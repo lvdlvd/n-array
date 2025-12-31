@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 DMAMUX (DMA Request Multiplexer) Peripheral
+  Extracted from RM0440 Rev 7
+  
+  DMAMUX1 connects DMA1/DMA2 channels (total 16) to peripheral requests.
+  Also has 4 request generator channels for software-triggered DMA.
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="DMAMUX" description="DMA request multiplexer">
+    <instance id="1" base="0x40020800" />
+    
+    <!-- Channel request configuration (16 channels: DMA1 CH1-8 + DMA2 CH1-8) -->
+    <group name="C" offset="0x00" stride="0x04" range_min="0" range_max="15" description="Channel request configuration">
+      <register name="CR" offset="0x00" reset="0x00000000" description="Channel x request configuration">
+        <field name="DMAREQ_ID" mask="0x0000007F" access="rw" description="DMA request identification">
+          <!-- 0=disabled, 1=DMAMUX_REQ_GEN0, ..., 5-115 are peripheral requests -->
+        </field>
+        <field name="SOIE" mask="0x00000100" access="rw" description="Synchronization overrun interrupt enable" />
+        <field name="EGE" mask="0x00000200" access="rw" description="Event generation enable" />
+        <field name="SE" mask="0x00010000" access="rw" description="Synchronization enable" />
+        <field name="SPOL" mask="0x00060000" access="rw" description="Synchronization polarity">
+          <enum value="0x00000000" name="NoEvent" />
+          <enum value="0x00020000" name="RisingEdge" />
+          <enum value="0x00040000" name="FallingEdge" />
+          <enum value="0x00060000" name="BothEdges" />
+        </field>
+        <field name="NBREQ" mask="0x00F80000" access="rw" description="Number of DMA requests minus 1 to forward" />
+        <field name="SYNC_ID" mask="0x1F000000" access="rw" description="Synchronization identification" />
+      </register>
+    </group>
+    
+    <register name="CSR" offset="0x80" reset="0x00000000" access="ro" description="Channel status register">
+      <field name="SOF" mask="0x0000FFFF" access="ro" description="Synchronization overrun event flag (channels 0-15)" />
+    </register>
+    
+    <register name="CFR" offset="0x84" reset="0x00000000" access="wo" description="Channel clear flag register">
+      <field name="CSOF" mask="0x0000FFFF" access="wo" description="Clear synchronization overrun event flag (channels 0-15)" />
+    </register>
+    
+    <!-- Request generator channels (4 channels) -->
+    <group name="RG" offset="0x100" stride="0x04" range_min="0" range_max="3" description="Request generator channel">
+      <register name="CR" offset="0x00" reset="0x00000000" description="Request generator x configuration">
+        <field name="SIG_ID" mask="0x0000001F" access="rw" description="Signal identification">
+          <!-- 0=EXTI0, 1=EXTI1, ..., various interrupt sources -->
+        </field>
+        <field name="OIE" mask="0x00000100" access="rw" description="Trigger overrun interrupt enable" />
+        <field name="GE" mask="0x00010000" access="rw" description="DMA request generator channel enable" />
+        <field name="GPOL" mask="0x00060000" access="rw" description="DMA request generator trigger polarity">
+          <enum value="0x00000000" name="NoEvent" />
+          <enum value="0x00020000" name="RisingEdge" />
+          <enum value="0x00040000" name="FallingEdge" />
+          <enum value="0x00060000" name="BothEdges" />
+        </field>
+        <field name="GNBREQ" mask="0x00F80000" access="rw" description="Number of DMA requests to be generated minus 1" />
+      </register>
+    </group>
+    
+    <register name="RGSR" offset="0x140" reset="0x00000000" access="ro" description="Request generator interrupt status register">
+      <field name="OF" mask="0x0000000F" access="ro" description="Trigger overrun event flag (generators 0-3)" />
+    </register>
+    
+    <register name="RGCFR" offset="0x144" reset="0x00000000" access="wo" description="Request generator interrupt clear flag register">
+      <field name="COF" mask="0x0000000F" access="wo" description="Clear trigger overrun event flag (generators 0-3)" />
+    </register>
+    
+  </peripheral>
+  
+</device>

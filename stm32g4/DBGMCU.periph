@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 DBGMCU (Debug MCU) Peripheral
+  Extracted from RM0440 Rev 7
+  
+  Debug support registers for halting peripherals when core is halted.
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="DBGMCU" description="Debug MCU">
+    <instance id="1" base="0xE0042000" />
+    
+    <register name="IDCODE" offset="0x00" reset="0x00000000" access="ro" description="MCU device ID code">
+      <field name="DEV_ID" mask="0x00000FFF" access="ro" description="Device identifier" />
+      <field name="REV_ID" mask="0xFFFF0000" access="ro" description="Revision identifier" />
+    </register>
+    
+    <register name="CR" offset="0x04" reset="0x00000000" description="Debug MCU configuration register">
+      <field name="DBG_SLEEP" mask="0x00000001" access="rw" description="Debug Sleep mode" />
+      <field name="DBG_STOP" mask="0x00000002" access="rw" description="Debug Stop mode" />
+      <field name="DBG_STANDBY" mask="0x00000004" access="rw" description="Debug Standby mode" />
+      <field name="TRACE_IOEN" mask="0x00000020" access="rw" description="Trace pin assignment control" />
+      <field name="TRACE_MODE" mask="0x000000C0" access="rw" description="Trace mode">
+        <enum value="0x00000000" name="Async" description="Asynchronous mode" />
+        <enum value="0x00000040" name="Sync1" description="Synchronous, TRACEDATA size 1" />
+        <enum value="0x00000080" name="Sync2" description="Synchronous, TRACEDATA size 2" />
+        <enum value="0x000000C0" name="Sync4" description="Synchronous, TRACEDATA size 4" />
+      </field>
+    </register>
+    
+    <register name="APB1FZR1" offset="0x08" reset="0x00000000" description="Debug MCU APB1 freeze register 1">
+      <field name="DBG_TIM2_STOP" mask="0x00000001" access="rw" description="TIM2 counter stopped when core halted" />
+      <field name="DBG_TIM3_STOP" mask="0x00000002" access="rw" description="TIM3 counter stopped when core halted" />
+      <field name="DBG_TIM4_STOP" mask="0x00000004" access="rw" description="TIM4 counter stopped when core halted" />
+      <field name="DBG_TIM5_STOP" mask="0x00000008" access="rw" description="TIM5 counter stopped when core halted" />
+      <field name="DBG_TIM6_STOP" mask="0x00000010" access="rw" description="TIM6 counter stopped when core halted" />
+      <field name="DBG_TIM7_STOP" mask="0x00000020" access="rw" description="TIM7 counter stopped when core halted" />
+      <field name="DBG_RTC_STOP" mask="0x00000400" access="rw" description="RTC counter stopped when core halted" />
+      <field name="DBG_WWDG_STOP" mask="0x00000800" access="rw" description="WWDG counter stopped when core halted" />
+      <field name="DBG_IWDG_STOP" mask="0x00001000" access="rw" description="IWDG counter stopped when core halted" />
+      <field name="DBG_I2C1_STOP" mask="0x00200000" access="rw" description="I2C1 SMBUS timeout stopped when core halted" />
+      <field name="DBG_I2C2_STOP" mask="0x00400000" access="rw" description="I2C2 SMBUS timeout stopped when core halted" />
+      <field name="DBG_I2C3_STOP" mask="0x40000000" access="rw" description="I2C3 SMBUS timeout stopped when core halted" />
+      <field name="DBG_LPTIM1_STOP" mask="0x80000000" access="rw" description="LPTIM1 counter stopped when core halted" />
+    </register>
+    
+    <register name="APB1FZR2" offset="0x0C" reset="0x00000000" description="Debug MCU APB1 freeze register 2">
+      <field name="DBG_I2C4_STOP" mask="0x00000002" access="rw" description="I2C4 SMBUS timeout stopped when core halted" />
+    </register>
+    
+    <register name="APB2FZR" offset="0x10" reset="0x00000000" description="Debug MCU APB2 freeze register">
+      <field name="DBG_TIM1_STOP" mask="0x00000800" access="rw" description="TIM1 counter stopped when core halted" />
+      <field name="DBG_TIM8_STOP" mask="0x00002000" access="rw" description="TIM8 counter stopped when core halted" />
+      <field name="DBG_TIM15_STOP" mask="0x00010000" access="rw" description="TIM15 counter stopped when core halted" />
+      <field name="DBG_TIM16_STOP" mask="0x00020000" access="rw" description="TIM16 counter stopped when core halted" />
+      <field name="DBG_TIM17_STOP" mask="0x00040000" access="rw" description="TIM17 counter stopped when core halted" />
+      <field name="DBG_TIM20_STOP" mask="0x00100000" access="rw" description="TIM20 counter stopped when core halted" />
+      <field name="DBG_HRTIM_STOP" mask="0x04000000" access="rw" description="HRTIM counter stopped when core halted" />
+    </register>
+    
+  </peripheral>
+  
+</device>

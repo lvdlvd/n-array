@@ -1,0 +1,548 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 Device Errata
+  Extracted from:
+  - ES0430 Rev 9 (G471/G473/G474/G483/G484)
+  - ES0431 Rev 9 (G431/G441)
+  - ES0523 Rev 5 (G491/G4A1)
+  
+  Status codes:
+    A = workaround available
+    P = partial workaround
+    N = no workaround
+    - = not applicable to this revision
+  
+  Silicon revisions:
+    G47x/G48x: Z (0x2001), Y (0x2002), X (0x2003)
+    G431/G441: Z (0x1000), Y (0x1001), X (0x1002)
+    G491/G4A1: A (0x1000), Z (0x1001)
+-->
+<device name="STM32G4" errata_docs="ES0430,ES0431,ES0523">
+
+  <!-- Core (Cortex-M4) Errata - Common to all -->
+  <errata_section peripheral="Core">
+    <erratum id="2.1.1" title="Interrupted loads to SP can cause erroneous behavior"
+             status="A" revisions="all">
+      <description>Certain sequences of LDM/POP to SP interrupted exactly between 2 loads can corrupt registers.</description>
+      <workaround>Avoid using LDM/POP targeting SP or disable interrupts during these operations.</workaround>
+      <registers>N/A - CPU core issue</registers>
+    </erratum>
+    
+    <erratum id="2.1.2" title="VDIV or VSQRT might not complete correctly with very short ISRs"
+             status="A" revisions="all">
+      <description>FPU VDIV/VSQRT may produce wrong result if ISR completes in 1-2 cycles.</description>
+      <workaround>Insert 2 NOP instructions at end of short ISRs, or use lazy FP stacking.</workaround>
+      <registers>FPU</registers>
+    </erratum>
+    
+    <erratum id="2.1.3" title="Store immediate overlapping exception return might vector to incorrect interrupt"
+             status="A" revisions="all">
+      <description>STR immediate following exception return BX may cause incorrect vectoring.</description>
+      <workaround>Insert DSB before BX for exception return, or avoid STR immediately after.</workaround>
+      <registers>N/A - CPU core issue</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- System Errata -->
+  <errata_section peripheral="System">
+    <erratum id="2.2.1" title="Full JTAG configuration without NJTRST pin cannot be used"
+             status="A" revisions="all">
+      <description>JTAG-DP cannot be used when NJTRST not connected.</description>
+      <workaround>Use SW-DP (SWD) mode or connect NJTRST pin.</workaround>
+      <registers>DBGMCU</registers>
+    </erratum>
+    
+    <erratum id="2.2.2" title="Data cache corrupted during flash read-while-write"
+             status="A" revisions="all" category="Cat3,Cat4">
+      <description>Flash read during program/erase may corrupt data cache if prefetch enabled.</description>
+      <workaround>Disable data cache or prefetch during flash write operations.</workaround>
+      <registers>FLASH_ACR.DCEN, FLASH_ACR.PRFTEN</registers>
+    </erratum>
+    
+    <erratum id="2.2.3" title="FLASH_ECCR corrupted upon reset during flash operation"
+             status="A" revisions="all">
+      <description>ECC register may contain invalid data after reset during flash program/erase.</description>
+      <workaround>Ignore FLASH_ECCR content after reset if flash operation was in progress.</workaround>
+      <registers>FLASH_ECCR</registers>
+    </erratum>
+    
+    <erratum id="2.2.4" title="Unstable LSI when clocking RTC or CSS on LSE"
+             status="P" revisions="all">
+      <description>LSI oscillator may be unstable when used with RTC or LSE CSS.</description>
+      <workaround>Use LSE for RTC when possible. If using LSI, accept reduced accuracy.</workaround>
+      <registers>RCC_BDCR.LSION, RCC_BDCR.RTCSEL</registers>
+    </erratum>
+    
+    <erratum id="2.2.5" title="MCU cannot enter Standby mode when HSE bypass used"
+             status="A" revisions="all">
+      <description>Standby entry fails when HSE is in bypass mode.</description>
+      <workaround>Switch to HSI and disable HSE before entering Standby.</workaround>
+      <registers>RCC_CR.HSEON, RCC_CR.HSEBYP, PWR_CR1.LPMS</registers>
+    </erratum>
+    
+    <erratum id="2.2.6" title="Corrupted backup domain after missed power-on reset"
+             status="A" revisions="all">
+      <description>Backup domain may be corrupted if VBAT drops without proper POR.</description>
+      <workaround>Check BORRSTF flag and reinitialize backup domain if set.</workaround>
+      <registers>RCC_CSR.BORRSTF, RTC registers, TAMP registers</registers>
+    </erratum>
+    
+    <erratum id="2.2.7" title="SRAM write error"
+             status="A" revisions="all">
+      <description>SRAM write may fail under specific timing conditions.</description>
+      <workaround>Configure SRAM wait states per datasheet recommendations.</workaround>
+      <registers>FLASH_ACR</registers>
+    </erratum>
+    
+    <erratum id="2.2.8" title="Wrong instruction fetch from flash upon wakeup in debug low-power"
+             status="A" revisions="all">
+      <description>Flash prefetch may fetch wrong instruction when waking from Sleep/Stop with debug enabled.</description>
+      <workaround>Disable debug in low-power mode or insert ISB after WFI/WFE.</workaround>
+      <registers>DBGMCU_CR.DBG_SLEEP, DBGMCU_CR.DBG_STOP</registers>
+    </erratum>
+    
+    <erratum id="2.2.9" title="LSE disturbed by transitions on PC13"
+             status="N" revisions="all">
+      <description>Fast GPIO toggling on PC13 may disturb LSE oscillator.</description>
+      <workaround>None. Avoid high-frequency toggling on PC13 when LSE accuracy is critical.</workaround>
+      <registers>GPIOC_ODR, RCC_BDCR.LSEON</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- DMA Errata -->
+  <errata_section peripheral="DMA">
+    <erratum id="2.3.1" title="DMA disable failure upon simultaneous error and flag clear"
+             status="A" revisions="all">
+      <description>DMA channel may not disable properly if transfer error occurs while clearing flags.</description>
+      <workaround>Check EN bit after clearing; if still set, clear again.</workaround>
+      <registers>DMA_CCRx.EN, DMA_IFCR</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- DMAMUX Errata -->
+  <errata_section peripheral="DMAMUX">
+    <erratum id="2.4.1" title="SOFx not asserted when writing DMAMUX_CFR"
+             status="N" revisions="all">
+      <description>Synchronization overrun flag clear may suppress SOFx assertion.</description>
+      <workaround>None. Do not rely solely on SOFx for synchronization detection.</workaround>
+      <registers>DMAMUX_CFR, DMAMUX_CSR.SOFx</registers>
+    </erratum>
+    
+    <erratum id="2.4.2" title="OFx not asserted for trigger event at last request"
+             status="N" revisions="all">
+      <description>Overrun flag may not set if trigger occurs on last DMA request.</description>
+      <workaround>None. Monitor request count independently if needed.</workaround>
+      <registers>DMAMUX_RGSR.OFx</registers>
+    </erratum>
+    
+    <erratum id="2.4.3" title="OFx not asserted when writing DMAMUX_RGCFR"
+             status="N" revisions="all">
+      <description>Request generator overrun flag clear may suppress OFx assertion.</description>
+      <workaround>None.</workaround>
+      <registers>DMAMUX_RGCFR, DMAMUX_RGSR.OFx</registers>
+    </erratum>
+    
+    <erratum id="2.4.4" title="Wrong DMA request routed on sync event coinciding with CxCR write"
+             status="A" revisions="all">
+      <description>DMAMUX may route wrong request if synchronization event occurs during register write.</description>
+      <workaround>Disable DMA channel before modifying DMAMUX_CxCR.</workaround>
+      <registers>DMAMUX_CxCR, DMA_CCRx.EN</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- FMC Errata -->
+  <errata_section peripheral="FMC" category="Cat3,Cat4">
+    <erratum id="2.5.1" title="Dummy read cycles inserted reading synchronous memories"
+             status="N" revisions="all">
+      <description>Extra dummy cycles may be inserted when reading synchronous PSRAM/NOR.</description>
+      <workaround>None. Account for extra latency in timing calculations.</workaround>
+      <registers>FMC_BTRx, FMC_BCRx</registers>
+    </erratum>
+    
+    <erratum id="2.5.2" title="Wrong data read from busy NAND memory"
+             status="A" revisions="all">
+      <description>Reading NAND while busy may return wrong data.</description>
+      <workaround>Poll R/B signal or status register before reading data.</workaround>
+      <registers>FMC_SR</registers>
+    </erratum>
+    
+    <erratum id="2.5.3" title="Data corruption with specific FIFO write sequence to synchronous PSRAM"
+             status="A" revisions="all">
+      <description>Specific write patterns may corrupt data in synchronous PSRAM.</description>
+      <workaround>Avoid back-to-back writes to different rows without intervening read.</workaround>
+      <registers>FMC_BCRx.CBURSTRW</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- QUADSPI Errata -->
+  <errata_section peripheral="QUADSPI" category="Cat3,Cat4">
+    <erratum id="2.6.1" title="QUADSPI cannot be used in indirect read with only data phase"
+             status="P" revisions="all">
+      <description>Indirect read fails if only data phase is configured (no instruction/address).</description>
+      <workaround>Always include at least instruction or address phase.</workaround>
+      <registers>QUADSPI_CCR.IMODE, QUADSPI_CCR.ADMODE, QUADSPI_CCR.DMODE</registers>
+    </erratum>
+    
+    <erratum id="2.6.2" title="QUADSPI hangs when QUADSPI_CCR is cleared"
+             status="P" revisions="all">
+      <description>Writing 0 to CCR while operation in progress may hang peripheral.</description>
+      <workaround>Abort current operation before modifying CCR.</workaround>
+      <registers>QUADSPI_CCR, QUADSPI_CR.ABORT</registers>
+    </erratum>
+    
+    <erratum id="2.6.3" title="QUADSPI internal timing criticality"
+             status="A" revisions="all">
+      <description>Timing margins are tight at high frequencies.</description>
+      <workaround>Enable sample shift (SSHIFT) for frequencies above 50 MHz.</workaround>
+      <registers>QUADSPI_CR.SSHIFT</registers>
+    </erratum>
+    
+    <erratum id="2.6.4" title="Memory-mapped read of last memory byte fails"
+             status="P" revisions="all">
+      <description>Reading the last byte of flash in memory-mapped mode may fail.</description>
+      <workaround>Configure FSIZE to one size larger or use indirect mode for last byte.</workaround>
+      <registers>QUADSPI_DCR.FSIZE</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- ADC Errata -->
+  <errata_section peripheral="ADC">
+    <erratum id="2.7.1" title="New context conversion without trigger when JQDIS=0, JQM=0"
+             status="A" revisions="all">
+      <description>Injected context may start without trigger under specific timing.</description>
+      <workaround>Set JQM=1 or use software trigger for injected sequences.</workaround>
+      <registers>ADC_JSQR.JQM, ADC_CFGR.JQDIS</registers>
+    </erratum>
+    
+    <erratum id="2.7.2" title="Two consecutive context conversions fail with JQDIS=0, JQM=0"
+             status="A" revisions="all">
+      <description>Writing ADC_JSQR immediately after context completion may fail.</description>
+      <workaround>Wait for JEOS flag before writing new context.</workaround>
+      <registers>ADC_JSQR, ADC_ISR.JEOS</registers>
+    </erratum>
+    
+    <erratum id="2.7.3" title="Unexpected regular conversion in Dual interleaved mode"
+             status="A" revisions="all">
+      <description>Regular conversion may trigger unexpectedly between injected conversions.</description>
+      <workaround>Disable regular conversion during injected sequence in interleaved mode.</workaround>
+      <registers>ADC_CCR.DUAL, ADC_CFGR</registers>
+    </erratum>
+    
+    <erratum id="2.7.4" title="ADC_AWDy_OUT reset by non-guarded channels"
+             status="A" revisions="all">
+      <description>Analog watchdog output may be incorrectly reset by non-guarded conversions.</description>
+      <workaround>Use AWDy filtering or handle in software.</workaround>
+      <registers>ADC_AWDxCR, ADC_TR1/2/3</registers>
+    </erratum>
+    
+    <erratum id="2.7.5" title="Injected data stored in wrong ADC_JDRx registers"
+             status="A" revisions="all">
+      <description>Injected data may be stored in incorrect JDR register under specific conditions.</description>
+      <workaround>Read all JDR registers and sort by JDATA field.</workaround>
+      <registers>ADC_JDR1/2/3/4</registers>
+    </erratum>
+    
+    <erratum id="2.7.6" title="ADC slave data may be shifted in Dual regular simultaneous mode"
+             status="A" revisions="all">
+      <description>Slave ADC data may be shifted by one position in dual mode.</description>
+      <workaround>Use DMA with proper data alignment or read master/slave separately.</workaround>
+      <registers>ADC_CDR, ADC_CCR.DUAL</registers>
+    </erratum>
+    
+    <erratum id="2.7.7" title="10/8/6-bit ADC conversion disturbing other ADCs"
+             status="A" revisions="Z">
+      <description>Short conversion on one ADC may disturb others running concurrently.</description>
+      <workaround>Use same resolution on concurrent ADCs or stagger conversions.</workaround>
+      <registers>ADC_CFGR.RES</registers>
+    </erratum>
+    
+    <erratum id="2.7.8" title="ADC input channel switching disturbs ongoing conversions"
+             status="P" revisions="Z">
+      <description>Changing input mux during conversion may affect accuracy.</description>
+      <workaround>Avoid channel switching during conversion. Use bulb sampling if needed.</workaround>
+      <registers>ADC_SQRx, ADC_SMPR1/2</registers>
+    </erratum>
+    
+    <erratum id="2.7.9" title="Wrong ADC result if conversion late after calibration"
+             status="A" revisions="all">
+      <description>First conversion may be inaccurate if started late after calibration.</description>
+      <workaround>Start conversion within 4 ADC clock cycles of ADEN or recalibrate.</workaround>
+      <registers>ADC_CR.ADEN, ADC_CR.ADCAL</registers>
+    </erratum>
+    
+    <erratum id="2.7.10" title="ADC channel 0 converted instead of required channel"
+             status="A" revisions="Y">
+      <description>Under specific conditions, channel 0 is converted instead of selected channel.</description>
+      <workaround>Ensure proper sequencing of ADC enable and channel configuration.</workaround>
+      <registers>ADC_SQRx, ADC_CR.ADEN</registers>
+    </erratum>
+    
+    <erratum id="2.7.11" title="One ADC instance may impact accuracy of another"
+             status="A" revisions="all">
+      <description>Concurrent conversions may affect each other's accuracy at high speeds.</description>
+      <workaround>Stagger conversion triggers or use lower sample rates.</workaround>
+      <registers>ADC_CCR.PRESC</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- VREFBUF Errata -->
+  <errata_section peripheral="VREFBUF">
+    <erratum id="2.8.1" title="VREF+ output disturbed by GPIO toggling"
+             status="P" revisions="all">
+      <description>Fast GPIO switching may cause noise on VREF+ output.</description>
+      <workaround>Reduce GPIO toggle frequency or add external filtering.</workaround>
+      <registers>VREFBUF_CSR</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- COMP Errata -->
+  <errata_section peripheral="COMP">
+    <erratum id="2.9.1" title="Comparator previously not fully tested in production"
+             status="N" revisions="Z,Y">
+      <description>Early revisions may have untested comparator parameters.</description>
+      <workaround>Use Rev X or later for critical comparator applications.</workaround>
+      <registers>COMPx_CSR</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- OPAMP Errata -->
+  <errata_section peripheral="OPAMP">
+    <erratum id="2.10.1" title="OPAMP disturbed by fast-edge toggle on VINM0 GPIO"
+             status="P" revisions="all">
+      <description>Fast edges on VINM0 pin may disturb OPAMP when used as GPIO.</description>
+      <workaround>Avoid fast toggling on OPAMP input pins or add filtering.</workaround>
+      <registers>OPAMPx_CSR</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- HRTIM Errata (Cat4 only) -->
+  <errata_section peripheral="HRTIM" category="Cat4">
+    <erratum id="2.11.1" title="Spurious register update event in up-down counting mode"
+             status="P" revisions="all">
+      <description>Extra update event may be generated at counter direction change.</description>
+      <workaround>Use up-counting mode or handle spurious events in software.</workaround>
+      <registers>HRTIM_TIMxCR.UPDGAT</registers>
+    </erratum>
+    
+    <erratum id="2.11.2" title="Counter restarting from crest after burst idle period"
+             status="A" revisions="all">
+      <description>Counter may restart from max value instead of 0 after burst idle.</description>
+      <workaround>Reset counter before exiting burst idle if precise timing needed.</workaround>
+      <registers>HRTIM_BMCR</registers>
+    </erratum>
+    
+    <erratum id="2.11.3" title="Incorrect output level in PWM mode with greater-than comparison"
+             status="A" revisions="all">
+      <description>Output may be inverted when using greater-than compare mode.</description>
+      <workaround>Use less-than comparison or invert output polarity in software.</workaround>
+      <registers>HRTIM_OUTxR</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- TIM Errata -->
+  <errata_section peripheral="TIM">
+    <erratum id="2.12.1" title="One-pulse mode trigger not detected in master-slave reset+trigger"
+             status="P" revisions="all">
+      <description>Trigger may be missed when using combined reset and trigger mode.</description>
+      <workaround>Use separate reset and trigger or add delay between operations.</workaround>
+      <registers>TIMx_SMCR.SMS, TIMx_SMCR.TS</registers>
+    </erratum>
+    
+    <erratum id="2.12.2" title="Consecutive compare event missed in specific conditions"
+             status="N" revisions="all">
+      <description>Second compare event may be missed if occurring within 2 clock cycles.</description>
+      <workaround>None. Ensure compare values differ by at least 2.</workaround>
+      <registers>TIMx_CCRx</registers>
+    </erratum>
+    
+    <erratum id="2.12.3" title="Compare event missed in center-aligned mode with dithering"
+             status="N" revisions="all">
+      <description>Dithering may cause missed compare events in center-aligned modes 1 and 2.</description>
+      <workaround>Use center-aligned mode 3 or disable dithering.</workaround>
+      <registers>TIMx_CR1.CMS, TIMx_DIER.DITHEN</registers>
+    </erratum>
+    
+    <erratum id="2.12.4" title="Output compare clear not working with external counter reset"
+             status="P" revisions="all">
+      <description>OC clear may not work when counter is reset by external trigger.</description>
+      <workaround>Use software clear or avoid combining with external reset.</workaround>
+      <registers>TIMx_CCMRx.OCxCE</registers>
+    </erratum>
+    
+    <erratum id="2.12.5" title="Bidirectional break mode not working with short pulses"
+             status="N" revisions="all">
+      <description>Break input may not be recognized if pulse is shorter than 2 clock cycles.</description>
+      <workaround>Ensure break pulses are at least 2 timer clock cycles wide.</workaround>
+      <registers>TIMx_BDTR.BKF</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- LPTIM Errata -->
+  <errata_section peripheral="LPTIM">
+    <erratum id="2.13.1" title="Device stuck in LPTIM interrupt when entering Stop mode"
+             status="A" revisions="all">
+      <description>LPTIM interrupt may prevent Stop mode entry.</description>
+      <workaround>Disable LPTIM interrupt before entering Stop mode.</workaround>
+      <registers>LPTIM_IER, PWR_CR1.LPMS</registers>
+    </erratum>
+    
+    <erratum id="2.13.2" title="Device stuck in LPTIM interrupt when clearing event flag"
+             status="P" revisions="all">
+      <description>Clearing LPTIM flag may cause repeated interrupt.</description>
+      <workaround>Disable interrupt before clearing flag, then re-enable.</workaround>
+      <registers>LPTIM_ICR, LPTIM_IER</registers>
+    </erratum>
+    
+    <erratum id="2.13.3" title="LPTIM events and PWM delayed by one kernel clock cycle"
+             status="P" revisions="all">
+      <description>Output transitions are delayed by one LPTIM kernel clock cycle.</description>
+      <workaround>Account for delay in timing calculations.</workaround>
+      <registers>LPTIM_ARR, LPTIM_CMP</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- RTC and TAMP Errata -->
+  <errata_section peripheral="RTC">
+    <erratum id="2.14.1" title="Calendar initialization may fail on consecutive INIT mode entry"
+             status="A" revisions="all">
+      <description>Entering INIT mode twice in quick succession may fail.</description>
+      <workaround>Wait for INITF flag before re-entering INIT mode.</workaround>
+      <registers>RTC_ISR.INIT, RTC_ISR.INITF</registers>
+    </erratum>
+    
+    <erratum id="2.14.2" title="Alarm flag repeatedly set when core stopped in debug"
+             status="N" revisions="all">
+      <description>Alarm flag may be set repeatedly when debugging with RTC running.</description>
+      <workaround>Freeze RTC in debug or handle repeated interrupts.</workaround>
+      <registers>RTC_ISR.ALRAF/B, DBGMCU_APB1FZR1.DBG_RTC_STOP</registers>
+    </erratum>
+    
+    <erratum id="2.14.3" title="Tamper fails to trigger timestamp after clearing TSF"
+             status="N" revisions="all">
+      <description>Timestamp may not trigger for a few cycles after clearing TSF.</description>
+      <workaround>None. Allow settling time after TSF clear.</workaround>
+      <registers>RTC_ISR.TSF, RTC_TSTR</registers>
+    </erratum>
+    
+    <erratum id="2.14.4" title="Subsecond register not latched with timestamp"
+             status="A" revisions="all">
+      <description>Subsecond value may not match timestamp time.</description>
+      <workaround>Read subsecond before timestamp registers.</workaround>
+      <registers>RTC_SSR, RTC_TSSSR</registers>
+    </erratum>
+    
+    <erratum id="2.14.5" title="Tamper flag not set on LSE failure detection"
+             status="N" revisions="all">
+      <description>Internal tamper for LSE failure may not set flag properly.</description>
+      <workaround>Monitor LSE status separately using RCC registers.</workaround>
+      <registers>TAMP_SR, RCC_BDCR.LSERDY</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- I2C Errata -->
+  <errata_section peripheral="I2C">
+    <erratum id="2.15.1" title="Wrong data hold time in Fast-mode Plus"
+             status="P" revisions="all">
+      <description>Data hold time may not meet Fast-mode Plus specification.</description>
+      <workaround>Reduce SCL frequency or use external pull-ups with lower values.</workaround>
+      <registers>I2C_TIMINGR</registers>
+    </erratum>
+    
+    <erratum id="2.15.2" title="Spurious bus error detection in master mode"
+             status="A" revisions="all">
+      <description>BERR flag may be set falsely in master mode.</description>
+      <workaround>Ignore BERR in master mode; check NACKF instead.</workaround>
+      <registers>I2C_ISR.BERR, I2C_ISR.NACKF</registers>
+    </erratum>
+    
+    <erratum id="2.15.3" title="Arbitration lost not detected in specific conditions"
+             status="A" revisions="all" category="Cat2">
+      <description>ARLO flag may not be set under specific multi-master conditions.</description>
+      <workaround>Use timeout to detect stalled transactions.</workaround>
+      <registers>I2C_ISR.ARLO</registers>
+    </erratum>
+    
+    <erratum id="2.15.4" title="OVR flag not set in underrun condition"
+             status="N" revisions="all">
+      <description>Overrun flag may not be set during slave transmit underrun.</description>
+      <workaround>Monitor TXIS flag timing to detect potential underrun.</workaround>
+      <registers>I2C_ISR.OVR</registers>
+    </erratum>
+    
+    <erratum id="2.15.5" title="Transmission stalled after first byte transfer"
+             status="A" revisions="all">
+      <description>Master transmission may stall after first byte under specific timing.</description>
+      <workaround>Enable NOSTRETCH mode or adjust timing.</workaround>
+      <registers>I2C_CR1.NOSTRETCH</registers>
+    </erratum>
+    
+    <erratum id="2.15.6" title="SDA held low upon SMBus timeout expiry in slave mode"
+             status="A" revisions="all">
+      <description>SDA may remain low after SMBus timeout, blocking bus.</description>
+      <workaround>Disable and re-enable I2C peripheral to release SDA.</workaround>
+      <registers>I2C_CR1.PE, I2C_TIMEOUTR</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- SPI/I2S Errata -->
+  <errata_section peripheral="SPI">
+    <erratum id="2.16.1" title="Anticipated end-of-transmission signaling in slave mode"
+             status="A" revisions="all">
+      <description>EOT/TXC may be signaled before last bit transmitted in slave mode.</description>
+      <workaround>Add extra clock cycle margin or use DMA completion for timing.</workaround>
+      <registers>SPI_SR.EOT, SPI_SR.TXC</registers>
+    </erratum>
+    
+    <erratum id="2.16.2" title="BSY bit may stay high when SPI is disabled"
+             status="A" revisions="all">
+      <description>BSY flag may remain set after disabling SPI.</description>
+      <workaround>Ignore BSY after PE=0; use EOT/TXC for transfer completion.</workaround>
+      <registers>SPI_SR.BSY, SPI_CR1.SPE</registers>
+    </erratum>
+    
+    <erratum id="2.16.3" title="BSY bit may stay high at end of data transfer in slave mode"
+             status="A" revisions="all">
+      <description>BSY may sporadically remain high after slave transfer completes.</description>
+      <workaround>Use RXNE/TXE flags instead of BSY for transfer completion.</workaround>
+      <registers>SPI_SR.BSY</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- USART Errata -->
+  <errata_section peripheral="USART">
+    <erratum id="2.17.1" title="Received data corrupted upon clearing ABREN bit"
+             status="A" revisions="all">
+      <description>Disabling auto baud rate during reception may corrupt data.</description>
+      <workaround>Disable ABREN only when receiver is idle.</workaround>
+      <registers>USART_CR2.ABREN</registers>
+    </erratum>
+    
+    <erratum id="2.17.2" title="Parity error flag may not be set for first character"
+             status="A" revisions="all">
+      <description>PE flag may not be set for parity error on first received character.</description>
+      <workaround>Ignore first character after enabling receiver or send preamble.</workaround>
+      <registers>USART_ISR.PE</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- FDCAN Errata -->
+  <errata_section peripheral="FDCAN">
+    <erratum id="2.18.1" title="Desynchronization with edge filtering enabled"
+             status="A" revisions="all">
+      <description>CAN may lose synchronization with specific edge filtering settings.</description>
+      <workaround>Disable edge filtering or adjust filter parameters.</workaround>
+      <registers>FDCAN_CCCR.EFBI</registers>
+    </erratum>
+  </errata_section>
+
+  <!-- USB Errata -->
+  <errata_section peripheral="USB">
+    <erratum id="2.19.1" title="Double buffer mode not working with isochronous endpoints"
+             status="A" revisions="all">
+      <description>Double buffering may cause data corruption for isochronous transfers.</description>
+      <workaround>Use single buffer mode for isochronous endpoints.</workaround>
+      <registers>USB_EPnR.DTOG_TX/RX</registers>
+    </erratum>
+  </errata_section>
+
+</device>

@@ -1,0 +1,535 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 RCC (Reset and Clock Control) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="RCC" description="Reset and clock control">
+    <instance id="1" base="0x40021000" />
+    
+    <register name="CR" offset="0x00" reset="0x00000063" description="Clock control register">
+      <field name="HSION" mask="0x00000100" access="rw" description="HSI16 clock enable" />
+      <field name="HSIKERON" mask="0x00000200" access="rw" description="HSI16 always enable for peripheral kernels" />
+      <field name="HSIRDY" mask="0x00000400" access="ro" description="HSI16 clock ready flag" />
+      <field name="HSEON" mask="0x00010000" access="rw" description="HSE clock enable" />
+      <field name="HSERDY" mask="0x00020000" access="ro" description="HSE clock ready flag" />
+      <field name="HSEBYP" mask="0x00040000" access="rw" description="HSE crystal oscillator bypass" />
+      <field name="CSSON" mask="0x00080000" access="rs" description="Clock security system enable" />
+      <field name="PLLON" mask="0x01000000" access="rw" description="Main PLL enable" />
+      <field name="PLLRDY" mask="0x02000000" access="ro" description="Main PLL clock ready flag" />
+    </register>
+    
+    <register name="ICSCR" offset="0x04" reset="0x40000000" description="Internal clock sources calibration register">
+      <field name="HSICAL" mask="0x00FF0000" access="ro" description="HSI16 clock calibration" />
+      <field name="HSITRIM" mask="0x7F000000" access="rw" description="HSI16 clock trimming" />
+    </register>
+    
+    <register name="CFGR" offset="0x08" reset="0x00000005" description="Clock configuration register">
+      <field name="SW" mask="0x00000003" access="rw" description="System clock switch">
+        <enum value="0x00000000" name="HSI16" description="HSI16 selected as system clock" />
+        <enum value="0x00000001" name="HSE" description="HSE selected as system clock" />
+        <enum value="0x00000002" name="PLL" description="PLL selected as system clock" />
+      </field>
+      <field name="SWS" mask="0x0000000C" access="ro" description="System clock switch status">
+        <enum value="0x00000000" name="HSI16" description="HSI16 used as system clock" />
+        <enum value="0x00000004" name="HSE" description="HSE used as system clock" />
+        <enum value="0x00000008" name="PLL" description="PLL used as system clock" />
+      </field>
+      <field name="HPRE" mask="0x000000F0" access="rw" description="AHB prescaler">
+        <enum value="0x00000000" name="Div1" description="SYSCLK not divided" />
+        <enum value="0x00000080" name="Div2" description="SYSCLK divided by 2" />
+        <enum value="0x00000090" name="Div4" description="SYSCLK divided by 4" />
+        <enum value="0x000000A0" name="Div8" description="SYSCLK divided by 8" />
+        <enum value="0x000000B0" name="Div16" description="SYSCLK divided by 16" />
+        <enum value="0x000000C0" name="Div64" description="SYSCLK divided by 64" />
+        <enum value="0x000000D0" name="Div128" description="SYSCLK divided by 128" />
+        <enum value="0x000000E0" name="Div256" description="SYSCLK divided by 256" />
+        <enum value="0x000000F0" name="Div512" description="SYSCLK divided by 512" />
+      </field>
+      <field name="PPRE1" mask="0x00000700" access="rw" description="APB1 prescaler">
+        <enum value="0x00000000" name="Div1" description="HCLK not divided" />
+        <enum value="0x00000400" name="Div2" description="HCLK divided by 2" />
+        <enum value="0x00000500" name="Div4" description="HCLK divided by 4" />
+        <enum value="0x00000600" name="Div8" description="HCLK divided by 8" />
+        <enum value="0x00000700" name="Div16" description="HCLK divided by 16" />
+      </field>
+      <field name="PPRE2" mask="0x00003800" access="rw" description="APB2 prescaler">
+        <enum value="0x00000000" name="Div1" description="HCLK not divided" />
+        <enum value="0x00002000" name="Div2" description="HCLK divided by 2" />
+        <enum value="0x00002800" name="Div4" description="HCLK divided by 4" />
+        <enum value="0x00003000" name="Div8" description="HCLK divided by 8" />
+        <enum value="0x00003800" name="Div16" description="HCLK divided by 16" />
+      </field>
+      <field name="MCOSEL" mask="0x0F000000" access="rw" description="MCO clock output selection">
+        <enum value="0x00000000" name="Disabled" description="MCO output disabled" />
+        <enum value="0x01000000" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x03000000" name="HSI16" description="HSI16 selected" />
+        <enum value="0x04000000" name="HSE" description="HSE selected" />
+        <enum value="0x05000000" name="PLL" description="Main PLL selected" />
+        <enum value="0x06000000" name="LSI" description="LSI selected" />
+        <enum value="0x07000000" name="LSE" description="LSE selected" />
+        <enum value="0x08000000" name="HSI48" description="HSI48 selected" />
+      </field>
+      <field name="MCOPRE" mask="0x70000000" access="rw" description="MCO clock output prescaler">
+        <enum value="0x00000000" name="Div1" description="MCO not divided" />
+        <enum value="0x10000000" name="Div2" description="MCO divided by 2" />
+        <enum value="0x20000000" name="Div4" description="MCO divided by 4" />
+        <enum value="0x30000000" name="Div8" description="MCO divided by 8" />
+        <enum value="0x40000000" name="Div16" description="MCO divided by 16" />
+      </field>
+    </register>
+    
+    <register name="PLLCFGR" offset="0x0C" reset="0x00001000" description="PLL configuration register">
+      <field name="PLLSRC" mask="0x00000003" access="rw" description="PLL input clock source">
+        <enum value="0x00000000" name="None" description="No clock sent to PLL" />
+        <enum value="0x00000002" name="HSI16" description="HSI16 clock selected" />
+        <enum value="0x00000003" name="HSE" description="HSE clock selected" />
+      </field>
+      <field name="PLLM" mask="0x000000F0" access="rw" description="Division factor M (1-16)" />
+      <field name="PLLN" mask="0x00007F00" access="rw" description="PLL multiplication factor N (8-127)" />
+      <field name="PLLPEN" mask="0x00010000" access="rw" description="PLL P clock output enable" />
+      <field name="PLLP" mask="0x00020000" access="rw" description="PLL P division factor">
+        <enum value="0x00000000" name="Div7" description="Divide by 7" />
+        <enum value="0x00020000" name="Div17" description="Divide by 17" />
+      </field>
+      <field name="PLLQEN" mask="0x00100000" access="rw" description="PLL Q clock output enable" />
+      <field name="PLLQ" mask="0x00600000" access="rw" description="PLL Q division factor">
+        <enum value="0x00000000" name="Div2" description="Divide by 2" />
+        <enum value="0x00200000" name="Div4" description="Divide by 4" />
+        <enum value="0x00400000" name="Div6" description="Divide by 6" />
+        <enum value="0x00600000" name="Div8" description="Divide by 8" />
+      </field>
+      <field name="PLLREN" mask="0x01000000" access="rw" description="PLL R clock output enable" />
+      <field name="PLLR" mask="0x06000000" access="rw" description="PLL R division factor">
+        <enum value="0x00000000" name="Div2" description="Divide by 2" />
+        <enum value="0x02000000" name="Div4" description="Divide by 4" />
+        <enum value="0x04000000" name="Div6" description="Divide by 6" />
+        <enum value="0x06000000" name="Div8" description="Divide by 8" />
+      </field>
+      <field name="PLLPDIV" mask="0xF8000000" access="rw" description="PLL P division factor (0=PLLP, 2-31)" />
+    </register>
+    
+    <register name="CIER" offset="0x18" reset="0x00000000" description="Clock interrupt enable register">
+      <field name="LSIRDYIE" mask="0x00000001" access="rw" description="LSI ready interrupt enable" />
+      <field name="LSERDYIE" mask="0x00000002" access="rw" description="LSE ready interrupt enable" />
+      <field name="HSIRDYIE" mask="0x00000008" access="rw" description="HSI16 ready interrupt enable" />
+      <field name="HSERDYIE" mask="0x00000010" access="rw" description="HSE ready interrupt enable" />
+      <field name="PLLRDYIE" mask="0x00000020" access="rw" description="PLL ready interrupt enable" />
+      <field name="LSECSSIE" mask="0x00000200" access="rw" description="LSE CSS interrupt enable" />
+      <field name="HSI48RDYIE" mask="0x00000400" access="rw" description="HSI48 ready interrupt enable" />
+    </register>
+    
+    <register name="CIFR" offset="0x1C" reset="0x00000000" access="ro" description="Clock interrupt flag register">
+      <field name="LSIRDYF" mask="0x00000001" access="ro" description="LSI ready interrupt flag" />
+      <field name="LSERDYF" mask="0x00000002" access="ro" description="LSE ready interrupt flag" />
+      <field name="HSIRDYF" mask="0x00000008" access="ro" description="HSI16 ready interrupt flag" />
+      <field name="HSERDYF" mask="0x00000010" access="ro" description="HSE ready interrupt flag" />
+      <field name="PLLRDYF" mask="0x00000020" access="ro" description="PLL ready interrupt flag" />
+      <field name="CSSF" mask="0x00000100" access="ro" description="CSS interrupt flag" />
+      <field name="LSECSSF" mask="0x00000200" access="ro" description="LSE CSS interrupt flag" />
+      <field name="HSI48RDYF" mask="0x00000400" access="ro" description="HSI48 ready interrupt flag" />
+    </register>
+    
+    <register name="CICR" offset="0x20" reset="0x00000000" access="wo" description="Clock interrupt clear register">
+      <field name="LSIRDYC" mask="0x00000001" access="wo" description="LSI ready interrupt clear" />
+      <field name="LSERDYC" mask="0x00000002" access="wo" description="LSE ready interrupt clear" />
+      <field name="HSIRDYC" mask="0x00000008" access="wo" description="HSI16 ready interrupt clear" />
+      <field name="HSERDYC" mask="0x00000010" access="wo" description="HSE ready interrupt clear" />
+      <field name="PLLRDYC" mask="0x00000020" access="wo" description="PLL ready interrupt clear" />
+      <field name="CSSC" mask="0x00000100" access="wo" description="CSS interrupt clear" />
+      <field name="LSECSSC" mask="0x00000200" access="wo" description="LSE CSS interrupt clear" />
+      <field name="HSI48RDYC" mask="0x00000400" access="wo" description="HSI48 ready interrupt clear" />
+    </register>
+    
+    <register name="AHB1RSTR" offset="0x28" reset="0x00000000" description="AHB1 peripheral reset register">
+      <field name="DMA1RST" mask="0x00000001" access="rw" description="DMA1 reset" />
+      <field name="DMA2RST" mask="0x00000002" access="rw" description="DMA2 reset" />
+      <field name="DMAMUX1RST" mask="0x00000004" access="rw" description="DMAMUX1 reset" />
+      <field name="CORDICRST" mask="0x00000008" access="rw" description="CORDIC reset" />
+      <field name="FMACRST" mask="0x00000010" access="rw" description="FMAC reset" />
+      <field name="FLASHRST" mask="0x00000100" access="rw" description="Flash memory reset" />
+      <field name="CRCRST" mask="0x00001000" access="rw" description="CRC reset" />
+    </register>
+    
+    <register name="AHB2RSTR" offset="0x2C" reset="0x00000000" description="AHB2 peripheral reset register">
+      <field name="GPIOARST" mask="0x00000001" access="rw" description="GPIOA reset" />
+      <field name="GPIOBRST" mask="0x00000002" access="rw" description="GPIOB reset" />
+      <field name="GPIOCRST" mask="0x00000004" access="rw" description="GPIOC reset" />
+      <field name="GPIODRST" mask="0x00000008" access="rw" description="GPIOD reset" />
+      <field name="GPIOERST" mask="0x00000010" access="rw" description="GPIOE reset" />
+      <field name="GPIOFRST" mask="0x00000020" access="rw" description="GPIOF reset" />
+      <field name="GPIOGRST" mask="0x00000040" access="rw" description="GPIOG reset" />
+      <field name="ADC12RST" mask="0x00002000" access="rw" description="ADC1/2 reset" />
+      <field name="ADC345RST" mask="0x00004000" access="rw" description="ADC3/4/5 reset" />
+      <field name="DAC1RST" mask="0x00010000" access="rw" description="DAC1 reset" />
+      <field name="DAC2RST" mask="0x00020000" access="rw" description="DAC2 reset" />
+      <field name="DAC3RST" mask="0x00040000" access="rw" description="DAC3 reset" />
+      <field name="DAC4RST" mask="0x00080000" access="rw" description="DAC4 reset" />
+      <field name="AESRST" mask="0x01000000" access="rw" description="AES reset" />
+      <field name="RNGRST" mask="0x04000000" access="rw" description="RNG reset" />
+    </register>
+    
+    <register name="AHB3RSTR" offset="0x30" reset="0x00000000" description="AHB3 peripheral reset register">
+      <field name="FMCRST" mask="0x00000001" access="rw" description="FMC reset" />
+      <field name="QSPIRST" mask="0x00000100" access="rw" description="QUADSPI reset" />
+    </register>
+    
+    <register name="APB1RSTR1" offset="0x38" reset="0x00000000" description="APB1 peripheral reset register 1">
+      <field name="TIM2RST" mask="0x00000001" access="rw" description="TIM2 reset" />
+      <field name="TIM3RST" mask="0x00000002" access="rw" description="TIM3 reset" />
+      <field name="TIM4RST" mask="0x00000004" access="rw" description="TIM4 reset" />
+      <field name="TIM5RST" mask="0x00000008" access="rw" description="TIM5 reset" />
+      <field name="TIM6RST" mask="0x00000010" access="rw" description="TIM6 reset" />
+      <field name="TIM7RST" mask="0x00000020" access="rw" description="TIM7 reset" />
+      <field name="CRSRST" mask="0x00000100" access="rw" description="CRS reset" />
+      <field name="SPI2RST" mask="0x00004000" access="rw" description="SPI2 reset" />
+      <field name="SPI3RST" mask="0x00008000" access="rw" description="SPI3 reset" />
+      <field name="USART2RST" mask="0x00020000" access="rw" description="USART2 reset" />
+      <field name="USART3RST" mask="0x00040000" access="rw" description="USART3 reset" />
+      <field name="UART4RST" mask="0x00080000" access="rw" description="UART4 reset" />
+      <field name="UART5RST" mask="0x00100000" access="rw" description="UART5 reset" />
+      <field name="I2C1RST" mask="0x00200000" access="rw" description="I2C1 reset" />
+      <field name="I2C2RST" mask="0x00400000" access="rw" description="I2C2 reset" />
+      <field name="USBRST" mask="0x00800000" access="rw" description="USB reset" />
+      <field name="FDCANRST" mask="0x02000000" access="rw" description="FDCAN reset" />
+      <field name="PWRRST" mask="0x10000000" access="rw" description="PWR reset" />
+      <field name="I2C3RST" mask="0x40000000" access="rw" description="I2C3 reset" />
+      <field name="LPTIM1RST" mask="0x80000000" access="rw" description="LPTIM1 reset" />
+    </register>
+    
+    <register name="APB1RSTR2" offset="0x3C" reset="0x00000000" description="APB1 peripheral reset register 2">
+      <field name="LPUART1RST" mask="0x00000001" access="rw" description="LPUART1 reset" />
+      <field name="I2C4RST" mask="0x00000002" access="rw" description="I2C4 reset" />
+      <field name="UCPD1RST" mask="0x00000100" access="rw" description="UCPD1 reset" />
+    </register>
+    
+    <register name="APB2RSTR" offset="0x40" reset="0x00000000" description="APB2 peripheral reset register">
+      <field name="SYSCFGRST" mask="0x00000001" access="rw" description="SYSCFG reset" />
+      <field name="TIM1RST" mask="0x00000800" access="rw" description="TIM1 reset" />
+      <field name="SPI1RST" mask="0x00001000" access="rw" description="SPI1 reset" />
+      <field name="TIM8RST" mask="0x00002000" access="rw" description="TIM8 reset" />
+      <field name="USART1RST" mask="0x00004000" access="rw" description="USART1 reset" />
+      <field name="SPI4RST" mask="0x00008000" access="rw" description="SPI4 reset" />
+      <field name="TIM15RST" mask="0x00010000" access="rw" description="TIM15 reset" />
+      <field name="TIM16RST" mask="0x00020000" access="rw" description="TIM16 reset" />
+      <field name="TIM17RST" mask="0x00040000" access="rw" description="TIM17 reset" />
+      <field name="TIM20RST" mask="0x00100000" access="rw" description="TIM20 reset" />
+      <field name="SAI1RST" mask="0x00200000" access="rw" description="SAI1 reset" />
+      <field name="HRTIM1RST" mask="0x04000000" access="rw" description="HRTIM1 reset" />
+    </register>
+    
+    <register name="AHB1ENR" offset="0x48" reset="0x00000100" description="AHB1 peripheral clock enable register">
+      <field name="DMA1EN" mask="0x00000001" access="rw" description="DMA1 clock enable" />
+      <field name="DMA2EN" mask="0x00000002" access="rw" description="DMA2 clock enable" />
+      <field name="DMAMUX1EN" mask="0x00000004" access="rw" description="DMAMUX1 clock enable" />
+      <field name="CORDICEN" mask="0x00000008" access="rw" description="CORDIC clock enable" />
+      <field name="FMACEN" mask="0x00000010" access="rw" description="FMAC clock enable" />
+      <field name="FLASHEN" mask="0x00000100" access="rw" description="Flash memory clock enable" />
+      <field name="CRCEN" mask="0x00001000" access="rw" description="CRC clock enable" />
+    </register>
+    
+    <register name="AHB2ENR" offset="0x4C" reset="0x00000000" description="AHB2 peripheral clock enable register">
+      <field name="GPIOAEN" mask="0x00000001" access="rw" description="GPIOA clock enable" />
+      <field name="GPIOBEN" mask="0x00000002" access="rw" description="GPIOB clock enable" />
+      <field name="GPIOCEN" mask="0x00000004" access="rw" description="GPIOC clock enable" />
+      <field name="GPIODEN" mask="0x00000008" access="rw" description="GPIOD clock enable" />
+      <field name="GPIOEEN" mask="0x00000010" access="rw" description="GPIOE clock enable" />
+      <field name="GPIOFEN" mask="0x00000020" access="rw" description="GPIOF clock enable" />
+      <field name="GPIOGEN" mask="0x00000040" access="rw" description="GPIOG clock enable" />
+      <field name="ADC12EN" mask="0x00002000" access="rw" description="ADC1/2 clock enable" />
+      <field name="ADC345EN" mask="0x00004000" access="rw" description="ADC3/4/5 clock enable" />
+      <field name="DAC1EN" mask="0x00010000" access="rw" description="DAC1 clock enable" />
+      <field name="DAC2EN" mask="0x00020000" access="rw" description="DAC2 clock enable" />
+      <field name="DAC3EN" mask="0x00040000" access="rw" description="DAC3 clock enable" />
+      <field name="DAC4EN" mask="0x00080000" access="rw" description="DAC4 clock enable" />
+      <field name="AESEN" mask="0x01000000" access="rw" description="AES clock enable" />
+      <field name="RNGEN" mask="0x04000000" access="rw" description="RNG clock enable" />
+    </register>
+    
+    <register name="AHB3ENR" offset="0x50" reset="0x00000000" description="AHB3 peripheral clock enable register">
+      <field name="FMCEN" mask="0x00000001" access="rw" description="FMC clock enable" />
+      <field name="QSPIEN" mask="0x00000100" access="rw" description="QUADSPI clock enable" />
+    </register>
+    
+    <register name="APB1ENR1" offset="0x58" reset="0x00000400" description="APB1 peripheral clock enable register 1">
+      <field name="TIM2EN" mask="0x00000001" access="rw" description="TIM2 clock enable" />
+      <field name="TIM3EN" mask="0x00000002" access="rw" description="TIM3 clock enable" />
+      <field name="TIM4EN" mask="0x00000004" access="rw" description="TIM4 clock enable" />
+      <field name="TIM5EN" mask="0x00000008" access="rw" description="TIM5 clock enable" />
+      <field name="TIM6EN" mask="0x00000010" access="rw" description="TIM6 clock enable" />
+      <field name="TIM7EN" mask="0x00000020" access="rw" description="TIM7 clock enable" />
+      <field name="CRSEN" mask="0x00000100" access="rw" description="CRS clock enable" />
+      <field name="RTCAPBEN" mask="0x00000400" access="rw" description="RTC APB clock enable" />
+      <field name="WWDGEN" mask="0x00000800" access="rw" description="WWDG clock enable" />
+      <field name="SPI2EN" mask="0x00004000" access="rw" description="SPI2 clock enable" />
+      <field name="SPI3EN" mask="0x00008000" access="rw" description="SPI3 clock enable" />
+      <field name="USART2EN" mask="0x00020000" access="rw" description="USART2 clock enable" />
+      <field name="USART3EN" mask="0x00040000" access="rw" description="USART3 clock enable" />
+      <field name="UART4EN" mask="0x00080000" access="rw" description="UART4 clock enable" />
+      <field name="UART5EN" mask="0x00100000" access="rw" description="UART5 clock enable" />
+      <field name="I2C1EN" mask="0x00200000" access="rw" description="I2C1 clock enable" />
+      <field name="I2C2EN" mask="0x00400000" access="rw" description="I2C2 clock enable" />
+      <field name="USBEN" mask="0x00800000" access="rw" description="USB clock enable" />
+      <field name="FDCANEN" mask="0x02000000" access="rw" description="FDCAN clock enable" />
+      <field name="PWREN" mask="0x10000000" access="rw" description="PWR clock enable" />
+      <field name="I2C3EN" mask="0x40000000" access="rw" description="I2C3 clock enable" />
+      <field name="LPTIM1EN" mask="0x80000000" access="rw" description="LPTIM1 clock enable" />
+    </register>
+    
+    <register name="APB1ENR2" offset="0x5C" reset="0x00000000" description="APB1 peripheral clock enable register 2">
+      <field name="LPUART1EN" mask="0x00000001" access="rw" description="LPUART1 clock enable" />
+      <field name="I2C4EN" mask="0x00000002" access="rw" description="I2C4 clock enable" />
+      <field name="UCPD1EN" mask="0x00000100" access="rw" description="UCPD1 clock enable" />
+    </register>
+    
+    <register name="APB2ENR" offset="0x60" reset="0x00000000" description="APB2 peripheral clock enable register">
+      <field name="SYSCFGEN" mask="0x00000001" access="rw" description="SYSCFG clock enable" />
+      <field name="TIM1EN" mask="0x00000800" access="rw" description="TIM1 clock enable" />
+      <field name="SPI1EN" mask="0x00001000" access="rw" description="SPI1 clock enable" />
+      <field name="TIM8EN" mask="0x00002000" access="rw" description="TIM8 clock enable" />
+      <field name="USART1EN" mask="0x00004000" access="rw" description="USART1 clock enable" />
+      <field name="SPI4EN" mask="0x00008000" access="rw" description="SPI4 clock enable" />
+      <field name="TIM15EN" mask="0x00010000" access="rw" description="TIM15 clock enable" />
+      <field name="TIM16EN" mask="0x00020000" access="rw" description="TIM16 clock enable" />
+      <field name="TIM17EN" mask="0x00040000" access="rw" description="TIM17 clock enable" />
+      <field name="TIM20EN" mask="0x00100000" access="rw" description="TIM20 clock enable" />
+      <field name="SAI1EN" mask="0x00200000" access="rw" description="SAI1 clock enable" />
+      <field name="HRTIM1EN" mask="0x04000000" access="rw" description="HRTIM1 clock enable" />
+    </register>
+    
+    <register name="AHB1SMENR" offset="0x68" reset="0x0000130F" description="AHB1 clocks enable in Sleep/Stop modes register">
+      <field name="DMA1SMEN" mask="0x00000001" access="rw" description="DMA1 clocks enable during Sleep/Stop" />
+      <field name="DMA2SMEN" mask="0x00000002" access="rw" description="DMA2 clocks enable during Sleep/Stop" />
+      <field name="DMAMUX1SMEN" mask="0x00000004" access="rw" description="DMAMUX1 clocks enable during Sleep/Stop" />
+      <field name="CORDICSMEN" mask="0x00000008" access="rw" description="CORDIC clocks enable during Sleep/Stop" />
+      <field name="FMACSMEN" mask="0x00000010" access="rw" description="FMAC clocks enable during Sleep/Stop" />
+      <field name="FLASHSMEN" mask="0x00000100" access="rw" description="Flash clocks enable during Sleep/Stop" />
+      <field name="SRAM1SMEN" mask="0x00000200" access="rw" description="SRAM1 clocks enable during Sleep/Stop" />
+      <field name="CRCSMEN" mask="0x00001000" access="rw" description="CRC clocks enable during Sleep/Stop" />
+    </register>
+    
+    <register name="AHB2SMENR" offset="0x6C" reset="0x050F667F" description="AHB2 clocks enable in Sleep/Stop modes register">
+      <field name="GPIOASMEN" mask="0x00000001" access="rw" description="GPIOA clocks enable during Sleep/Stop" />
+      <field name="GPIOBSMEN" mask="0x00000002" access="rw" description="GPIOB clocks enable during Sleep/Stop" />
+      <field name="GPIOCSMEN" mask="0x00000004" access="rw" description="GPIOC clocks enable during Sleep/Stop" />
+      <field name="GPIODSMEN" mask="0x00000008" access="rw" description="GPIOD clocks enable during Sleep/Stop" />
+      <field name="GPIOESMEN" mask="0x00000010" access="rw" description="GPIOE clocks enable during Sleep/Stop" />
+      <field name="GPIOFSMEN" mask="0x00000020" access="rw" description="GPIOF clocks enable during Sleep/Stop" />
+      <field name="GPIOGSMEN" mask="0x00000040" access="rw" description="GPIOG clocks enable during Sleep/Stop" />
+      <field name="CCMSRAMSMEN" mask="0x00000200" access="rw" description="CCMSRAM clocks enable during Sleep/Stop" />
+      <field name="SRAM2SMEN" mask="0x00000400" access="rw" description="SRAM2 clocks enable during Sleep/Stop" />
+      <field name="ADC12SMEN" mask="0x00002000" access="rw" description="ADC1/2 clocks enable during Sleep/Stop" />
+      <field name="ADC345SMEN" mask="0x00004000" access="rw" description="ADC3/4/5 clocks enable during Sleep/Stop" />
+      <field name="DAC1SMEN" mask="0x00010000" access="rw" description="DAC1 clocks enable during Sleep/Stop" />
+      <field name="DAC2SMEN" mask="0x00020000" access="rw" description="DAC2 clocks enable during Sleep/Stop" />
+      <field name="DAC3SMEN" mask="0x00040000" access="rw" description="DAC3 clocks enable during Sleep/Stop" />
+      <field name="DAC4SMEN" mask="0x00080000" access="rw" description="DAC4 clocks enable during Sleep/Stop" />
+      <field name="AESSMEN" mask="0x01000000" access="rw" description="AES clocks enable during Sleep/Stop" />
+      <field name="RNGSMEN" mask="0x04000000" access="rw" description="RNG clocks enable during Sleep/Stop" />
+    </register>
+    
+    <register name="AHB3SMENR" offset="0x70" reset="0x00000101" description="AHB3 clocks enable in Sleep/Stop modes register">
+      <field name="FMCSMEN" mask="0x00000001" access="rw" description="FMC clocks enable during Sleep/Stop" />
+      <field name="QSPISMEN" mask="0x00000100" access="rw" description="QUADSPI clocks enable during Sleep/Stop" />
+    </register>
+    
+    <register name="APB1SMENR1" offset="0x78" reset="0xD2FECD3F" description="APB1 clocks enable in Sleep/Stop modes register 1">
+      <field name="TIM2SMEN" mask="0x00000001" access="rw" description="TIM2 clocks enable during Sleep/Stop" />
+      <field name="TIM3SMEN" mask="0x00000002" access="rw" description="TIM3 clocks enable during Sleep/Stop" />
+      <field name="TIM4SMEN" mask="0x00000004" access="rw" description="TIM4 clocks enable during Sleep/Stop" />
+      <field name="TIM5SMEN" mask="0x00000008" access="rw" description="TIM5 clocks enable during Sleep/Stop" />
+      <field name="TIM6SMEN" mask="0x00000010" access="rw" description="TIM6 clocks enable during Sleep/Stop" />
+      <field name="TIM7SMEN" mask="0x00000020" access="rw" description="TIM7 clocks enable during Sleep/Stop" />
+      <field name="CRSSMEN" mask="0x00000100" access="rw" description="CRS clocks enable during Sleep/Stop" />
+      <field name="RTCAPBSMEN" mask="0x00000400" access="rw" description="RTC APB clocks enable during Sleep/Stop" />
+      <field name="WWDGSMEN" mask="0x00000800" access="rw" description="WWDG clocks enable during Sleep/Stop" />
+      <field name="SPI2SMEN" mask="0x00004000" access="rw" description="SPI2 clocks enable during Sleep/Stop" />
+      <field name="SPI3SMEN" mask="0x00008000" access="rw" description="SPI3 clocks enable during Sleep/Stop" />
+      <field name="USART2SMEN" mask="0x00020000" access="rw" description="USART2 clocks enable during Sleep/Stop" />
+      <field name="USART3SMEN" mask="0x00040000" access="rw" description="USART3 clocks enable during Sleep/Stop" />
+      <field name="UART4SMEN" mask="0x00080000" access="rw" description="UART4 clocks enable during Sleep/Stop" />
+      <field name="UART5SMEN" mask="0x00100000" access="rw" description="UART5 clocks enable during Sleep/Stop" />
+      <field name="I2C1SMEN" mask="0x00200000" access="rw" description="I2C1 clocks enable during Sleep/Stop" />
+      <field name="I2C2SMEN" mask="0x00400000" access="rw" description="I2C2 clocks enable during Sleep/Stop" />
+      <field name="USBSMEN" mask="0x00800000" access="rw" description="USB clocks enable during Sleep/Stop" />
+      <field name="FDCANSMEN" mask="0x02000000" access="rw" description="FDCAN clocks enable during Sleep/Stop" />
+      <field name="PWRSMEN" mask="0x10000000" access="rw" description="PWR clocks enable during Sleep/Stop" />
+      <field name="I2C3SMEN" mask="0x40000000" access="rw" description="I2C3 clocks enable during Sleep/Stop" />
+      <field name="LPTIM1SMEN" mask="0x80000000" access="rw" description="LPTIM1 clocks enable during Sleep/Stop" />
+    </register>
+    
+    <register name="APB1SMENR2" offset="0x7C" reset="0x00000103" description="APB1 clocks enable in Sleep/Stop modes register 2">
+      <field name="LPUART1SMEN" mask="0x00000001" access="rw" description="LPUART1 clocks enable during Sleep/Stop" />
+      <field name="I2C4SMEN" mask="0x00000002" access="rw" description="I2C4 clocks enable during Sleep/Stop" />
+      <field name="UCPD1SMEN" mask="0x00000100" access="rw" description="UCPD1 clocks enable during Sleep/Stop" />
+    </register>
+    
+    <register name="APB2SMENR" offset="0x80" reset="0x0437F801" description="APB2 clocks enable in Sleep/Stop modes register">
+      <field name="SYSCFGSMEN" mask="0x00000001" access="rw" description="SYSCFG clocks enable during Sleep/Stop" />
+      <field name="TIM1SMEN" mask="0x00000800" access="rw" description="TIM1 clocks enable during Sleep/Stop" />
+      <field name="SPI1SMEN" mask="0x00001000" access="rw" description="SPI1 clocks enable during Sleep/Stop" />
+      <field name="TIM8SMEN" mask="0x00002000" access="rw" description="TIM8 clocks enable during Sleep/Stop" />
+      <field name="USART1SMEN" mask="0x00004000" access="rw" description="USART1 clocks enable during Sleep/Stop" />
+      <field name="SPI4SMEN" mask="0x00008000" access="rw" description="SPI4 clocks enable during Sleep/Stop" />
+      <field name="TIM15SMEN" mask="0x00010000" access="rw" description="TIM15 clocks enable during Sleep/Stop" />
+      <field name="TIM16SMEN" mask="0x00020000" access="rw" description="TIM16 clocks enable during Sleep/Stop" />
+      <field name="TIM17SMEN" mask="0x00040000" access="rw" description="TIM17 clocks enable during Sleep/Stop" />
+      <field name="TIM20SMEN" mask="0x00100000" access="rw" description="TIM20 clocks enable during Sleep/Stop" />
+      <field name="SAI1SMEN" mask="0x00200000" access="rw" description="SAI1 clocks enable during Sleep/Stop" />
+      <field name="HRTIM1SMEN" mask="0x04000000" access="rw" description="HRTIM1 clocks enable during Sleep/Stop" />
+    </register>
+    
+    <register name="CCIPR" offset="0x88" reset="0x00000000" description="Peripherals independent clock configuration register">
+      <field name="USART1SEL" mask="0x00000003" access="rw" description="USART1 clock source selection">
+        <enum value="0x00000000" name="PCLK2" description="PCLK2 selected" />
+        <enum value="0x00000001" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00000002" name="HSI16" description="HSI16 selected" />
+        <enum value="0x00000003" name="LSE" description="LSE selected" />
+      </field>
+      <field name="USART2SEL" mask="0x0000000C" access="rw" description="USART2 clock source selection">
+        <enum value="0x00000000" name="PCLK1" description="PCLK1 selected" />
+        <enum value="0x00000004" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00000008" name="HSI16" description="HSI16 selected" />
+        <enum value="0x0000000C" name="LSE" description="LSE selected" />
+      </field>
+      <field name="USART3SEL" mask="0x00000030" access="rw" description="USART3 clock source selection">
+        <enum value="0x00000000" name="PCLK1" description="PCLK1 selected" />
+        <enum value="0x00000010" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00000020" name="HSI16" description="HSI16 selected" />
+        <enum value="0x00000030" name="LSE" description="LSE selected" />
+      </field>
+      <field name="UART4SEL" mask="0x000000C0" access="rw" description="UART4 clock source selection">
+        <enum value="0x00000000" name="PCLK1" description="PCLK1 selected" />
+        <enum value="0x00000040" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00000080" name="HSI16" description="HSI16 selected" />
+        <enum value="0x000000C0" name="LSE" description="LSE selected" />
+      </field>
+      <field name="UART5SEL" mask="0x00000300" access="rw" description="UART5 clock source selection">
+        <enum value="0x00000000" name="PCLK1" description="PCLK1 selected" />
+        <enum value="0x00000100" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00000200" name="HSI16" description="HSI16 selected" />
+        <enum value="0x00000300" name="LSE" description="LSE selected" />
+      </field>
+      <field name="LPUART1SEL" mask="0x00000C00" access="rw" description="LPUART1 clock source selection">
+        <enum value="0x00000000" name="PCLK1" description="PCLK1 selected" />
+        <enum value="0x00000400" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00000800" name="HSI16" description="HSI16 selected" />
+        <enum value="0x00000C00" name="LSE" description="LSE selected" />
+      </field>
+      <field name="I2C1SEL" mask="0x00003000" access="rw" description="I2C1 clock source selection">
+        <enum value="0x00000000" name="PCLK1" description="PCLK1 selected" />
+        <enum value="0x00001000" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00002000" name="HSI16" description="HSI16 selected" />
+      </field>
+      <field name="I2C2SEL" mask="0x0000C000" access="rw" description="I2C2 clock source selection">
+        <enum value="0x00000000" name="PCLK1" description="PCLK1 selected" />
+        <enum value="0x00004000" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00008000" name="HSI16" description="HSI16 selected" />
+      </field>
+      <field name="I2C3SEL" mask="0x00030000" access="rw" description="I2C3 clock source selection">
+        <enum value="0x00000000" name="PCLK1" description="PCLK1 selected" />
+        <enum value="0x00010000" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00020000" name="HSI16" description="HSI16 selected" />
+      </field>
+      <field name="LPTIM1SEL" mask="0x000C0000" access="rw" description="LPTIM1 clock source selection">
+        <enum value="0x00000000" name="PCLK1" description="PCLK1 selected" />
+        <enum value="0x00040000" name="LSI" description="LSI selected" />
+        <enum value="0x00080000" name="HSI16" description="HSI16 selected" />
+        <enum value="0x000C0000" name="LSE" description="LSE selected" />
+      </field>
+      <field name="SAI1SEL" mask="0x00300000" access="rw" description="SAI1 clock source selection">
+        <enum value="0x00000000" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00100000" name="PLLQ" description="PLL Q output selected" />
+        <enum value="0x00200000" name="I2S_CKIN" description="External I2S_CKIN selected" />
+        <enum value="0x00300000" name="HSI16" description="HSI16 selected" />
+      </field>
+      <field name="I2S23SEL" mask="0x00C00000" access="rw" description="I2S2/3 clock source selection">
+        <enum value="0x00000000" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00400000" name="PLLQ" description="PLL Q output selected" />
+        <enum value="0x00800000" name="I2S_CKIN" description="External I2S_CKIN selected" />
+        <enum value="0x00C00000" name="HSI16" description="HSI16 selected" />
+      </field>
+      <field name="FDCANSEL" mask="0x03000000" access="rw" description="FDCAN clock source selection">
+        <enum value="0x00000000" name="HSE" description="HSE selected" />
+        <enum value="0x01000000" name="PLLQ" description="PLL Q output selected" />
+        <enum value="0x02000000" name="PCLK1" description="PCLK1 selected" />
+      </field>
+      <field name="CLK48SEL" mask="0x0C000000" access="rw" description="48 MHz clock source selection">
+        <enum value="0x00000000" name="HSI48" description="HSI48 selected" />
+        <enum value="0x04000000" name="PLLQ" description="PLL Q output selected" />
+      </field>
+      <field name="ADC12SEL" mask="0x30000000" access="rw" description="ADC1/2 clock source selection">
+        <enum value="0x00000000" name="None" description="No clock selected" />
+        <enum value="0x10000000" name="PLLP" description="PLL P output selected" />
+        <enum value="0x20000000" name="SYSCLK" description="SYSCLK selected" />
+      </field>
+      <field name="ADC345SEL" mask="0xC0000000" access="rw" description="ADC3/4/5 clock source selection">
+        <enum value="0x00000000" name="None" description="No clock selected" />
+        <enum value="0x40000000" name="PLLP" description="PLL P output selected" />
+        <enum value="0x80000000" name="SYSCLK" description="SYSCLK selected" />
+      </field>
+    </register>
+    
+    <register name="BDCR" offset="0x90" reset="0x00000000" description="Backup domain control register">
+      <field name="LSEON" mask="0x00000001" access="rw" description="LSE oscillator enable" />
+      <field name="LSERDY" mask="0x00000002" access="ro" description="LSE oscillator ready" />
+      <field name="LSEBYP" mask="0x00000004" access="rw" description="LSE oscillator bypass" />
+      <field name="LSEDRV" mask="0x00000018" access="rw" description="LSE oscillator drive capability">
+        <enum value="0x00000000" name="Low" description="Low drive capability" />
+        <enum value="0x00000008" name="MediumLow" description="Medium-low drive capability" />
+        <enum value="0x00000010" name="MediumHigh" description="Medium-high drive capability" />
+        <enum value="0x00000018" name="High" description="High drive capability" />
+      </field>
+      <field name="LSECSSON" mask="0x00000020" access="rw" description="LSE CSS enable" />
+      <field name="LSECSSD" mask="0x00000040" access="ro" description="LSE CSS detection" />
+      <field name="RTCSEL" mask="0x00000300" access="rw" description="RTC clock source selection">
+        <enum value="0x00000000" name="None" description="No clock" />
+        <enum value="0x00000100" name="LSE" description="LSE selected" />
+        <enum value="0x00000200" name="LSI" description="LSI selected" />
+        <enum value="0x00000300" name="HSE_DIV32" description="HSE/32 selected" />
+      </field>
+      <field name="RTCEN" mask="0x00008000" access="rw" description="RTC clock enable" />
+      <field name="BDRST" mask="0x00010000" access="rw" description="Backup domain software reset" />
+      <field name="LSCOEN" mask="0x01000000" access="rw" description="Low-speed clock output enable" />
+      <field name="LSCOSEL" mask="0x02000000" access="rw" description="Low-speed clock output selection">
+        <enum value="0x00000000" name="LSI" description="LSI selected" />
+        <enum value="0x02000000" name="LSE" description="LSE selected" />
+      </field>
+    </register>
+    
+    <register name="CSR" offset="0x94" reset="0x0C000000" description="Control/status register">
+      <field name="LSION" mask="0x00000001" access="rw" description="LSI oscillator enable" />
+      <field name="LSIRDY" mask="0x00000002" access="ro" description="LSI oscillator ready" />
+      <field name="RMVF" mask="0x00800000" access="rw" description="Remove reset flag" />
+      <field name="OBLRSTF" mask="0x02000000" access="ro" description="Option byte loader reset flag" />
+      <field name="PINRSTF" mask="0x04000000" access="ro" description="Pin reset flag" />
+      <field name="BORRSTF" mask="0x08000000" access="ro" description="BOR reset flag" />
+      <field name="SFTRSTF" mask="0x10000000" access="ro" description="Software reset flag" />
+      <field name="IWDGRSTF" mask="0x20000000" access="ro" description="IWDG reset flag" />
+      <field name="WWDGRSTF" mask="0x40000000" access="ro" description="WWDG reset flag" />
+      <field name="LPWRRSTF" mask="0x80000000" access="ro" description="Low-power reset flag" />
+    </register>
+    
+    <register name="CRRCR" offset="0x98" reset="0x00000000" description="Clock recovery RC register">
+      <field name="HSI48ON" mask="0x00000001" access="rw" description="HSI48 oscillator enable" />
+      <field name="HSI48RDY" mask="0x00000002" access="ro" description="HSI48 clock ready" />
+      <field name="HSI48CAL" mask="0x00FF0000" access="ro" description="HSI48 clock calibration" />
+    </register>
+    
+    <register name="CCIPR2" offset="0x9C" reset="0x00000000" description="Peripherals independent clock configuration register 2">
+      <field name="I2C4SEL" mask="0x00000003" access="rw" description="I2C4 clock source selection">
+        <enum value="0x00000000" name="PCLK1" description="PCLK1 selected" />
+        <enum value="0x00000001" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00000002" name="HSI16" description="HSI16 selected" />
+      </field>
+      <field name="QSPISEL" mask="0x00300000" access="rw" description="QUADSPI clock source selection">
+        <enum value="0x00000000" name="SYSCLK" description="SYSCLK selected" />
+        <enum value="0x00100000" name="HSI16" description="HSI16 selected" />
+        <enum value="0x00200000" name="PLLQ" description="PLL Q output selected" />
+      </field>
+    </register>
+    
+  </peripheral>
+  
+</device>

@@ -1,0 +1,607 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 Pin Multiplexing (Alternate Functions) Reference
+  Extracted from datasheets: DS12288 (G474), DS12589 (G431), DS12712 (G473),
+                             DS12960 (G441), DS12983 (G484), DS12997 (G483),
+                             DS13122 (G491), DS13268 (G4A1)
+  
+  Product Categories:
+  - Cat2: STM32G431/G441 - 32KB SRAM, no TIM5, 48-100 pins
+  - Cat3: STM32G473/G483/G491/G4A1 - 128KB SRAM (G473/G483 have TIM5)
+  - Cat4: STM32G474/G484 - 128KB SRAM, TIM5, HRTIM
+  
+  AF selection via GPIOx_AFRL (pins 0-7) and GPIOx_AFRH (pins 8-15)
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+
+  <!-- Part Number Decoder -->
+  <part_decoder pattern="STM32G4{ff}x{s}{p}{t}">
+    <family ff="31" cat="2" name="Access line" sram="32KB" />
+    <family ff="41" cat="2" name="Access line + AES" sram="32KB" />
+    <family ff="71" cat="3" name="Performance line" sram="96KB" tim5="yes" />
+    <family ff="73" cat="3" name="Performance line" sram="128KB" tim5="yes" />
+    <family ff="83" cat="3" name="Performance line + AES" sram="128KB" tim5="yes" />
+    <family ff="91" cat="3" name="Access+ line" sram="112KB" />
+    <family ff="A1" cat="3" name="Access+ line + AES" sram="112KB" />
+    <family ff="74" cat="4" name="Hi-resolution line" sram="128KB" tim5="yes" hrtim="yes" />
+    <family ff="84" cat="4" name="Hi-resolution + AES" sram="128KB" tim5="yes" hrtim="yes" />
+    
+    <flash s="6" kb="32" />
+    <flash s="8" kb="64" />
+    <flash s="B" kb="128" />
+    <flash s="C" kb="256" />
+    <flash s="E" kb="512" />
+    
+    <package p="C" pins="48" />
+    <package p="G" pins="28" />
+    <package p="J" pins="72" />
+    <package p="K" pins="32" />
+    <package p="M" pins="81" />
+    <package p="N" pins="40" />
+    <package p="P" pins="128" />
+    <package p="Q" pins="128" />
+    <package p="R" pins="64" />
+    <package p="T" pins="36" />
+    <package p="U" pins="63" />
+    <package p="V" pins="100" />
+    <package p="Y" pins="36" />
+    
+    <temp t="6" range="-40..85C" />
+    <temp t="7" range="-40..105C" />
+  </part_decoder>
+
+  <!-- GPIO Alternate Functions by Category -->
+  <!-- Reference: G474/G484 (Cat4) as superset, with category restrictions noted -->
+  
+  <pinmux>
+    <!-- Port A -->
+    <pin name="PA0">
+      <af num="0" func="-" />
+      <af num="1" func="TIM2_CH1" />
+      <af num="2" func="TIM5_CH1" cat="3,4" note="TIM5 on G473/G474/G483/G484 only" />
+      <af num="7" func="USART2_CTS" />
+      <af num="8" func="COMP1_OUT" />
+      <af num="9" func="TIM8_BKIN" />
+      <af num="10" func="TIM8_ETR" />
+      <af num="14" func="TIM2_ETR" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA1">
+      <af num="0" func="RTC_REFIN" />
+      <af num="1" func="TIM2_CH2" />
+      <af num="2" func="TIM5_CH2" cat="3,4" />
+      <af num="7" func="USART2_RTS_DE" />
+      <af num="9" func="TIM15_CH1N" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA2">
+      <af num="1" func="TIM2_CH3" />
+      <af num="2" func="TIM5_CH3" cat="3,4" />
+      <af num="7" func="USART2_TX" />
+      <af num="8" func="COMP2_OUT" />
+      <af num="9" func="TIM15_CH1" />
+      <af num="10" func="QUADSPI1_BK1_NCS" />
+      <af num="12" func="LPUART1_TX" />
+      <af num="14" func="UCPD1_FRSTX" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA3">
+      <af num="1" func="TIM2_CH4" />
+      <af num="2" func="TIM5_CH4" cat="3,4" />
+      <af num="3" func="SAI1_CK1" cat="3,4" />
+      <af num="7" func="USART2_RX" />
+      <af num="9" func="TIM15_CH2" />
+      <af num="10" func="QUADSPI1_CLK" />
+      <af num="12" func="LPUART1_RX" />
+      <af num="13" func="SAI1_MCLK_A" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA4">
+      <af num="2" func="TIM3_CH2" />
+      <af num="5" func="SPI1_NSS" />
+      <af num="6" func="SPI3_NSS" />
+      <af num="7" func="USART2_CK" />
+      <af num="13" func="SAI1_FS_B" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA5">
+      <af num="1" func="TIM2_CH1" />
+      <af num="2" func="TIM2_ETR" />
+      <af num="5" func="SPI1_SCK" />
+      <af num="14" func="UCPD1_FRSTX" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA6">
+      <af num="1" func="TIM16_CH1" />
+      <af num="2" func="TIM3_CH1" />
+      <af num="4" func="TIM8_BKIN" />
+      <af num="5" func="SPI1_MISO" />
+      <af num="6" func="TIM1_BKIN" />
+      <af num="8" func="COMP1_OUT" />
+      <af num="10" func="QUADSPI1_BK1_IO3" />
+      <af num="12" func="LPUART1_CTS" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA7">
+      <af num="1" func="TIM17_CH1" />
+      <af num="2" func="TIM3_CH2" />
+      <af num="4" func="TIM8_CH1N" />
+      <af num="5" func="SPI1_MOSI" />
+      <af num="6" func="TIM1_CH1N" />
+      <af num="8" func="COMP2_OUT" />
+      <af num="10" func="QUADSPI1_BK1_IO2" />
+      <af num="14" func="UCPD1_FRSTX" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA8">
+      <af num="0" func="MCO" />
+      <af num="1" func="TIM1_CH1" />
+      <af num="2" func="TIM4_ETR" />
+      <af num="3" func="HRTIM1_CHA1" cat="4" />
+      <af num="4" func="I2C3_SCL" />
+      <af num="6" func="I2C2_SDA" />
+      <af num="7" func="USART1_CK" />
+      <af num="10" func="SAI1_CK2" cat="3,4" />
+      <af num="12" func="FMC_OE" />
+      <af num="13" func="SAI1_SCK_A" cat="3,4" />
+      <af num="14" func="TIM4_CH3" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA9">
+      <af num="1" func="TIM1_CH2" />
+      <af num="2" func="TIM2_CH3" />
+      <af num="3" func="HRTIM1_CHA2" cat="4" />
+      <af num="4" func="I2C3_SMBA" />
+      <af num="5" func="SPI2_SCK" />
+      <af num="7" func="USART1_TX" />
+      <af num="10" func="SAI1_FS_A" cat="3,4" />
+      <af num="12" func="FMC_NL" />
+      <af num="14" func="TIM15_BKIN" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA10">
+      <af num="0" func="TIM17_BKIN" />
+      <af num="1" func="TIM1_CH3" />
+      <af num="2" func="TIM2_CH4" />
+      <af num="3" func="HRTIM1_CHB1" cat="4" />
+      <af num="5" func="SPI2_MISO" />
+      <af num="7" func="USART1_RX" />
+      <af num="10" func="SAI1_SD_A" cat="3,4" />
+      <af num="11" func="USB_CRS_SYNC" />
+      <af num="12" func="FMC_A0" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA11">
+      <af num="1" func="TIM1_CH4" />
+      <af num="2" func="TIM1_CH1N" />
+      <af num="3" func="HRTIM1_CHB2" cat="4" />
+      <af num="4" func="TIM4_CH1" />
+      <af num="5" func="SPI2_MOSI" />
+      <af num="6" func="TIM1_BKIN2" />
+      <af num="7" func="USART1_CTS" />
+      <af num="8" func="FDCAN1_RX" />
+      <af num="11" func="USB_DM" />
+      <af num="12" func="FMC_A1" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA12">
+      <af num="1" func="TIM1_ETR" />
+      <af num="2" func="TIM16_CH1" />
+      <af num="3" func="HRTIM1_FLT1" cat="4" />
+      <af num="4" func="TIM4_CH2" />
+      <af num="6" func="TIM1_CH2N" />
+      <af num="7" func="USART1_RTS_DE" />
+      <af num="8" func="FDCAN1_TX" />
+      <af num="11" func="USB_DP" />
+      <af num="12" func="FMC_A2" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA13">
+      <af num="0" func="JTMS-SWDIO" />
+      <af num="1" func="TIM16_CH1N" />
+      <af num="2" func="TIM4_CH3" />
+      <af num="3" func="HRTIM1_FLT2" cat="4" />
+      <af num="6" func="I2C1_SCL" />
+      <af num="7" func="USART3_CTS" />
+      <af num="9" func="SAI1_SD_B" cat="3,4" />
+      <af num="10" func="IR_OUT" />
+      <af num="11" func="USB_OE" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA14">
+      <af num="0" func="JTCK-SWCLK" />
+      <af num="1" func="LPTIM1_OUT" />
+      <af num="5" func="I2C1_SDA" />
+      <af num="6" func="I2C4_SMBA" />
+      <af num="7" func="USART2_TX" />
+      <af num="10" func="SAI1_FS_B" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PA15">
+      <af num="0" func="JTDI" />
+      <af num="1" func="TIM2_CH1" />
+      <af num="2" func="TIM8_CH1" />
+      <af num="3" func="HRTIM1_FLT1" cat="4" />
+      <af num="4" func="I2C1_SCL" />
+      <af num="5" func="SPI1_NSS" />
+      <af num="6" func="SPI3_NSS" />
+      <af num="7" func="USART2_RX" />
+      <af num="8" func="UART4_RTS_DE" />
+      <af num="9" func="TIM1_BKIN" />
+      <af num="14" func="TIM2_ETR" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <!-- Port B -->
+    <pin name="PB0">
+      <af num="2" func="TIM3_CH3" />
+      <af num="4" func="TIM8_CH2N" />
+      <af num="6" func="TIM1_CH2N" />
+      <af num="10" func="QUADSPI1_BK1_IO1" />
+      <af num="13" func="HRTIM1_FLT5" cat="4" />
+      <af num="14" func="UCPD1_FRSTX" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB1">
+      <af num="2" func="TIM3_CH4" />
+      <af num="4" func="TIM8_CH3N" />
+      <af num="6" func="TIM1_CH3N" />
+      <af num="8" func="COMP4_OUT" />
+      <af num="10" func="QUADSPI1_BK1_IO0" />
+      <af num="12" func="LPUART1_RTS_DE" />
+      <af num="13" func="HRTIM1_SCOUT" cat="4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB2">
+      <af num="0" func="RTC_OUT2" />
+      <af num="1" func="LPTIM1_OUT" />
+      <af num="2" func="TIM5_CH1" cat="3,4" />
+      <af num="3" func="TIM20_CH1" cat="4" />
+      <af num="4" func="I2C3_SMBA" />
+      <af num="10" func="QUADSPI1_BK2_IO1" />
+      <af num="13" func="HRTIM1_SCIN" cat="4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB3">
+      <af num="0" func="JTDO-TRACESWO" />
+      <af num="1" func="TIM2_CH2" />
+      <af num="2" func="TIM4_ETR" />
+      <af num="3" func="USB_CRS_SYNC" />
+      <af num="4" func="TIM8_CH1N" />
+      <af num="5" func="SPI1_SCK" />
+      <af num="6" func="SPI3_SCK" />
+      <af num="7" func="USART2_TX" />
+      <af num="10" func="TIM3_ETR" />
+      <af num="11" func="FDCAN3_RX" cat="3,4" />
+      <af num="12" func="HRTIM1_SCOUT" cat="4" />
+      <af num="13" func="HRTIM1_EEV9" cat="4" />
+      <af num="14" func="SAI1_SCK_B" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB4">
+      <af num="0" func="JTRST" />
+      <af num="1" func="TIM16_CH1" />
+      <af num="2" func="TIM3_CH1" />
+      <af num="4" func="TIM8_CH2N" />
+      <af num="5" func="SPI1_MISO" />
+      <af num="6" func="SPI3_MISO" />
+      <af num="7" func="USART2_RX" />
+      <af num="8" func="UART5_RTS_DE" />
+      <af num="10" func="TIM17_BKIN" />
+      <af num="11" func="FDCAN3_TX" cat="3,4" />
+      <af num="13" func="HRTIM1_EEV7" cat="4" />
+      <af num="14" func="SAI1_MCLK_B" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB5">
+      <af num="1" func="TIM16_BKIN" />
+      <af num="2" func="TIM3_CH2" />
+      <af num="3" func="TIM8_CH3N" />
+      <af num="4" func="I2C1_SMBA" />
+      <af num="5" func="SPI1_MOSI" />
+      <af num="6" func="SPI3_MOSI" />
+      <af num="7" func="USART2_CK" />
+      <af num="8" func="I2C3_SDA" />
+      <af num="9" func="FDCAN2_RX" />
+      <af num="10" func="TIM17_CH1" />
+      <af num="11" func="LPTIM1_IN1" />
+      <af num="12" func="SAI1_SD_B" cat="3,4" />
+      <af num="13" func="HRTIM1_EEV6" cat="4" />
+      <af num="14" func="UART5_CTS" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB6">
+      <af num="1" func="TIM16_CH1N" />
+      <af num="2" func="TIM4_CH1" />
+      <af num="3" func="TIM8_CH1" />
+      <af num="4" func="I2C1_SCL" />
+      <af num="5" func="TIM8_ETR" />
+      <af num="6" func="TIM8_BKIN2" />
+      <af num="7" func="USART1_TX" />
+      <af num="9" func="FDCAN2_TX" />
+      <af num="10" func="SAI1_FS_B" cat="3,4" />
+      <af num="11" func="LPTIM1_ETR" />
+      <af num="12" func="HRTIM1_SCIN" cat="4" />
+      <af num="13" func="HRTIM1_EEV4" cat="4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB7">
+      <af num="1" func="TIM17_CH1N" />
+      <af num="2" func="TIM4_CH2" />
+      <af num="3" func="TIM8_BKIN" />
+      <af num="4" func="I2C1_SDA" />
+      <af num="5" func="I2C4_SDA" />
+      <af num="7" func="USART1_RX" />
+      <af num="8" func="COMP3_OUT" />
+      <af num="10" func="TIM3_CH4" />
+      <af num="11" func="LPTIM1_IN2" />
+      <af num="12" func="FMC_NL" />
+      <af num="13" func="HRTIM1_EEV3" cat="4" />
+      <af num="14" func="UART4_CTS" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB8">
+      <af num="0" func="BOOT0" note="Directly usable as BOOT0 pin" />
+      <af num="1" func="TIM16_CH1" />
+      <af num="2" func="TIM4_CH3" />
+      <af num="3" func="TIM8_CH2" />
+      <af num="4" func="I2C1_SCL" />
+      <af num="5" func="SAI1_CK1" cat="3,4" />
+      <af num="6" func="TIM1_BKIN" />
+      <af num="7" func="USART3_RX" />
+      <af num="8" func="COMP1_OUT" />
+      <af num="9" func="FDCAN1_RX" />
+      <af num="10" func="TIM8_BKIN" />
+      <af num="12" func="HRTIM1_EEV8" cat="4" />
+      <af num="13" func="HRTIM1_CHE1" cat="4" />
+      <af num="14" func="SAI1_MCLK_A" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB9">
+      <af num="1" func="TIM17_CH1" />
+      <af num="2" func="TIM4_CH4" />
+      <af num="3" func="TIM8_CH3" />
+      <af num="4" func="I2C1_SDA" />
+      <af num="5" func="SAI1_D2" cat="3,4" />
+      <af num="6" func="IR_OUT" />
+      <af num="7" func="USART3_TX" />
+      <af num="8" func="COMP2_OUT" />
+      <af num="9" func="FDCAN1_TX" />
+      <af num="12" func="HRTIM1_EEV5" cat="4" />
+      <af num="13" func="HRTIM1_CHE2" cat="4" />
+      <af num="14" func="SAI1_FS_A" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB10">
+      <af num="1" func="TIM2_CH3" />
+      <af num="3" func="HRTIM1_FLT3" cat="4" />
+      <af num="5" func="SPI2_SCK" />
+      <af num="7" func="USART3_TX" />
+      <af num="8" func="LPUART1_RX" />
+      <af num="9" func="TIM1_BKIN" />
+      <af num="10" func="QUADSPI1_CLK" />
+      <af num="11" func="HRTIM1_FLT3" cat="4" />
+      <af num="12" func="SAI1_SCK_A" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB11">
+      <af num="1" func="TIM2_CH4" />
+      <af num="3" func="HRTIM1_FLT4" cat="4" />
+      <af num="7" func="USART3_RX" />
+      <af num="8" func="LPUART1_TX" />
+      <af num="11" func="HRTIM1_FLT4" cat="4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB12">
+      <af num="1" func="TIM5_ETR" cat="3,4" />
+      <af num="3" func="HRTIM1_CHC1" cat="4" />
+      <af num="4" func="I2C2_SMBA" />
+      <af num="5" func="SPI2_NSS" />
+      <af num="6" func="TIM1_BKIN" />
+      <af num="7" func="USART3_CK" />
+      <af num="8" func="LPUART1_RTS_DE" />
+      <af num="9" func="FDCAN2_RX" />
+      <af num="13" func="HRTIM1_CHC1" cat="4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB13">
+      <af num="1" func="TIM1_CH1N" />
+      <af num="3" func="HRTIM1_CHC2" cat="4" />
+      <af num="5" func="SPI2_SCK" />
+      <af num="7" func="USART3_CTS" />
+      <af num="8" func="LPUART1_CTS" />
+      <af num="9" func="FDCAN2_TX" />
+      <af num="13" func="HRTIM1_CHC2" cat="4" />
+      <af num="14" func="SAI1_SCK_A" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB14">
+      <af num="1" func="TIM15_CH1" />
+      <af num="3" func="HRTIM1_CHD1" cat="4" />
+      <af num="5" func="SPI2_MISO" />
+      <af num="6" func="TIM1_CH2N" />
+      <af num="7" func="USART3_RTS_DE" />
+      <af num="13" func="HRTIM1_CHD1" cat="4" />
+      <af num="14" func="SAI1_MCLK_A" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PB15">
+      <af num="0" func="RTC_REFIN" />
+      <af num="1" func="TIM15_CH2" />
+      <af num="2" func="TIM15_CH1N" />
+      <af num="3" func="HRTIM1_CHD2" cat="4" />
+      <af num="4" func="COMP3_OUT" />
+      <af num="5" func="SPI2_MOSI" />
+      <af num="6" func="TIM1_CH3N" />
+      <af num="13" func="HRTIM1_CHD2" cat="4" />
+      <af num="14" func="SAI1_SD_A" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <!-- Port C (selected pins - full port would be similar) -->
+    <pin name="PC0">
+      <af num="1" func="TIM1_CH1" />
+      <af num="2" func="LPTIM1_IN1" />
+      <af num="8" func="LPUART1_RX" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC1">
+      <af num="1" func="TIM1_CH2" />
+      <af num="2" func="LPTIM1_OUT" />
+      <af num="4" func="I2C3_SDA" />
+      <af num="5" func="SPI2_MOSI" />
+      <af num="8" func="LPUART1_TX" />
+      <af num="9" func="SAI1_SD_A" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC2">
+      <af num="1" func="TIM1_CH3" />
+      <af num="2" func="LPTIM1_IN2" />
+      <af num="5" func="SPI2_MISO" />
+      <af num="6" func="COMP3_OUT" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC3">
+      <af num="1" func="TIM1_CH4" />
+      <af num="2" func="LPTIM1_ETR" />
+      <af num="5" func="SPI2_MOSI" />
+      <af num="6" func="SAI1_D1" cat="3,4" />
+      <af num="9" func="SAI1_SD_A" cat="3,4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC4">
+      <af num="1" func="TIM1_ETR" />
+      <af num="7" func="USART1_TX" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC5">
+      <af num="1" func="TIM1_CH4N" />
+      <af num="3" func="HRTIM1_EEV10" cat="4" />
+      <af num="6" func="TIM15_BKIN" />
+      <af num="7" func="USART1_RX" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC6">
+      <af num="1" func="TIM8_CH1" />
+      <af num="2" func="TIM3_CH1" />
+      <af num="3" func="HRTIM1_EEV10" cat="4" />
+      <af num="5" func="I2S2_MCK" />
+      <af num="6" func="I2C4_SCL" />
+      <af num="8" func="COMP6_OUT" />
+      <af num="13" func="HRTIM1_CHF1" cat="4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC7">
+      <af num="1" func="TIM8_CH2" />
+      <af num="2" func="TIM3_CH2" />
+      <af num="3" func="HRTIM1_FLT5" cat="4" />
+      <af num="5" func="I2S3_MCK" />
+      <af num="6" func="I2C4_SDA" />
+      <af num="8" func="COMP5_OUT" />
+      <af num="13" func="HRTIM1_CHF2" cat="4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC8">
+      <af num="1" func="TIM8_CH3" />
+      <af num="2" func="TIM3_CH3" />
+      <af num="3" func="HRTIM1_CHE1" cat="4" />
+      <af num="5" func="TIM20_CH3" cat="4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC9">
+      <af num="1" func="TIM8_CH4" />
+      <af num="2" func="TIM3_CH4" />
+      <af num="3" func="HRTIM1_CHE2" cat="4" />
+      <af num="4" func="I2C3_SDA" />
+      <af num="5" func="TIM8_BKIN2" />
+      <af num="6" func="TIM20_CH4" cat="4" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC10">
+      <af num="1" func="TIM8_CH1N" />
+      <af num="3" func="HRTIM1_FLT6" cat="4" />
+      <af num="5" func="SPI3_SCK" />
+      <af num="6" func="UART4_TX" />
+      <af num="7" func="USART3_TX" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC11">
+      <af num="1" func="TIM8_CH2N" />
+      <af num="3" func="HRTIM1_EEV2" cat="4" />
+      <af num="5" func="SPI3_MISO" />
+      <af num="6" func="UART4_RX" />
+      <af num="7" func="USART3_RX" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC12">
+      <af num="1" func="TIM8_CH3N" />
+      <af num="3" func="HRTIM1_EEV1" cat="4" />
+      <af num="5" func="SPI3_MOSI" />
+      <af num="6" func="UART5_TX" />
+      <af num="7" func="USART3_CK" />
+      <af num="14" func="UCPD1_FRSTX" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC13">
+      <af num="1" func="TIM1_BKIN" />
+      <af num="2" func="TIM1_CH1N" />
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC14">
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <pin name="PC15">
+      <af num="15" func="EVENTOUT" />
+    </pin>
+    
+    <!-- Note: Ports D, E, F, G follow similar patterns. 
+         Full pin definitions would extend to 107 pins for largest packages. -->
+    
+  </pinmux>
+
+</device>

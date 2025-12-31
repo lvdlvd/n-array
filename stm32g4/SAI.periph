@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 SAI (Serial Audio Interface) Peripheral
+  Extracted from RM0440 Rev 7
+  
+  SAI has two audio blocks (A and B), each with identical register sets.
+  Block A registers at offset 0x04, Block B at offset 0x24
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="SAI" description="Serial audio interface">
+    <instance id="1" base="0x40015400" />
+    
+    <!-- Global configuration register -->
+    <register name="GCR" offset="0x00" reset="0x00000000" description="Global configuration register">
+      <field name="SYNCIN" mask="0x00000003" access="rw" description="Synchronization inputs" />
+      <field name="SYNCOUT" mask="0x00000030" access="rw" description="Synchronization outputs" />
+    </register>
+    
+    <!-- Block A registers -->
+    <register name="ACR1" offset="0x04" reset="0x00000040" description="Block A configuration register 1">
+      <field name="MODE" mask="0x00000003" access="rw" description="Audio block mode">
+        <enum value="0x00000000" name="MasterTx" />
+        <enum value="0x00000001" name="MasterRx" />
+        <enum value="0x00000002" name="SlaveTx" />
+        <enum value="0x00000003" name="SlaveRx" />
+      </field>
+      <field name="PRTCFG" mask="0x0000000C" access="rw" description="Protocol configuration">
+        <enum value="0x00000000" name="Free" />
+        <enum value="0x00000004" name="SPDIF" />
+        <enum value="0x00000008" name="AC97" />
+      </field>
+      <field name="DS" mask="0x000000E0" access="rw" description="Data size">
+        <enum value="0x00000040" name="Bits8" />
+        <enum value="0x00000060" name="Bits10" />
+        <enum value="0x00000080" name="Bits16" />
+        <enum value="0x000000A0" name="Bits20" />
+        <enum value="0x000000C0" name="Bits24" />
+        <enum value="0x000000E0" name="Bits32" />
+      </field>
+      <field name="LSBFIRST" mask="0x00000100" access="rw" description="LSB first" />
+      <field name="CKSTR" mask="0x00000200" access="rw" description="Clock strobing edge" />
+      <field name="SYNCEN" mask="0x00000C00" access="rw" description="Synchronization enable" />
+      <field name="MONO" mask="0x00001000" access="rw" description="Mono mode" />
+      <field name="OUTDRIV" mask="0x00002000" access="rw" description="Output drive" />
+      <field name="SAIEN" mask="0x00010000" access="rw" description="Audio block enable" />
+      <field name="DMAEN" mask="0x00020000" access="rw" description="DMA enable" />
+      <field name="NODIV" mask="0x00080000" access="rw" description="No divider" />
+      <field name="MCKDIV" mask="0x03F00000" access="rw" description="Master clock divider" />
+      <field name="OSR" mask="0x04000000" access="rw" description="Oversampling ratio" />
+      <field name="MCKEN" mask="0x08000000" access="rw" description="Master clock generation enable" />
+    </register>
+    
+    <register name="ACR2" offset="0x08" reset="0x00000000" description="Block A configuration register 2">
+      <field name="FTH" mask="0x00000007" access="rw" description="FIFO threshold" />
+      <field name="FFLUSH" mask="0x00000008" access="wo" description="FIFO flush" />
+      <field name="TRIS" mask="0x00000010" access="rw" description="Tristate management" />
+      <field name="MUTE" mask="0x00000020" access="rw" description="Mute" />
+      <field name="MUTEVAL" mask="0x00000040" access="rw" description="Mute value" />
+      <field name="MUTECNT" mask="0x00001F80" access="rw" description="Mute counter" />
+      <field name="CPL" mask="0x00002000" access="rw" description="Complement bit" />
+      <field name="COMP" mask="0x0000C000" access="rw" description="Companding mode" />
+    </register>
+    
+    <register name="AFRCR" offset="0x0C" reset="0x00000007" description="Block A frame configuration register">
+      <field name="FRL" mask="0x000000FF" access="rw" description="Frame length" />
+      <field name="FSALL" mask="0x00007F00" access="rw" description="Frame sync active level length" />
+      <field name="FSDEF" mask="0x00010000" access="rw" description="Frame sync definition" />
+      <field name="FSPOL" mask="0x00020000" access="rw" description="Frame sync polarity" />
+      <field name="FSOFF" mask="0x00040000" access="rw" description="Frame sync offset" />
+    </register>
+    
+    <register name="ASLOTR" offset="0x10" reset="0x00000000" description="Block A slot register">
+      <field name="FBOFF" mask="0x0000001F" access="rw" description="First bit offset" />
+      <field name="SLOTSZ" mask="0x000000C0" access="rw" description="Slot size" />
+      <field name="NBSLOT" mask="0x00000F00" access="rw" description="Number of slots" />
+      <field name="SLOTEN" mask="0xFFFF0000" access="rw" description="Slot enable" />
+    </register>
+    
+    <register name="AIM" offset="0x14" reset="0x00000000" description="Block A interrupt mask register">
+      <field name="OVRUDRIE" mask="0x00000001" access="rw" description="Overrun/underrun interrupt enable" />
+      <field name="MUTEDETIE" mask="0x00000002" access="rw" description="Mute detection interrupt enable" />
+      <field name="WCKCFGIE" mask="0x00000004" access="rw" description="Wrong clock configuration interrupt enable" />
+      <field name="FREQIE" mask="0x00000008" access="rw" description="FIFO request interrupt enable" />
+      <field name="CNRDYIE" mask="0x00000010" access="rw" description="Codec not ready interrupt enable" />
+      <field name="AFSDETIE" mask="0x00000020" access="rw" description="Anticipated frame sync detection interrupt enable" />
+      <field name="LFSDETIE" mask="0x00000040" access="rw" description="Late frame sync detection interrupt enable" />
+    </register>
+    
+    <register name="ASR" offset="0x18" reset="0x00000008" description="Block A status register">
+      <field name="OVRUDR" mask="0x00000001" access="rc_w1" description="Overrun/underrun" />
+      <field name="MUTEDET" mask="0x00000002" access="rc_w1" description="Mute detection" />
+      <field name="WCKCFG" mask="0x00000004" access="rc_w1" description="Wrong clock configuration" />
+      <field name="FREQ" mask="0x00000008" access="ro" description="FIFO request" />
+      <field name="CNRDY" mask="0x00000010" access="rc_w1" description="Codec not ready" />
+      <field name="AFSDET" mask="0x00000020" access="rc_w1" description="Anticipated frame sync detection" />
+      <field name="LFSDET" mask="0x00000040" access="rc_w1" description="Late frame sync detection" />
+      <field name="FLVL" mask="0x00070000" access="ro" description="FIFO level threshold" />
+    </register>
+    
+    <register name="ACLRFR" offset="0x1C" reset="0x00000000" access="wo" description="Block A clear flag register">
+      <field name="COVRUDR" mask="0x00000001" access="wo" description="Clear overrun/underrun" />
+      <field name="CMUTEDET" mask="0x00000002" access="wo" description="Clear mute detection" />
+      <field name="CWCKCFG" mask="0x00000004" access="wo" description="Clear wrong clock configuration" />
+      <field name="CCNRDY" mask="0x00000010" access="wo" description="Clear codec not ready" />
+      <field name="CAFSDET" mask="0x00000020" access="wo" description="Clear anticipated frame sync detection" />
+      <field name="CLFSDET" mask="0x00000040" access="wo" description="Clear late frame sync detection" />
+    </register>
+    
+    <register name="ADR" offset="0x20" reset="0x00000000" description="Block A data register">
+      <field name="DATA" mask="0xFFFFFFFF" access="rw" description="Data" />
+    </register>
+    
+    <!-- Block B registers (identical structure, different offset) -->
+    <register name="BCR1" offset="0x24" reset="0x00000040" description="Block B configuration register 1">
+      <field name="MODE" mask="0x00000003" access="rw" description="Audio block mode" />
+      <field name="PRTCFG" mask="0x0000000C" access="rw" description="Protocol configuration" />
+      <field name="DS" mask="0x000000E0" access="rw" description="Data size" />
+      <field name="LSBFIRST" mask="0x00000100" access="rw" description="LSB first" />
+      <field name="CKSTR" mask="0x00000200" access="rw" description="Clock strobing edge" />
+      <field name="SYNCEN" mask="0x00000C00" access="rw" description="Synchronization enable" />
+      <field name="MONO" mask="0x00001000" access="rw" description="Mono mode" />
+      <field name="OUTDRIV" mask="0x00002000" access="rw" description="Output drive" />
+      <field name="SAIEN" mask="0x00010000" access="rw" description="Audio block enable" />
+      <field name="DMAEN" mask="0x00020000" access="rw" description="DMA enable" />
+      <field name="NODIV" mask="0x00080000" access="rw" description="No divider" />
+      <field name="MCKDIV" mask="0x03F00000" access="rw" description="Master clock divider" />
+      <field name="OSR" mask="0x04000000" access="rw" description="Oversampling ratio" />
+      <field name="MCKEN" mask="0x08000000" access="rw" description="Master clock generation enable" />
+    </register>
+    
+    <register name="BCR2" offset="0x28" reset="0x00000000" description="Block B configuration register 2">
+      <field name="FTH" mask="0x00000007" access="rw" description="FIFO threshold" />
+      <field name="FFLUSH" mask="0x00000008" access="wo" description="FIFO flush" />
+      <field name="TRIS" mask="0x00000010" access="rw" description="Tristate management" />
+      <field name="MUTE" mask="0x00000020" access="rw" description="Mute" />
+      <field name="MUTEVAL" mask="0x00000040" access="rw" description="Mute value" />
+      <field name="MUTECNT" mask="0x00001F80" access="rw" description="Mute counter" />
+      <field name="CPL" mask="0x00002000" access="rw" description="Complement bit" />
+      <field name="COMP" mask="0x0000C000" access="rw" description="Companding mode" />
+    </register>
+    
+    <register name="BFRCR" offset="0x2C" reset="0x00000007" description="Block B frame configuration register">
+      <field name="FRL" mask="0x000000FF" access="rw" description="Frame length" />
+      <field name="FSALL" mask="0x00007F00" access="rw" description="Frame sync active level length" />
+      <field name="FSDEF" mask="0x00010000" access="rw" description="Frame sync definition" />
+      <field name="FSPOL" mask="0x00020000" access="rw" description="Frame sync polarity" />
+      <field name="FSOFF" mask="0x00040000" access="rw" description="Frame sync offset" />
+    </register>
+    
+    <register name="BSLOTR" offset="0x30" reset="0x00000000" description="Block B slot register">
+      <field name="FBOFF" mask="0x0000001F" access="rw" description="First bit offset" />
+      <field name="SLOTSZ" mask="0x000000C0" access="rw" description="Slot size" />
+      <field name="NBSLOT" mask="0x00000F00" access="rw" description="Number of slots" />
+      <field name="SLOTEN" mask="0xFFFF0000" access="rw" description="Slot enable" />
+    </register>
+    
+    <register name="BIM" offset="0x34" reset="0x00000000" description="Block B interrupt mask register">
+      <field name="OVRUDRIE" mask="0x00000001" access="rw" description="Overrun/underrun interrupt enable" />
+      <field name="MUTEDETIE" mask="0x00000002" access="rw" description="Mute detection interrupt enable" />
+      <field name="WCKCFGIE" mask="0x00000004" access="rw" description="Wrong clock configuration interrupt enable" />
+      <field name="FREQIE" mask="0x00000008" access="rw" description="FIFO request interrupt enable" />
+      <field name="CNRDYIE" mask="0x00000010" access="rw" description="Codec not ready interrupt enable" />
+      <field name="AFSDETIE" mask="0x00000020" access="rw" description="Anticipated frame sync detection interrupt enable" />
+      <field name="LFSDETIE" mask="0x00000040" access="rw" description="Late frame sync detection interrupt enable" />
+    </register>
+    
+    <register name="BSR" offset="0x38" reset="0x00000008" description="Block B status register">
+      <field name="OVRUDR" mask="0x00000001" access="rc_w1" description="Overrun/underrun" />
+      <field name="MUTEDET" mask="0x00000002" access="rc_w1" description="Mute detection" />
+      <field name="WCKCFG" mask="0x00000004" access="rc_w1" description="Wrong clock configuration" />
+      <field name="FREQ" mask="0x00000008" access="ro" description="FIFO request" />
+      <field name="CNRDY" mask="0x00000010" access="rc_w1" description="Codec not ready" />
+      <field name="AFSDET" mask="0x00000020" access="rc_w1" description="Anticipated frame sync detection" />
+      <field name="LFSDET" mask="0x00000040" access="rc_w1" description="Late frame sync detection" />
+      <field name="FLVL" mask="0x00070000" access="ro" description="FIFO level threshold" />
+    </register>
+    
+    <register name="BCLRFR" offset="0x3C" reset="0x00000000" access="wo" description="Block B clear flag register">
+      <field name="COVRUDR" mask="0x00000001" access="wo" description="Clear overrun/underrun" />
+      <field name="CMUTEDET" mask="0x00000002" access="wo" description="Clear mute detection" />
+      <field name="CWCKCFG" mask="0x00000004" access="wo" description="Clear wrong clock configuration" />
+      <field name="CCNRDY" mask="0x00000010" access="wo" description="Clear codec not ready" />
+      <field name="CAFSDET" mask="0x00000020" access="wo" description="Clear anticipated frame sync detection" />
+      <field name="CLFSDET" mask="0x00000040" access="wo" description="Clear late frame sync detection" />
+    </register>
+    
+    <register name="BDR" offset="0x40" reset="0x00000000" description="Block B data register">
+      <field name="DATA" mask="0xFFFFFFFF" access="rw" description="Data" />
+    </register>
+    
+    <register name="PDMCR" offset="0x44" reset="0x00000000" description="PDM control register">
+      <field name="PDMEN" mask="0x00000001" access="rw" description="PDM enable" />
+      <field name="MICNBR" mask="0x00000030" access="rw" description="Number of microphones" />
+      <field name="CKEN1" mask="0x00000100" access="rw" description="Clock enable of bitstream clock 1" />
+      <field name="CKEN2" mask="0x00000200" access="rw" description="Clock enable of bitstream clock 2" />
+      <field name="CKEN3" mask="0x00000400" access="rw" description="Clock enable of bitstream clock 3" />
+      <field name="CKEN4" mask="0x00000800" access="rw" description="Clock enable of bitstream clock 4" />
+    </register>
+    
+    <register name="PDMDLY" offset="0x48" reset="0x00000000" description="PDM delay register">
+      <field name="DLYM1L" mask="0x00000007" access="rw" description="Delay line for 1st mic left" />
+      <field name="DLYM1R" mask="0x00000070" access="rw" description="Delay line for 1st mic right" />
+      <field name="DLYM2L" mask="0x00000700" access="rw" description="Delay line for 2nd mic left" />
+      <field name="DLYM2R" mask="0x00007000" access="rw" description="Delay line for 2nd mic right" />
+      <field name="DLYM3L" mask="0x00070000" access="rw" description="Delay line for 3rd mic left" />
+      <field name="DLYM3R" mask="0x00700000" access="rw" description="Delay line for 3rd mic right" />
+      <field name="DLYM4L" mask="0x07000000" access="rw" description="Delay line for 4th mic left" />
+      <field name="DLYM4R" mask="0x70000000" access="rw" description="Delay line for 4th mic right" />
+    </register>
+    
+  </peripheral>
+  
+</device>

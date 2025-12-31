@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ARM Cortex-M4 SCB (System Control Block)
+  Extracted from PM0214 Rev 10 - STM32 Cortex-M4 Programming Manual
+  
+  Base address: 0xE000ED00
+-->
+<device name="CortexM4" reference_manual="PM0214" revision="10">
+  
+  <peripheral name="SCB" description="System Control Block">
+    <instance id="1" base="0xE000ED00" />
+    
+    <register name="CPUID" offset="0x00" reset="0x410FC241" access="ro" 
+              description="CPUID base register">
+      <field name="REVISION" mask="0x0000000F" access="ro" description="Revision number (p value)" />
+      <field name="PARTNO" mask="0x0000FFF0" access="ro" description="Part number (0xC24 = Cortex-M4)" />
+      <field name="CONSTANT" mask="0x000F0000" access="ro" description="Reads as 0xF" />
+      <field name="VARIANT" mask="0x00F00000" access="ro" description="Variant number (r value)" />
+      <field name="IMPLEMENTER" mask="0xFF000000" access="ro" description="Implementer code (0x41 = ARM)" />
+    </register>
+    
+    <register name="ICSR" offset="0x04" reset="0x00000000" description="Interrupt control and state register">
+      <field name="VECTACTIVE" mask="0x000001FF" access="ro" description="Active exception number" />
+      <field name="RETTOBASE" mask="0x00000800" access="ro" description="No preempted active exceptions" />
+      <field name="VECTPENDING" mask="0x0007F000" access="ro" description="Pending exception number" />
+      <field name="ISRPENDING" mask="0x00400000" access="ro" description="Interrupt pending flag" />
+      <field name="PENDSTCLR" mask="0x02000000" access="wo" description="Clear SysTick pending" />
+      <field name="PENDSTSET" mask="0x04000000" access="rw" description="Set SysTick pending" />
+      <field name="PENDSVCLR" mask="0x08000000" access="wo" description="Clear PendSV pending" />
+      <field name="PENDSVSET" mask="0x10000000" access="rw" description="Set PendSV pending" />
+      <field name="NMIPENDSET" mask="0x80000000" access="rw" description="Set NMI pending" />
+    </register>
+    
+    <register name="VTOR" offset="0x08" reset="0x00000000" description="Vector table offset register">
+      <field name="TBLOFF" mask="0x3FFFFE00" access="rw" 
+             description="Vector table base offset (bits 29:9, 128-word aligned)" />
+    </register>
+    
+    <register name="AIRCR" offset="0x0C" reset="0xFA050000" description="Application interrupt and reset control">
+      <field name="VECTRESET" mask="0x00000001" access="wo" description="Reserved for debug" />
+      <field name="VECTCLRACTIVE" mask="0x00000002" access="wo" description="Reserved for debug" />
+      <field name="SYSRESETREQ" mask="0x00000004" access="wo" description="System reset request" />
+      <field name="PRIGROUP" mask="0x00000700" access="rw" description="Priority grouping" />
+      <field name="ENDIANESS" mask="0x00008000" access="ro" description="Data endianness (0=little)" />
+      <field name="VECTKEY" mask="0xFFFF0000" access="rw" 
+             description="Write 0x05FA to enable write, reads as 0xFA05" />
+    </register>
+    
+    <register name="SCR" offset="0x10" reset="0x00000000" description="System control register">
+      <field name="SLEEPONEXIT" mask="0x00000002" access="rw" description="Sleep on return from ISR" />
+      <field name="SLEEPDEEP" mask="0x00000004" access="rw" description="Deep sleep enable" />
+      <field name="SEVONPEND" mask="0x00000010" access="rw" description="Send event on pending" />
+    </register>
+    
+    <register name="CCR" offset="0x14" reset="0x00000200" description="Configuration and control register">
+      <field name="NONBASETHRDENA" mask="0x00000001" access="rw" 
+             description="Allow Thread mode from any level" />
+      <field name="USERSETMPEND" mask="0x00000002" access="rw" 
+             description="Enable unprivileged STIR access" />
+      <field name="UNALIGN_TRP" mask="0x00000008" access="rw" description="Trap unaligned access" />
+      <field name="DIV_0_TRP" mask="0x00000010" access="rw" description="Trap divide by zero" />
+      <field name="BFHFNMIGN" mask="0x00000100" access="rw" 
+             description="Ignore bus faults in NMI/HardFault" />
+      <field name="STKALIGN" mask="0x00000200" access="rw" description="8-byte stack alignment" />
+    </register>
+    
+    <register name="SHPR1" offset="0x18" reset="0x00000000" description="System handler priority register 1">
+      <field name="PRI_4" mask="0x000000FF" access="rw" description="MemManage priority (bits 7:4 used)" />
+      <field name="PRI_5" mask="0x0000FF00" access="rw" description="BusFault priority (bits 7:4 used)" />
+      <field name="PRI_6" mask="0x00FF0000" access="rw" description="UsageFault priority (bits 7:4 used)" />
+    </register>
+    
+    <register name="SHPR2" offset="0x1C" reset="0x00000000" description="System handler priority register 2">
+      <field name="PRI_11" mask="0xFF000000" access="rw" description="SVCall priority (bits 7:4 used)" />
+    </register>
+    
+    <register name="SHPR3" offset="0x20" reset="0x00000000" description="System handler priority register 3">
+      <field name="PRI_14" mask="0x00FF0000" access="rw" description="PendSV priority (bits 7:4 used)" />
+      <field name="PRI_15" mask="0xFF000000" access="rw" description="SysTick priority (bits 7:4 used)" />
+    </register>
+    
+    <register name="SHCSR" offset="0x24" reset="0x00000000" description="System handler control and state">
+      <field name="MEMFAULTACT" mask="0x00000001" access="rw" description="MemManage active" />
+      <field name="BUSFAULTACT" mask="0x00000002" access="rw" description="BusFault active" />
+      <field name="USGFAULTACT" mask="0x00000008" access="rw" description="UsageFault active" />
+      <field name="SVCALLACT" mask="0x00000080" access="rw" description="SVCall active" />
+      <field name="MONITORACT" mask="0x00000100" access="rw" description="Debug monitor active" />
+      <field name="PENDSVACT" mask="0x00000400" access="rw" description="PendSV active" />
+      <field name="SYSTICKACT" mask="0x00000800" access="rw" description="SysTick active" />
+      <field name="USGFAULTPENDED" mask="0x00001000" access="rw" description="UsageFault pending" />
+      <field name="MEMFAULTPENDED" mask="0x00002000" access="rw" description="MemManage pending" />
+      <field name="BUSFAULTPENDED" mask="0x00004000" access="rw" description="BusFault pending" />
+      <field name="SVCALLPENDED" mask="0x00008000" access="rw" description="SVCall pending" />
+      <field name="MEMFAULTENA" mask="0x00010000" access="rw" description="MemManage enable" />
+      <field name="BUSFAULTENA" mask="0x00020000" access="rw" description="BusFault enable" />
+      <field name="USGFAULTENA" mask="0x00040000" access="rw" description="UsageFault enable" />
+    </register>
+    
+    <register name="CFSR" offset="0x28" reset="0x00000000" description="Configurable fault status register">
+      <!-- MMFSR (bits 7:0) -->
+      <field name="IACCVIOL" mask="0x00000001" access="rc_w1" description="Instruction access violation" />
+      <field name="DACCVIOL" mask="0x00000002" access="rc_w1" description="Data access violation" />
+      <field name="MUNSTKERR" mask="0x00000008" access="rc_w1" description="MemManage unstacking error" />
+      <field name="MSTKERR" mask="0x00000010" access="rc_w1" description="MemManage stacking error" />
+      <field name="MLSPERR" mask="0x00000020" access="rc_w1" description="MemManage FP lazy state error" />
+      <field name="MMARVALID" mask="0x00000080" access="rc_w1" description="MMFAR valid" />
+      <!-- BFSR (bits 15:8) -->
+      <field name="IBUSERR" mask="0x00000100" access="rc_w1" description="Instruction bus error" />
+      <field name="PRECISERR" mask="0x00000200" access="rc_w1" description="Precise data bus error" />
+      <field name="IMPRECISERR" mask="0x00000400" access="rc_w1" description="Imprecise data bus error" />
+      <field name="UNSTKERR" mask="0x00000800" access="rc_w1" description="BusFault unstacking error" />
+      <field name="STKERR" mask="0x00001000" access="rc_w1" description="BusFault stacking error" />
+      <field name="LSPERR" mask="0x00002000" access="rc_w1" description="BusFault FP lazy state error" />
+      <field name="BFARVALID" mask="0x00008000" access="rc_w1" description="BFAR valid" />
+      <!-- UFSR (bits 31:16) -->
+      <field name="UNDEFINSTR" mask="0x00010000" access="rc_w1" description="Undefined instruction" />
+      <field name="INVSTATE" mask="0x00020000" access="rc_w1" description="Invalid state" />
+      <field name="INVPC" mask="0x00040000" access="rc_w1" description="Invalid PC load" />
+      <field name="NOCP" mask="0x00080000" access="rc_w1" description="No coprocessor" />
+      <field name="UNALIGNED" mask="0x01000000" access="rc_w1" description="Unaligned access" />
+      <field name="DIVBYZERO" mask="0x02000000" access="rc_w1" description="Divide by zero" />
+    </register>
+    
+    <register name="HFSR" offset="0x2C" reset="0x00000000" description="Hard fault status register">
+      <field name="VECTTBL" mask="0x00000002" access="rc_w1" description="Vector table read fault" />
+      <field name="FORCED" mask="0x40000000" access="rc_w1" description="Forced hard fault" />
+      <field name="DEBUGEVT" mask="0x80000000" access="rc_w1" description="Debug event" />
+    </register>
+    
+    <register name="MMFAR" offset="0x34" reset="0x00000000" description="MemManage fault address register">
+      <field name="ADDRESS" mask="0xFFFFFFFF" access="rw" description="Faulting address" />
+    </register>
+    
+    <register name="BFAR" offset="0x38" reset="0x00000000" description="Bus fault address register">
+      <field name="ADDRESS" mask="0xFFFFFFFF" access="rw" description="Faulting address" />
+    </register>
+    
+    <register name="AFSR" offset="0x3C" reset="0x00000000" description="Auxiliary fault status register">
+      <field name="IMPDEF" mask="0xFFFFFFFF" access="rw" description="Implementation defined" />
+    </register>
+    
+    <!-- Coprocessor Access Control -->
+    <register name="CPACR" offset="0x88" reset="0x00000000" description="Coprocessor access control register">
+      <field name="CP10" mask="0x00300000" access="rw" description="CP10 access (FPU)">
+        <enum value="0x00000000" name="Denied" />
+        <enum value="0x00100000" name="Privileged" />
+        <enum value="0x00300000" name="Full" />
+      </field>
+      <field name="CP11" mask="0x00C00000" access="rw" description="CP11 access (FPU)">
+        <enum value="0x00000000" name="Denied" />
+        <enum value="0x00400000" name="Privileged" />
+        <enum value="0x00C00000" name="Full" />
+      </field>
+    </register>
+    
+  </peripheral>
+  
+</device>

@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 DAC (Digital-to-Analog Converter) Peripheral
+  Extracted from RM0440 Rev 7
+  
+  Instance notes:
+  - DAC1: Dual channel, output buffer, PA4/PA5 output, 1MSPS
+  - DAC2: Single channel, output buffer, PA6 output, 1MSPS
+  - DAC3: Dual channel, no output buffer, internal only, 15MSPS
+  - DAC4: Dual channel, no output buffer, internal only, 15MSPS
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="DAC" description="Digital-to-analog converter">
+    <instance id="1" base="0x50000800" />
+    <instance id="2" base="0x50000C00" />
+    <instance id="3" base="0x50001000" />
+    <instance id="4" base="0x50001400" />
+    
+    <register name="CR" offset="0x00" reset="0x00000000" description="Control register">
+      <field name="EN1" mask="0x00000001" access="rw" description="Channel 1 enable">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00000001" name="Enabled" />
+      </field>
+      <field name="TEN1" mask="0x00000002" access="rw" description="Channel 1 trigger enable">
+        <enum value="0x00000000" name="Disabled" description="Data transferred 1 cycle after write" />
+        <enum value="0x00000002" name="Enabled" description="Data transferred 3 cycles after trigger" />
+      </field>
+      <field name="TSEL1" mask="0x0000003C" access="rw" description="Channel 1 trigger selection">
+        <enum value="0x00000000" name="SWTRIG" description="Software trigger" />
+        <enum value="0x00000004" name="TRG1" description="dac_ch1_trg1 (DAC1/2: TIM8_TRGO, DAC3/4: TIM1_TRGO)" />
+        <enum value="0x00000008" name="TRG2" description="dac_ch1_trg2 (TIM7_TRGO)" />
+        <enum value="0x0000000C" name="TRG3" description="dac_ch1_trg3 (TIM15_TRGO)" />
+        <enum value="0x00000010" name="TRG4" description="dac_ch1_trg4 (TIM2_TRGO)" />
+        <enum value="0x00000014" name="TRG5" description="dac_ch1_trg5 (TIM4_TRGO)" />
+        <enum value="0x00000018" name="TRG6" description="dac_ch1_trg6 (EXTI9)" />
+        <enum value="0x0000001C" name="TRG7" description="dac_ch1_trg7 (TIM6_TRGO)" />
+        <enum value="0x00000020" name="TRG8" description="dac_ch1_trg8 (TIM3_TRGO)" />
+        <enum value="0x00000024" name="TRG9" description="dac_ch1_trg9 (hrtim_dac_reset_trg1)" />
+        <enum value="0x00000028" name="TRG10" description="dac_ch1_trg10 (hrtim_dac_reset_trg2)" />
+        <enum value="0x0000002C" name="TRG11" description="dac_ch1_trg11 (hrtim_dac_reset_trg3)" />
+        <enum value="0x00000030" name="TRG12" description="dac_ch1_trg12 (hrtim_dac_reset_trg4)" />
+        <enum value="0x00000034" name="TRG13" description="dac_ch1_trg13 (hrtim_dac_reset_trg5)" />
+        <enum value="0x00000038" name="TRG14" description="dac_ch1_trg14 (hrtim_dac_reset_trg6)" />
+        <enum value="0x0000003C" name="TRG15" description="dac_ch1_trg15 (DAC1: hrtim_dac_trg1, DAC2: hrtim_dac_trg2, DAC3: hrtim_dac_trg3)" />
+      </field>
+      <field name="WAVE1" mask="0x000000C0" access="rw" description="Channel 1 wave generation">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00000040" name="Noise" />
+        <enum value="0x00000080" name="Triangle" />
+        <enum value="0x000000C0" name="Sawtooth" />
+      </field>
+      <field name="MAMP1" mask="0x00000F00" access="rw" description="Channel 1 mask/amplitude selector">
+        <enum value="0x00000000" name="Amp1" description="LFSR[0] / triangle amplitude=1" />
+        <enum value="0x00000100" name="Amp3" description="LFSR[1:0] / triangle amplitude=3" />
+        <enum value="0x00000200" name="Amp7" description="LFSR[2:0] / triangle amplitude=7" />
+        <enum value="0x00000300" name="Amp15" description="LFSR[3:0] / triangle amplitude=15" />
+        <enum value="0x00000400" name="Amp31" description="LFSR[4:0] / triangle amplitude=31" />
+        <enum value="0x00000500" name="Amp63" description="LFSR[5:0] / triangle amplitude=63" />
+        <enum value="0x00000600" name="Amp127" description="LFSR[6:0] / triangle amplitude=127" />
+        <enum value="0x00000700" name="Amp255" description="LFSR[7:0] / triangle amplitude=255" />
+        <enum value="0x00000800" name="Amp511" description="LFSR[8:0] / triangle amplitude=511" />
+        <enum value="0x00000900" name="Amp1023" description="LFSR[9:0] / triangle amplitude=1023" />
+        <enum value="0x00000A00" name="Amp2047" description="LFSR[10:0] / triangle amplitude=2047" />
+        <enum value="0x00000B00" name="Amp4095" description="LFSR[11:0] / triangle amplitude=4095" />
+      </field>
+      <field name="DMAEN1" mask="0x00001000" access="rw" description="Channel 1 DMA enable">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00001000" name="Enabled" />
+      </field>
+      <field name="DMAUDRIE1" mask="0x00002000" access="rw" description="Channel 1 DMA underrun interrupt enable">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00002000" name="Enabled" />
+      </field>
+      <field name="CEN1" mask="0x00004000" access="rw" description="Channel 1 calibration enable">
+        <enum value="0x00000000" name="Normal" />
+        <enum value="0x00004000" name="Calibration" />
+      </field>
+      <!-- Channel 2 fields - only on dual-channel DACs (1, 3, 4) -->
+      <field name="EN2" mask="0x00010000" access="rw" description="Channel 2 enable">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00010000" name="Enabled" />
+      </field>
+      <field name="TEN2" mask="0x00020000" access="rw" description="Channel 2 trigger enable">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00020000" name="Enabled" />
+      </field>
+      <field name="TSEL2" mask="0x003C0000" access="rw" description="Channel 2 trigger selection">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+        <enum value="0x00000000" name="SWTRIG" />
+        <enum value="0x00040000" name="TRG1" />
+        <enum value="0x00080000" name="TRG2" />
+        <enum value="0x000C0000" name="TRG3" />
+        <enum value="0x00100000" name="TRG4" />
+        <enum value="0x00140000" name="TRG5" />
+        <enum value="0x00180000" name="TRG6" />
+        <enum value="0x001C0000" name="TRG7" />
+        <enum value="0x00200000" name="TRG8" />
+        <enum value="0x00240000" name="TRG9" />
+        <enum value="0x00280000" name="TRG10" />
+        <enum value="0x002C0000" name="TRG11" />
+        <enum value="0x00300000" name="TRG12" />
+        <enum value="0x00340000" name="TRG13" />
+        <enum value="0x00380000" name="TRG14" />
+        <enum value="0x003C0000" name="TRG15" />
+      </field>
+      <field name="WAVE2" mask="0x00C00000" access="rw" description="Channel 2 wave generation">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00400000" name="Noise" />
+        <enum value="0x00800000" name="Triangle" />
+        <enum value="0x00C00000" name="Sawtooth" />
+      </field>
+      <field name="MAMP2" mask="0x0F000000" access="rw" description="Channel 2 mask/amplitude selector">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+        <enum value="0x00000000" name="Amp1" />
+        <enum value="0x01000000" name="Amp3" />
+        <enum value="0x02000000" name="Amp7" />
+        <enum value="0x03000000" name="Amp15" />
+        <enum value="0x04000000" name="Amp31" />
+        <enum value="0x05000000" name="Amp63" />
+        <enum value="0x06000000" name="Amp127" />
+        <enum value="0x07000000" name="Amp255" />
+        <enum value="0x08000000" name="Amp511" />
+        <enum value="0x09000000" name="Amp1023" />
+        <enum value="0x0A000000" name="Amp2047" />
+        <enum value="0x0B000000" name="Amp4095" />
+      </field>
+      <field name="DMAEN2" mask="0x10000000" access="rw" description="Channel 2 DMA enable">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x10000000" name="Enabled" />
+      </field>
+      <field name="DMAUDRIE2" mask="0x20000000" access="rw" description="Channel 2 DMA underrun interrupt enable">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x20000000" name="Enabled" />
+      </field>
+      <field name="CEN2" mask="0x40000000" access="rw" description="Channel 2 calibration enable">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+        <enum value="0x00000000" name="Normal" />
+        <enum value="0x40000000" name="Calibration" />
+      </field>
+    </register>
+    
+    <register name="SWTRGR" offset="0x04" reset="0x00000000" description="Software trigger register">
+      <field name="SWTRIG1" mask="0x00000001" access="wo" description="Channel 1 software trigger" />
+      <field name="SWTRIG2" mask="0x00000002" access="wo" description="Channel 2 software trigger">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+      </field>
+      <field name="SWTRIGB1" mask="0x00010000" access="wo" description="Channel 1 software trigger B (double data mode)" />
+      <field name="SWTRIGB2" mask="0x00020000" access="wo" description="Channel 2 software trigger B (double data mode)">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+      </field>
+    </register>
+    
+    <!-- Channel 1 data holding registers -->
+    <register name="DHR12R1" offset="0x08" reset="0x00000000" description="Channel 1 12-bit right-aligned data holding register">
+      <field name="DHR" mask="0x00000FFF" access="rw" description="12-bit right-aligned data" />
+      <field name="DHRB" mask="0x0FFF0000" access="rw" description="12-bit right-aligned data B (double data mode)" />
+    </register>
+    
+    <register name="DHR12L1" offset="0x0C" reset="0x00000000" description="Channel 1 12-bit left-aligned data holding register">
+      <field name="DHR" mask="0x0000FFF0" access="rw" description="12-bit left-aligned data" />
+      <field name="DHRB" mask="0xFFF00000" access="rw" description="12-bit left-aligned data B (double data mode)" />
+    </register>
+    
+    <register name="DHR8R1" offset="0x10" reset="0x00000000" description="Channel 1 8-bit right-aligned data holding register">
+      <field name="DHR" mask="0x000000FF" access="rw" description="8-bit right-aligned data" />
+      <field name="DHRB" mask="0x0000FF00" access="rw" description="8-bit right-aligned data B (double data mode)" />
+    </register>
+    
+    <!-- Channel 2 data holding registers - only on dual-channel DACs -->
+    <register name="DHR12R2" offset="0x14" reset="0x00000000" description="Channel 2 12-bit right-aligned data holding register">
+      <instance id="1" /><instance id="3" /><instance id="4" />
+      <field name="DHR" mask="0x00000FFF" access="rw" description="12-bit right-aligned data" />
+      <field name="DHRB" mask="0x0FFF0000" access="rw" description="12-bit right-aligned data B (double data mode)" />
+    </register>
+    
+    <register name="DHR12L2" offset="0x18" reset="0x00000000" description="Channel 2 12-bit left-aligned data holding register">
+      <instance id="1" /><instance id="3" /><instance id="4" />
+      <field name="DHR" mask="0x0000FFF0" access="rw" description="12-bit left-aligned data" />
+      <field name="DHRB" mask="0xFFF00000" access="rw" description="12-bit left-aligned data B (double data mode)" />
+    </register>
+    
+    <register name="DHR8R2" offset="0x1C" reset="0x00000000" description="Channel 2 8-bit right-aligned data holding register">
+      <instance id="1" /><instance id="3" /><instance id="4" />
+      <field name="DHR" mask="0x000000FF" access="rw" description="8-bit right-aligned data" />
+      <field name="DHRB" mask="0x0000FF00" access="rw" description="8-bit right-aligned data B (double data mode)" />
+    </register>
+    
+    <!-- Dual data holding registers - write to both channels simultaneously -->
+    <register name="DHR12RD" offset="0x20" reset="0x00000000" description="Dual 12-bit right-aligned data holding register">
+      <instance id="1" /><instance id="3" /><instance id="4" />
+      <field name="DHR1" mask="0x00000FFF" access="rw" description="Channel 1 12-bit right-aligned data" />
+      <field name="DHR2" mask="0x0FFF0000" access="rw" description="Channel 2 12-bit right-aligned data" />
+    </register>
+    
+    <register name="DHR12LD" offset="0x24" reset="0x00000000" description="Dual 12-bit left-aligned data holding register">
+      <instance id="1" /><instance id="3" /><instance id="4" />
+      <field name="DHR1" mask="0x0000FFF0" access="rw" description="Channel 1 12-bit left-aligned data" />
+      <field name="DHR2" mask="0xFFF00000" access="rw" description="Channel 2 12-bit left-aligned data" />
+    </register>
+    
+    <register name="DHR8RD" offset="0x28" reset="0x00000000" description="Dual 8-bit right-aligned data holding register">
+      <instance id="1" /><instance id="3" /><instance id="4" />
+      <field name="DHR1" mask="0x000000FF" access="rw" description="Channel 1 8-bit right-aligned data" />
+      <field name="DHR2" mask="0x0000FF00" access="rw" description="Channel 2 8-bit right-aligned data" />
+    </register>
+    
+    <!-- Data output registers -->
+    <register name="DOR1" offset="0x2C" reset="0x00000000" description="Channel 1 data output register">
+      <field name="DOR" mask="0x00000FFF" access="ro" description="Channel 1 data output" />
+      <field name="DORB" mask="0x0FFF0000" access="ro" description="Channel 1 data output B (double data mode)" />
+    </register>
+    
+    <register name="DOR2" offset="0x30" reset="0x00000000" description="Channel 2 data output register">
+      <instance id="1" /><instance id="3" /><instance id="4" />
+      <field name="DOR" mask="0x00000FFF" access="ro" description="Channel 2 data output" />
+      <field name="DORB" mask="0x0FFF0000" access="ro" description="Channel 2 data output B (double data mode)" />
+    </register>
+    
+    <register name="SR" offset="0x34" reset="0x00000000" description="Status register">
+      <field name="DAC1RDY" mask="0x00000800" access="ro" description="Channel 1 ready" />
+      <field name="DORSTAT1" mask="0x00001000" access="ro" description="Channel 1 DOR write status" />
+      <field name="DMAUDR1" mask="0x00002000" access="rw" description="Channel 1 DMA underrun flag" />
+      <field name="CAL_FLAG1" mask="0x00004000" access="ro" description="Channel 1 calibration offset status" />
+      <field name="BWST1" mask="0x00008000" access="ro" description="Channel 1 busy writing sample time flag" />
+      <field name="DAC2RDY" mask="0x08000000" access="ro" description="Channel 2 ready">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+      </field>
+      <field name="DORSTAT2" mask="0x10000000" access="ro" description="Channel 2 DOR write status">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+      </field>
+      <field name="DMAUDR2" mask="0x20000000" access="rw" description="Channel 2 DMA underrun flag">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+      </field>
+      <field name="CAL_FLAG2" mask="0x40000000" access="ro" description="Channel 2 calibration offset status">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+      </field>
+      <field name="BWST2" mask="0x80000000" access="ro" description="Channel 2 busy writing sample time flag">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+      </field>
+    </register>
+    
+    <register name="CCR" offset="0x38" reset="0x00000000" description="Calibration control register">
+      <field name="OTRIM1" mask="0x0000001F" access="rw" description="Channel 1 offset trimming value" />
+      <field name="OTRIM2" mask="0x001F0000" access="rw" description="Channel 2 offset trimming value">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+      </field>
+    </register>
+    
+    <register name="MCR" offset="0x3C" reset="0x00000000" description="Mode control register">
+      <field name="MODE1" mask="0x00000007" access="rw" description="Channel 1 mode">
+        <enum value="0x00000000" name="ExtBufOn" description="External pin, buffer enabled" />
+        <enum value="0x00000001" name="ExtIntBufOn" description="External pin + on-chip, buffer enabled" />
+        <enum value="0x00000002" name="ExtBufOff" description="External pin, buffer disabled" />
+        <enum value="0x00000003" name="IntBufOff" description="On-chip only, buffer disabled" />
+        <enum value="0x00000004" name="SH_ExtBufOn" description="S&amp;H: External pin, buffer enabled" />
+        <enum value="0x00000005" name="SH_ExtIntBufOn" description="S&amp;H: External pin + on-chip, buffer enabled" />
+        <enum value="0x00000006" name="SH_ExtIntBufOff" description="S&amp;H: External pin + on-chip, buffer disabled" />
+        <enum value="0x00000007" name="SH_IntBufOff" description="S&amp;H: On-chip only, buffer disabled" />
+      </field>
+      <field name="DMADOUBLE1" mask="0x00000100" access="rw" description="Channel 1 DMA double data mode">
+        <enum value="0x00000000" name="Normal" />
+        <enum value="0x00000100" name="Double" />
+      </field>
+      <field name="SINFORMAT1" mask="0x00000200" access="rw" description="Channel 1 signed format">
+        <enum value="0x00000000" name="Unsigned" />
+        <enum value="0x00000200" name="Signed" />
+      </field>
+      <field name="HFSEL" mask="0x0000C000" access="rw" description="High frequency mode">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00004000" name="AHB80" description="AHB &gt; 80 MHz" />
+        <enum value="0x00008000" name="AHB160" description="AHB &gt; 160 MHz" />
+      </field>
+      <field name="MODE2" mask="0x00070000" access="rw" description="Channel 2 mode">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+        <enum value="0x00000000" name="ExtBufOn" />
+        <enum value="0x00010000" name="ExtIntBufOn" />
+        <enum value="0x00020000" name="ExtBufOff" />
+        <enum value="0x00030000" name="IntBufOff" />
+        <enum value="0x00040000" name="SH_ExtBufOn" />
+        <enum value="0x00050000" name="SH_ExtIntBufOn" />
+        <enum value="0x00060000" name="SH_ExtIntBufOff" />
+        <enum value="0x00070000" name="SH_IntBufOff" />
+      </field>
+      <field name="DMADOUBLE2" mask="0x01000000" access="rw" description="Channel 2 DMA double data mode">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+        <enum value="0x00000000" name="Normal" />
+        <enum value="0x01000000" name="Double" />
+      </field>
+      <field name="SINFORMAT2" mask="0x02000000" access="rw" description="Channel 2 signed format">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+        <enum value="0x00000000" name="Unsigned" />
+        <enum value="0x02000000" name="Signed" />
+      </field>
+    </register>
+    
+    <!-- Sample & Hold registers -->
+    <register name="SHSR1" offset="0x40" reset="0x00000000" description="Channel 1 sample &amp; hold sample time register">
+      <field name="TSAMPLE1" mask="0x000003FF" access="rw" description="Channel 1 sample time (LSI/LSE cycles)" />
+    </register>
+    
+    <register name="SHSR2" offset="0x44" reset="0x00000000" description="Channel 2 sample &amp; hold sample time register">
+      <instance id="1" /><instance id="3" /><instance id="4" />
+      <field name="TSAMPLE2" mask="0x000003FF" access="rw" description="Channel 2 sample time (LSI/LSE cycles)" />
+    </register>
+    
+    <register name="SHHR" offset="0x48" reset="0x00010001" description="Sample &amp; hold hold time register">
+      <field name="THOLD1" mask="0x000003FF" access="rw" description="Channel 1 hold time" />
+      <field name="THOLD2" mask="0x03FF0000" access="rw" description="Channel 2 hold time">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+      </field>
+    </register>
+    
+    <register name="SHRR" offset="0x4C" reset="0x00010001" description="Sample &amp; hold refresh time register">
+      <field name="TREFRESH1" mask="0x000000FF" access="rw" description="Channel 1 refresh time" />
+      <field name="TREFRESH2" mask="0x00FF0000" access="rw" description="Channel 2 refresh time">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+      </field>
+    </register>
+    
+    <!-- Sawtooth registers -->
+    <register name="STR1" offset="0x58" reset="0x00000000" description="Channel 1 sawtooth register">
+      <field name="STRSTDATA1" mask="0x00000FFF" access="rw" description="Sawtooth reset data" />
+      <field name="STDIR1" mask="0x00001000" access="rw" description="Sawtooth direction">
+        <enum value="0x00000000" name="Decrement" />
+        <enum value="0x00001000" name="Increment" />
+      </field>
+      <field name="STINCDATA1" mask="0xFFFF0000" access="rw" description="Sawtooth increment data (12.4 fixed point)" />
+    </register>
+    
+    <register name="STR2" offset="0x5C" reset="0x00000000" description="Channel 2 sawtooth register">
+      <instance id="1" /><instance id="3" /><instance id="4" />
+      <field name="STRSTDATA2" mask="0x00000FFF" access="rw" description="Sawtooth reset data" />
+      <field name="STDIR2" mask="0x00001000" access="rw" description="Sawtooth direction">
+        <enum value="0x00000000" name="Decrement" />
+        <enum value="0x00001000" name="Increment" />
+      </field>
+      <field name="STINCDATA2" mask="0xFFFF0000" access="rw" description="Sawtooth increment data (12.4 fixed point)" />
+    </register>
+    
+    <register name="STMODR" offset="0x60" reset="0x00000000" description="Sawtooth mode register">
+      <field name="STRSTTRIGSEL1" mask="0x0000000F" access="rw" description="Channel 1 sawtooth reset trigger selection" />
+      <field name="STINCTRIGSEL1" mask="0x00000F00" access="rw" description="Channel 1 sawtooth increment trigger selection" />
+      <field name="STRSTTRIGSEL2" mask="0x000F0000" access="rw" description="Channel 2 sawtooth reset trigger selection">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+      </field>
+      <field name="STINCTRIGSEL2" mask="0x0F000000" access="rw" description="Channel 2 sawtooth increment trigger selection">
+        <instance id="1" /><instance id="3" /><instance id="4" />
+      </field>
+    </register>
+    
+  </peripheral>
+  
+</device>

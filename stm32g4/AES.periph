@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 AES (Advanced Encryption Standard) Peripheral
+  Extracted from RM0440 Rev 7
+  Available on Cat2 (G441) and Cat3 (G483/G4A1) devices with AES
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="AES" description="Advanced encryption standard hardware accelerator" category="Cat2,Cat3">
+    <instance id="1" base="0x50060000" />
+    
+    <register name="CR" offset="0x00" reset="0x00000000" description="Control register">
+      <field name="EN" mask="0x00000001" access="rw" description="AES enable" />
+      <field name="DATATYPE" mask="0x00000006" access="rw" description="Data type selection">
+        <enum value="0x00000000" name="None" description="No swapping (32-bit)" />
+        <enum value="0x00000002" name="HalfWord" description="Half-word swapping (16-bit)" />
+        <enum value="0x00000004" name="Byte" description="Byte swapping (8-bit)" />
+        <enum value="0x00000006" name="Bit" description="Bit swapping" />
+      </field>
+      <field name="MODE" mask="0x00000018" access="rw" description="AES operating mode">
+        <enum value="0x00000000" name="Encryption" description="Mode 1: Encryption" />
+        <enum value="0x00000008" name="KeyDerivation" description="Mode 2: Key derivation" />
+        <enum value="0x00000010" name="Decryption" description="Mode 3: Decryption" />
+        <enum value="0x00000018" name="KeyDerivationDecryption" description="Mode 4: Key derivation then decryption" />
+      </field>
+      <field name="CHMOD" mask="0x00010060" access="rw" description="Chaining mode">
+        <enum value="0x00000000" name="ECB" description="Electronic codebook" />
+        <enum value="0x00000020" name="CBC" description="Cipher block chaining" />
+        <enum value="0x00000040" name="CTR" description="Counter mode" />
+        <enum value="0x00010000" name="GCM_GMAC" description="Galois counter mode / GMAC" />
+        <enum value="0x00010020" name="CCM" description="Counter with CBC-MAC" />
+      </field>
+      <field name="CCFC" mask="0x00000080" access="rs" description="Computation complete flag clear" />
+      <field name="ERRC" mask="0x00000100" access="rs" description="Error flag clear" />
+      <field name="CCFIE" mask="0x00000200" access="rw" description="CCF interrupt enable" />
+      <field name="ERRIE" mask="0x00000400" access="rw" description="Error interrupt enable" />
+      <field name="DMAINEN" mask="0x00000800" access="rw" description="DMA input enable" />
+      <field name="DMAOUTEN" mask="0x00001000" access="rw" description="DMA output enable" />
+      <field name="GCMPH" mask="0x00006000" access="rw" description="GCM/CCM phase">
+        <enum value="0x00000000" name="Init" description="Init phase" />
+        <enum value="0x00002000" name="Header" description="Header phase" />
+        <enum value="0x00004000" name="Payload" description="Payload phase" />
+        <enum value="0x00006000" name="Final" description="Final phase" />
+      </field>
+      <field name="KEYSIZE" mask="0x00040000" access="rw" description="Key size">
+        <enum value="0x00000000" name="Bits128" description="128-bit key" />
+        <enum value="0x00040000" name="Bits256" description="256-bit key" />
+      </field>
+      <field name="NPBLB" mask="0x00F00000" access="rw" description="Number of padding bytes in last block" />
+    </register>
+    
+    <register name="SR" offset="0x04" reset="0x00000000" access="ro" description="Status register">
+      <field name="CCF" mask="0x00000001" access="ro" description="Computation complete flag" />
+      <field name="RDERR" mask="0x00000002" access="ro" description="Read error flag" />
+      <field name="WRERR" mask="0x00000004" access="ro" description="Write error flag" />
+      <field name="BUSY" mask="0x00000008" access="ro" description="Busy flag" />
+    </register>
+    
+    <register name="DINR" offset="0x08" reset="0x00000000" access="wo" description="Data input register">
+      <field name="DIN" mask="0xFFFFFFFF" access="wo" description="Input data word" />
+    </register>
+    
+    <register name="DOUTR" offset="0x0C" reset="0x00000000" access="ro" description="Data output register">
+      <field name="DOUT" mask="0xFFFFFFFF" access="ro" description="Output data word" />
+    </register>
+    
+    <!-- Key registers as array -->
+    <group name="KEYR" offset="0x10" stride="0x04" range_min="0" range_max="7" description="Key register">
+      <register name="x" offset="0x00" reset="0x00000000" access="wo" description="Key word">
+        <field name="KEY" mask="0xFFFFFFFF" access="wo" description="Key data" />
+      </register>
+    </group>
+    
+    <!-- Initialization vector registers as array -->
+    <group name="IVR" offset="0x30" stride="0x04" range_min="0" range_max="3" description="Initialization vector register">
+      <register name="x" offset="0x00" reset="0x00000000" access="rw" description="IV word">
+        <field name="IV" mask="0xFFFFFFFF" access="rw" description="Initialization vector data" />
+      </register>
+    </group>
+    
+    <!-- Suspend registers as array -->
+    <group name="SUSPR" offset="0x40" stride="0x04" range_min="0" range_max="7" description="Suspend register">
+      <register name="x" offset="0x00" reset="0x00000000" access="rw" description="Suspend word">
+        <field name="SUSP" mask="0xFFFFFFFF" access="rw" description="Suspend data" />
+      </register>
+    </group>
+    
+  </peripheral>
+  
+</device>

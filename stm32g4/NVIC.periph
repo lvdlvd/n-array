@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ARM Cortex-M4 NVIC (Nested Vectored Interrupt Controller)
+  Extracted from PM0214 Rev 10 - STM32 Cortex-M4 Programming Manual
+  
+  Base address: 0xE000E100 (NVIC register block)
+  STIR is at separate address: 0xE000EF00
+  
+  Note: Number of implemented interrupts is device-specific (STM32G4 has ~102)
+-->
+<device name="CortexM4" reference_manual="PM0214" revision="10">
+  
+  <peripheral name="NVIC" description="Nested Vectored Interrupt Controller">
+    <instance id="1" base="0xE000E100" />
+    
+    <!-- Interrupt Set-Enable Registers (8 x 32-bit) -->
+    <group name="ISER" offset="0x000" stride="0x04" range_min="0" range_max="7" 
+           description="Interrupt set-enable register">
+      <register name="" offset="0x00" reset="0x00000000" description="Interrupt set-enable bits">
+        <field name="SETENA" mask="0xFFFFFFFF" access="rs" 
+               description="Write 1 to enable interrupt, read returns enable state" />
+      </register>
+    </group>
+    
+    <!-- Interrupt Clear-Enable Registers (8 x 32-bit) -->
+    <group name="ICER" offset="0x080" stride="0x04" range_min="0" range_max="7"
+           description="Interrupt clear-enable register">
+      <register name="" offset="0x00" reset="0x00000000" description="Interrupt clear-enable bits">
+        <field name="CLRENA" mask="0xFFFFFFFF" access="rc_w1"
+               description="Write 1 to disable interrupt, read returns enable state" />
+      </register>
+    </group>
+    
+    <!-- Interrupt Set-Pending Registers (8 x 32-bit) -->
+    <group name="ISPR" offset="0x100" stride="0x04" range_min="0" range_max="7"
+           description="Interrupt set-pending register">
+      <register name="" offset="0x00" reset="0x00000000" description="Interrupt set-pending bits">
+        <field name="SETPEND" mask="0xFFFFFFFF" access="rs"
+               description="Write 1 to set pending, read returns pending state" />
+      </register>
+    </group>
+    
+    <!-- Interrupt Clear-Pending Registers (8 x 32-bit) -->
+    <group name="ICPR" offset="0x180" stride="0x04" range_min="0" range_max="7"
+           description="Interrupt clear-pending register">
+      <register name="" offset="0x00" reset="0x00000000" description="Interrupt clear-pending bits">
+        <field name="CLRPEND" mask="0xFFFFFFFF" access="rc_w1"
+               description="Write 1 to clear pending, read returns pending state" />
+      </register>
+    </group>
+    
+    <!-- Interrupt Active Bit Registers (8 x 32-bit) -->
+    <group name="IABR" offset="0x200" stride="0x04" range_min="0" range_max="7"
+           description="Interrupt active bit register">
+      <register name="" offset="0x00" reset="0x00000000" access="ro" description="Interrupt active flags">
+        <field name="ACTIVE" mask="0xFFFFFFFF" access="ro"
+               description="1 = interrupt active or active and pending" />
+      </register>
+    </group>
+    
+    <!-- Interrupt Priority Registers (60 x 32-bit, 4 priorities per register) -->
+    <group name="IPR" offset="0x300" stride="0x04" range_min="0" range_max="59"
+           description="Interrupt priority register">
+      <register name="" offset="0x00" reset="0x00000000" description="4 x 8-bit priority fields">
+        <field name="IP0" mask="0x000000FF" access="rw" description="Priority bits[7:4] implemented" />
+        <field name="IP1" mask="0x0000FF00" access="rw" description="Priority bits[7:4] implemented" />
+        <field name="IP2" mask="0x00FF0000" access="rw" description="Priority bits[7:4] implemented" />
+        <field name="IP3" mask="0xFF000000" access="rw" description="Priority bits[7:4] implemented" />
+      </register>
+    </group>
+    
+  </peripheral>
+  
+  <!-- Software Trigger Interrupt Register (separate base) -->
+  <peripheral name="NVIC_STIR" description="NVIC Software Trigger">
+    <instance id="1" base="0xE000EF00" />
+    
+    <register name="STIR" offset="0x00" reset="0x00000000" access="wo" 
+              description="Software trigger interrupt register">
+      <field name="INTID" mask="0x000001FF" access="wo" 
+             description="Interrupt ID to trigger (0-239)" />
+    </register>
+  </peripheral>
+  
+</device>

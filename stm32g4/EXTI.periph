@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 EXTI (Extended Interrupts and Events Controller) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="EXTI" description="Extended interrupts and events controller">
+    <instance id="1" base="0x40010400" />
+    
+    <!-- Interrupt mask register 1 (lines 0-31) -->
+    <register name="IMR1" offset="0x00" reset="0xFF820000" description="Interrupt mask register 1">
+      <field name="IM" mask="0xFFFFFFFF" access="rw" description="Interrupt mask on line 0-31" />
+    </register>
+    
+    <register name="EMR1" offset="0x04" reset="0x00000000" description="Event mask register 1">
+      <field name="EM" mask="0xFFFFFFFF" access="rw" description="Event mask on line 0-31" />
+    </register>
+    
+    <register name="RTSR1" offset="0x08" reset="0x00000000" description="Rising trigger selection register 1">
+      <field name="RT" mask="0x803FFFFF" access="rw" description="Rising trigger on line 0-21,31" />
+    </register>
+    
+    <register name="FTSR1" offset="0x0C" reset="0x00000000" description="Falling trigger selection register 1">
+      <field name="FT" mask="0x803FFFFF" access="rw" description="Falling trigger on line 0-21,31" />
+    </register>
+    
+    <register name="SWIER1" offset="0x10" reset="0x00000000" description="Software interrupt event register 1">
+      <field name="SWI" mask="0x803FFFFF" access="rw" description="Software interrupt on line 0-21,31" />
+    </register>
+    
+    <register name="PR1" offset="0x14" reset="0x00000000" description="Pending register 1">
+      <field name="PIF" mask="0x803FFFFF" access="rc_w1" description="Pending interrupt flag on line 0-21,31" />
+    </register>
+    
+    <!-- Interrupt mask register 2 (lines 32-43) -->
+    <register name="IMR2" offset="0x20" reset="0xFFFFFF87" description="Interrupt mask register 2">
+      <field name="IM" mask="0x00000FFF" access="rw" description="Interrupt mask on line 32-43" />
+    </register>
+    
+    <register name="EMR2" offset="0x24" reset="0x00000000" description="Event mask register 2">
+      <field name="EM" mask="0x00000FFF" access="rw" description="Event mask on line 32-43" />
+    </register>
+    
+    <register name="RTSR2" offset="0x28" reset="0x00000000" description="Rising trigger selection register 2">
+      <field name="RT" mask="0x00000378" access="rw" description="Rising trigger on line 35-38,40" />
+    </register>
+    
+    <register name="FTSR2" offset="0x2C" reset="0x00000000" description="Falling trigger selection register 2">
+      <field name="FT" mask="0x00000378" access="rw" description="Falling trigger on line 35-38,40" />
+    </register>
+    
+    <register name="SWIER2" offset="0x30" reset="0x00000000" description="Software interrupt event register 2">
+      <field name="SWI" mask="0x00000378" access="rw" description="Software interrupt on line 35-38,40" />
+    </register>
+    
+    <register name="PR2" offset="0x34" reset="0x00000000" description="Pending register 2">
+      <field name="PIF" mask="0x00000378" access="rc_w1" description="Pending interrupt flag on line 35-38,40" />
+    </register>
+    
+  </peripheral>
+  
+</device>

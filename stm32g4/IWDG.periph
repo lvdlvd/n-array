@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 IWDG (Independent Watchdog) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="IWDG" description="Independent watchdog">
+    <instance id="1" base="0x40003000" />
+    
+    <register name="KR" offset="0x00" reset="0x00000000" description="Key register">
+      <field name="KEY" mask="0x0000FFFF" access="wo" description="Key value (write only, reads as 0x0000)">
+        <enum value="0x0000AAAA" name="Reload" description="Reload counter with RLR value, prevent reset" />
+        <enum value="0x00005555" name="EnableAccess" description="Enable write access to PR, RLR, WINR" />
+        <enum value="0x0000CCCC" name="Start" description="Start the watchdog" />
+      </field>
+    </register>
+    
+    <register name="PR" offset="0x04" reset="0x00000000" description="Prescaler register">
+      <field name="PR" mask="0x00000007" access="rw" description="Prescaler divider">
+        <enum value="0x00000000" name="Div4" description="Divider /4" />
+        <enum value="0x00000001" name="Div8" description="Divider /8" />
+        <enum value="0x00000002" name="Div16" description="Divider /16" />
+        <enum value="0x00000003" name="Div32" description="Divider /32" />
+        <enum value="0x00000004" name="Div64" description="Divider /64" />
+        <enum value="0x00000005" name="Div128" description="Divider /128" />
+        <enum value="0x00000006" name="Div256" description="Divider /256" />
+        <enum value="0x00000007" name="Div256_2" description="Divider /256" />
+      </field>
+    </register>
+    
+    <register name="RLR" offset="0x08" reset="0x00000FFF" description="Reload register">
+      <field name="RL" mask="0x00000FFF" access="rw" description="Watchdog counter reload value" />
+    </register>
+    
+    <register name="SR" offset="0x0C" reset="0x00000000" description="Status register">
+      <field name="PVU" mask="0x00000001" access="ro" description="Watchdog prescaler value update">
+        <enum value="0x00000000" name="Ready" description="No prescaler update ongoing" />
+        <enum value="0x00000001" name="Busy" description="Prescaler update ongoing" />
+      </field>
+      <field name="RVU" mask="0x00000002" access="ro" description="Watchdog counter reload value update">
+        <enum value="0x00000000" name="Ready" description="No reload value update ongoing" />
+        <enum value="0x00000002" name="Busy" description="Reload value update ongoing" />
+      </field>
+      <field name="WVU" mask="0x00000004" access="ro" description="Watchdog counter window value update">
+        <enum value="0x00000000" name="Ready" description="No window value update ongoing" />
+        <enum value="0x00000004" name="Busy" description="Window value update ongoing" />
+      </field>
+    </register>
+    
+    <register name="WINR" offset="0x10" reset="0x00000FFF" description="Window register">
+      <field name="WIN" mask="0x00000FFF" access="rw" description="Watchdog counter window value" />
+    </register>
+    
+  </peripheral>
+  
+</device>

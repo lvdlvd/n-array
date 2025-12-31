@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 VREFBUF (Voltage Reference Buffer) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="VREFBUF" description="Voltage reference buffer">
+    <instance id="1" base="0x40010030" />
+    
+    <register name="CSR" offset="0x00" reset="0x00000002" description="Control and status register">
+      <field name="ENVR" mask="0x00000001" access="rw" description="Voltage reference buffer mode enable" />
+      <field name="HIZ" mask="0x00000002" access="rw" description="High impedance mode" />
+      <field name="VRR" mask="0x00000008" access="ro" description="Voltage reference buffer ready" />
+      <field name="VRS" mask="0x00000030" access="rw" description="Voltage reference scale">
+        <enum value="0x00000000" name="Scale0" description="2.048V" />
+        <enum value="0x00000010" name="Scale1" description="2.5V" />
+        <enum value="0x00000020" name="Scale2" description="2.9V" />
+      </field>
+    </register>
+    
+    <register name="CCR" offset="0x04" reset="0x00000000" description="Calibration control register">
+      <field name="TRIM" mask="0x0000003F" access="rw" description="Trimming code" />
+    </register>
+    
+  </peripheral>
+  
+</device>

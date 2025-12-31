@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 ADC (Analog-to-Digital Converter) Peripheral
+  Extracted from RM0440 Rev 7
+  
+  ADC1/2 share common registers at ADC12_COMMON base
+  ADC3/4/5 share common registers at ADC345_COMMON base
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <!-- Individual ADC instances -->
+  <peripheral name="ADC" description="Analog-to-digital converter">
+    <instance id="1" base="0x50000000" />
+    <instance id="2" base="0x50000100" />
+    <instance id="3" base="0x50000400" />
+    <instance id="4" base="0x50000500" />
+    <instance id="5" base="0x50000600" />
+    
+    <register name="ISR" offset="0x00" reset="0x00000000" description="Interrupt and status register">
+      <field name="ADRDY" mask="0x00000001" access="rc_w1" description="ADC ready" />
+      <field name="EOSMP" mask="0x00000002" access="rc_w1" description="End of sampling flag" />
+      <field name="EOC" mask="0x00000004" access="rc_w1" description="End of conversion flag" />
+      <field name="EOS" mask="0x00000008" access="rc_w1" description="End of regular sequence flag" />
+      <field name="OVR" mask="0x00000010" access="rc_w1" description="Overrun flag" />
+      <field name="JEOC" mask="0x00000020" access="rc_w1" description="Injected end of conversion" />
+      <field name="JEOS" mask="0x00000040" access="rc_w1" description="Injected end of sequence" />
+      <field name="AWD1" mask="0x00000080" access="rc_w1" description="Analog watchdog 1 flag" />
+      <field name="AWD2" mask="0x00000100" access="rc_w1" description="Analog watchdog 2 flag" />
+      <field name="AWD3" mask="0x00000200" access="rc_w1" description="Analog watchdog 3 flag" />
+      <field name="JQOVF" mask="0x00000400" access="rc_w1" description="Injected queue overflow" />
+    </register>
+    
+    <register name="IER" offset="0x04" reset="0x00000000" description="Interrupt enable register">
+      <field name="ADRDYIE" mask="0x00000001" access="rw" description="ADC ready interrupt enable" />
+      <field name="EOSMPIE" mask="0x00000002" access="rw" description="End of sampling interrupt enable" />
+      <field name="EOCIE" mask="0x00000004" access="rw" description="End of conversion interrupt enable" />
+      <field name="EOSIE" mask="0x00000008" access="rw" description="End of sequence interrupt enable" />
+      <field name="OVRIE" mask="0x00000010" access="rw" description="Overrun interrupt enable" />
+      <field name="JEOCIE" mask="0x00000020" access="rw" description="Injected EOC interrupt enable" />
+      <field name="JEOSIE" mask="0x00000040" access="rw" description="Injected EOS interrupt enable" />
+      <field name="AWD1IE" mask="0x00000080" access="rw" description="AWD1 interrupt enable" />
+      <field name="AWD2IE" mask="0x00000100" access="rw" description="AWD2 interrupt enable" />
+      <field name="AWD3IE" mask="0x00000200" access="rw" description="AWD3 interrupt enable" />
+      <field name="JQOVFIE" mask="0x00000400" access="rw" description="Injected queue overflow interrupt enable" />
+    </register>
+    
+    <register name="CR" offset="0x08" reset="0x20000000" description="Control register">
+      <field name="ADEN" mask="0x00000001" access="rs" description="ADC enable" />
+      <field name="ADDIS" mask="0x00000002" access="rs" description="ADC disable" />
+      <field name="ADSTART" mask="0x00000004" access="rs" description="ADC start regular conversion" />
+      <field name="JADSTART" mask="0x00000008" access="rs" description="ADC start injected conversion" />
+      <field name="ADSTP" mask="0x00000010" access="rs" description="ADC stop regular conversion" />
+      <field name="JADSTP" mask="0x00000020" access="rs" description="ADC stop injected conversion" />
+      <field name="ADVREGEN" mask="0x10000000" access="rw" description="ADC voltage regulator enable" />
+      <field name="DEEPPWD" mask="0x20000000" access="rw" description="Deep power down enable" />
+      <field name="ADCALDIF" mask="0x40000000" access="rw" description="Differential mode for calibration" />
+      <field name="ADCAL" mask="0x80000000" access="rs" description="ADC calibration" />
+    </register>
+    
+    <register name="CFGR" offset="0x0C" reset="0x80000000" description="Configuration register">
+      <field name="DMAEN" mask="0x00000001" access="rw" description="DMA enable" />
+      <field name="DMACFG" mask="0x00000002" access="rw" description="DMA configuration" />
+      <field name="RES" mask="0x00000018" access="rw" description="Data resolution">
+        <enum value="0x00000000" name="Bits12" />
+        <enum value="0x00000008" name="Bits10" />
+        <enum value="0x00000010" name="Bits8" />
+        <enum value="0x00000018" name="Bits6" />
+      </field>
+      <field name="EXTSEL" mask="0x000003E0" access="rw" description="External trigger selection" />
+      <field name="EXTEN" mask="0x00000C00" access="rw" description="External trigger enable">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00000400" name="RisingEdge" />
+        <enum value="0x00000800" name="FallingEdge" />
+        <enum value="0x00000C00" name="BothEdges" />
+      </field>
+      <field name="OVRMOD" mask="0x00001000" access="rw" description="Overrun mode" />
+      <field name="CONT" mask="0x00002000" access="rw" description="Continuous conversion mode" />
+      <field name="AUTDLY" mask="0x00004000" access="rw" description="Delayed conversion mode" />
+      <field name="ALIGN" mask="0x00008000" access="rw" description="Data alignment" />
+      <field name="DISCEN" mask="0x00010000" access="rw" description="Discontinuous mode enable" />
+      <field name="DISCNUM" mask="0x000E0000" access="rw" description="Discontinuous mode channel count" />
+      <field name="JDISCEN" mask="0x00100000" access="rw" description="Injected discontinuous mode" />
+      <field name="JQM" mask="0x00200000" access="rw" description="JSQR queue mode" />
+      <field name="AWD1SGL" mask="0x00400000" access="rw" description="AWD1 single channel enable" />
+      <field name="AWD1EN" mask="0x00800000" access="rw" description="AWD1 enable on regular channels" />
+      <field name="JAWD1EN" mask="0x01000000" access="rw" description="AWD1 enable on injected channels" />
+      <field name="JAUTO" mask="0x02000000" access="rw" description="Automatic injected group conversion" />
+      <field name="AWD1CH" mask="0x7C000000" access="rw" description="AWD1 channel selection" />
+      <field name="JQDIS" mask="0x80000000" access="rw" description="Injected queue disable" />
+    </register>
+    
+    <register name="CFGR2" offset="0x10" reset="0x00000000" description="Configuration register 2">
+      <field name="ROVSE" mask="0x00000001" access="rw" description="Regular oversampling enable" />
+      <field name="JOVSE" mask="0x00000002" access="rw" description="Injected oversampling enable" />
+      <field name="OVSR" mask="0x0000001C" access="rw" description="Oversampling ratio" />
+      <field name="OVSS" mask="0x000001E0" access="rw" description="Oversampling shift" />
+      <field name="TROVS" mask="0x00000200" access="rw" description="Triggered regular oversampling" />
+      <field name="ROVSM" mask="0x00000400" access="rw" description="Regular oversampling mode" />
+      <field name="GCOMP" mask="0x00010000" access="rw" description="Gain compensation mode" />
+      <field name="SWTRIG" mask="0x02000000" access="rw" description="Software trigger for sampling" />
+      <field name="BULB" mask="0x04000000" access="rw" description="Bulb sampling mode" />
+      <field name="SMPTRIG" mask="0x08000000" access="rw" description="Sampling time control trigger mode" />
+    </register>
+    
+    <register name="SMPR1" offset="0x14" reset="0x00000000" description="Sample time register 1">
+      <field name="SMP0" mask="0x00000007" access="rw" description="Channel 0 sampling time" />
+      <field name="SMP1" mask="0x00000038" access="rw" description="Channel 1 sampling time" />
+      <field name="SMP2" mask="0x000001C0" access="rw" description="Channel 2 sampling time" />
+      <field name="SMP3" mask="0x00000E00" access="rw" description="Channel 3 sampling time" />
+      <field name="SMP4" mask="0x00007000" access="rw" description="Channel 4 sampling time" />
+      <field name="SMP5" mask="0x00038000" access="rw" description="Channel 5 sampling time" />
+      <field name="SMP6" mask="0x001C0000" access="rw" description="Channel 6 sampling time" />
+      <field name="SMP7" mask="0x00E00000" access="rw" description="Channel 7 sampling time" />
+      <field name="SMP8" mask="0x07000000" access="rw" description="Channel 8 sampling time" />
+      <field name="SMP9" mask="0x38000000" access="rw" description="Channel 9 sampling time" />
+      <field name="SMPPLUS" mask="0x80000000" access="rw" description="Sampling time 2.5 ADC clock cycles" />
+    </register>
+    
+    <register name="SMPR2" offset="0x18" reset="0x00000000" description="Sample time register 2">
+      <field name="SMP10" mask="0x00000007" access="rw" description="Channel 10 sampling time" />
+      <field name="SMP11" mask="0x00000038" access="rw" description="Channel 11 sampling time" />
+      <field name="SMP12" mask="0x000001C0" access="rw" description="Channel 12 sampling time" />
+      <field name="SMP13" mask="0x00000E00" access="rw" description="Channel 13 sampling time" />
+      <field name="SMP14" mask="0x00007000" access="rw" description="Channel 14 sampling time" />
+      <field name="SMP15" mask="0x00038000" access="rw" description="Channel 15 sampling time" />
+      <field name="SMP16" mask="0x001C0000" access="rw" description="Channel 16 sampling time" />
+      <field name="SMP17" mask="0x00E00000" access="rw" description="Channel 17 sampling time" />
+      <field name="SMP18" mask="0x07000000" access="rw" description="Channel 18 sampling time" />
+    </register>
+    
+    <register name="TR1" offset="0x20" reset="0x0FFF0000" description="Watchdog threshold register 1">
+      <field name="LT1" mask="0x00000FFF" access="rw" description="AWD1 lower threshold" />
+      <field name="AWDFILT" mask="0x00007000" access="rw" description="AWD filtering" />
+      <field name="HT1" mask="0x0FFF0000" access="rw" description="AWD1 higher threshold" />
+    </register>
+    
+    <register name="TR2" offset="0x24" reset="0x00FF0000" description="Watchdog threshold register 2">
+      <field name="LT2" mask="0x000000FF" access="rw" description="AWD2 lower threshold" />
+      <field name="HT2" mask="0x00FF0000" access="rw" description="AWD2 higher threshold" />
+    </register>
+    
+    <register name="TR3" offset="0x28" reset="0x00FF0000" description="Watchdog threshold register 3">
+      <field name="LT3" mask="0x000000FF" access="rw" description="AWD3 lower threshold" />
+      <field name="HT3" mask="0x00FF0000" access="rw" description="AWD3 higher threshold" />
+    </register>
+    
+    <register name="SQR1" offset="0x30" reset="0x00000000" description="Regular sequence register 1">
+      <field name="L" mask="0x0000000F" access="rw" description="Regular channel sequence length" />
+      <field name="SQ1" mask="0x000007C0" access="rw" description="1st conversion in sequence" />
+      <field name="SQ2" mask="0x0001F000" access="rw" description="2nd conversion in sequence" />
+      <field name="SQ3" mask="0x007C0000" access="rw" description="3rd conversion in sequence" />
+      <field name="SQ4" mask="0x1F000000" access="rw" description="4th conversion in sequence" />
+    </register>
+    
+    <register name="SQR2" offset="0x34" reset="0x00000000" description="Regular sequence register 2">
+      <field name="SQ5" mask="0x0000001F" access="rw" description="5th conversion in sequence" />
+      <field name="SQ6" mask="0x000007C0" access="rw" description="6th conversion in sequence" />
+      <field name="SQ7" mask="0x0001F000" access="rw" description="7th conversion in sequence" />
+      <field name="SQ8" mask="0x007C0000" access="rw" description="8th conversion in sequence" />
+      <field name="SQ9" mask="0x1F000000" access="rw" description="9th conversion in sequence" />
+    </register>
+    
+    <register name="SQR3" offset="0x38" reset="0x00000000" description="Regular sequence register 3">
+      <field name="SQ10" mask="0x0000001F" access="rw" description="10th conversion in sequence" />
+      <field name="SQ11" mask="0x000007C0" access="rw" description="11th conversion in sequence" />
+      <field name="SQ12" mask="0x0001F000" access="rw" description="12th conversion in sequence" />
+      <field name="SQ13" mask="0x007C0000" access="rw" description="13th conversion in sequence" />
+      <field name="SQ14" mask="0x1F000000" access="rw" description="14th conversion in sequence" />
+    </register>
+    
+    <register name="SQR4" offset="0x3C" reset="0x00000000" description="Regular sequence register 4">
+      <field name="SQ15" mask="0x0000001F" access="rw" description="15th conversion in sequence" />
+      <field name="SQ16" mask="0x000007C0" access="rw" description="16th conversion in sequence" />
+    </register>
+    
+    <register name="DR" offset="0x40" reset="0x00000000" access="ro" description="Regular data register">
+      <field name="RDATA" mask="0x0000FFFF" access="ro" description="Regular data converted" />
+    </register>
+    
+    <register name="JSQR" offset="0x4C" reset="0x00000000" description="Injected sequence register">
+      <field name="JL" mask="0x00000003" access="rw" description="Injected channel sequence length" />
+      <field name="JEXTSEL" mask="0x0000007C" access="rw" description="External trigger selection" />
+      <field name="JEXTEN" mask="0x00000180" access="rw" description="External trigger enable" />
+      <field name="JSQ1" mask="0x00001F00" access="rw" description="1st injected conversion" />
+      <field name="JSQ2" mask="0x0007C000" access="rw" description="2nd injected conversion" />
+      <field name="JSQ3" mask="0x01F00000" access="rw" description="3rd injected conversion" />
+      <field name="JSQ4" mask="0x7C000000" access="rw" description="4th injected conversion" />
+    </register>
+    
+    <!-- Offset registers -->
+    <register name="OFR1" offset="0x60" reset="0x00000000" description="Offset register 1">
+      <field name="OFFSET1" mask="0x00000FFF" access="rw" description="Data offset 1" />
+      <field name="OFFSETPOS" mask="0x01000000" access="rw" description="Positive offset" />
+      <field name="SATEN" mask="0x02000000" access="rw" description="Saturation enable" />
+      <field name="OFFSET1_CH" mask="0x7C000000" access="rw" description="Channel for offset 1" />
+      <field name="OFFSET1_EN" mask="0x80000000" access="rw" description="Offset 1 enable" />
+    </register>
+    <register name="OFR2" offset="0x64" reset="0x00000000" description="Offset register 2" />
+    <register name="OFR3" offset="0x68" reset="0x00000000" description="Offset register 3" />
+    <register name="OFR4" offset="0x6C" reset="0x00000000" description="Offset register 4" />
+    
+    <!-- Injected data registers -->
+    <register name="JDR1" offset="0x80" reset="0x00000000" access="ro" description="Injected data register 1">
+      <field name="JDATA" mask="0x0000FFFF" access="ro" description="Injected data" />
+    </register>
+    <register name="JDR2" offset="0x84" reset="0x00000000" access="ro" description="Injected data register 2" />
+    <register name="JDR3" offset="0x88" reset="0x00000000" access="ro" description="Injected data register 3" />
+    <register name="JDR4" offset="0x8C" reset="0x00000000" access="ro" description="Injected data register 4" />
+    
+    <register name="AWD2CR" offset="0xA0" reset="0x00000000" description="AWD2 configuration register">
+      <field name="AWD2CH" mask="0x0007FFFF" access="rw" description="AWD2 channel selection" />
+    </register>
+    
+    <register name="AWD3CR" offset="0xA4" reset="0x00000000" description="AWD3 configuration register">
+      <field name="AWD3CH" mask="0x0007FFFF" access="rw" description="AWD3 channel selection" />
+    </register>
+    
+    <register name="DIFSEL" offset="0xB0" reset="0x00000000" description="Differential mode selection register">
+      <field name="DIFSEL" mask="0x0007FFFF" access="rw" description="Differential mode for channels 0-18" />
+    </register>
+    
+    <register name="CALFACT" offset="0xB4" reset="0x00000000" description="Calibration factors register">
+      <field name="CALFACT_S" mask="0x0000007F" access="rw" description="Single-ended calibration factor" />
+      <field name="CALFACT_D" mask="0x007F0000" access="rw" description="Differential calibration factor" />
+    </register>
+    
+    <register name="GCOMP" offset="0xC0" reset="0x00000000" description="Gain compensation register">
+      <field name="GCOMPCOEFF" mask="0x00003FFF" access="rw" description="Gain compensation coefficient" />
+    </register>
+    
+  </peripheral>
+  
+  <!-- ADC12 Common registers -->
+  <peripheral name="ADC12_COMMON" description="ADC1/2 common registers">
+    <instance id="1" base="0x50000300" />
+    
+    <register name="CSR" offset="0x00" reset="0x00000000" access="ro" description="Common status register">
+      <field name="ADRDY_MST" mask="0x00000001" access="ro" description="Master ADC ready" />
+      <field name="EOSMP_MST" mask="0x00000002" access="ro" description="Master end of sampling" />
+      <field name="EOC_MST" mask="0x00000004" access="ro" description="Master end of conversion" />
+      <field name="EOS_MST" mask="0x00000008" access="ro" description="Master end of sequence" />
+      <field name="OVR_MST" mask="0x00000010" access="ro" description="Master overrun" />
+      <field name="JEOC_MST" mask="0x00000020" access="ro" description="Master injected EOC" />
+      <field name="JEOS_MST" mask="0x00000040" access="ro" description="Master injected EOS" />
+      <field name="AWD1_MST" mask="0x00000080" access="ro" description="Master AWD1" />
+      <field name="AWD2_MST" mask="0x00000100" access="ro" description="Master AWD2" />
+      <field name="AWD3_MST" mask="0x00000200" access="ro" description="Master AWD3" />
+      <field name="JQOVF_MST" mask="0x00000400" access="ro" description="Master injected queue overflow" />
+      <field name="ADRDY_SLV" mask="0x00010000" access="ro" description="Slave ADC ready" />
+      <field name="EOSMP_SLV" mask="0x00020000" access="ro" description="Slave end of sampling" />
+      <field name="EOC_SLV" mask="0x00040000" access="ro" description="Slave end of conversion" />
+      <field name="EOS_SLV" mask="0x00080000" access="ro" description="Slave end of sequence" />
+      <field name="OVR_SLV" mask="0x00100000" access="ro" description="Slave overrun" />
+      <field name="JEOC_SLV" mask="0x00200000" access="ro" description="Slave injected EOC" />
+      <field name="JEOS_SLV" mask="0x00400000" access="ro" description="Slave injected EOS" />
+      <field name="AWD1_SLV" mask="0x00800000" access="ro" description="Slave AWD1" />
+      <field name="AWD2_SLV" mask="0x01000000" access="ro" description="Slave AWD2" />
+      <field name="AWD3_SLV" mask="0x02000000" access="ro" description="Slave AWD3" />
+      <field name="JQOVF_SLV" mask="0x04000000" access="ro" description="Slave injected queue overflow" />
+    </register>
+    
+    <register name="CCR" offset="0x08" reset="0x00000000" description="Common control register">
+      <field name="DUAL" mask="0x0000001F" access="rw" description="Dual ADC mode selection" />
+      <field name="DELAY" mask="0x00000F00" access="rw" description="Delay between 2 sampling phases" />
+      <field name="DMACFG" mask="0x00002000" access="rw" description="DMA configuration" />
+      <field name="MDMA" mask="0x0000C000" access="rw" description="DMA mode for dual ADC mode" />
+      <field name="CKMODE" mask="0x00030000" access="rw" description="ADC clock mode" />
+      <field name="PRESC" mask="0x003C0000" access="rw" description="ADC prescaler" />
+      <field name="VREFEN" mask="0x00400000" access="rw" description="VREFINT enable" />
+      <field name="VSENSESEL" mask="0x00800000" access="rw" description="Temperature sensor enable" />
+      <field name="VBATSEL" mask="0x01000000" access="rw" description="VBAT enable" />
+    </register>
+    
+    <register name="CDR" offset="0x0C" reset="0x00000000" access="ro" description="Common regular data register">
+      <field name="RDATA_MST" mask="0x0000FFFF" access="ro" description="Master data" />
+      <field name="RDATA_SLV" mask="0xFFFF0000" access="ro" description="Slave data" />
+    </register>
+    
+  </peripheral>
+  
+  <!-- ADC345 Common registers -->
+  <peripheral name="ADC345_COMMON" base="ADC12_COMMON" description="ADC3/4/5 common registers">
+    <instance id="1" base="0x50000700" />
+  </peripheral>
+  
+</device>

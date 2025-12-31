@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 DMA (Direct Memory Access) Peripheral
+  Extracted from RM0440 Rev 7
+  
+  Uses <group> element for per-channel registers:
+  - offset: base offset of first group element
+  - stride: bytes between consecutive elements
+  - range_min, range_max: valid index range (1-8 for DMA channels)
+  
+  Address formula: peripheral_base + group_offset + (index - range_min) * stride + register_offset
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="DMA" description="Direct memory access controller">
+    <instance id="1" base="0x40020000" />
+    <instance id="2" base="0x40020400" />
+    
+    <register name="ISR" offset="0x00" reset="0x00000000" access="ro" description="Interrupt status register">
+      <field name="GIF1" mask="0x00000001" access="ro" description="Channel 1 global interrupt flag" />
+      <field name="TCIF1" mask="0x00000002" access="ro" description="Channel 1 transfer complete flag" />
+      <field name="HTIF1" mask="0x00000004" access="ro" description="Channel 1 half transfer flag" />
+      <field name="TEIF1" mask="0x00000008" access="ro" description="Channel 1 transfer error flag" />
+      <field name="GIF2" mask="0x00000010" access="ro" description="Channel 2 global interrupt flag" />
+      <field name="TCIF2" mask="0x00000020" access="ro" description="Channel 2 transfer complete flag" />
+      <field name="HTIF2" mask="0x00000040" access="ro" description="Channel 2 half transfer flag" />
+      <field name="TEIF2" mask="0x00000080" access="ro" description="Channel 2 transfer error flag" />
+      <field name="GIF3" mask="0x00000100" access="ro" description="Channel 3 global interrupt flag" />
+      <field name="TCIF3" mask="0x00000200" access="ro" description="Channel 3 transfer complete flag" />
+      <field name="HTIF3" mask="0x00000400" access="ro" description="Channel 3 half transfer flag" />
+      <field name="TEIF3" mask="0x00000800" access="ro" description="Channel 3 transfer error flag" />
+      <field name="GIF4" mask="0x00001000" access="ro" description="Channel 4 global interrupt flag" />
+      <field name="TCIF4" mask="0x00002000" access="ro" description="Channel 4 transfer complete flag" />
+      <field name="HTIF4" mask="0x00004000" access="ro" description="Channel 4 half transfer flag" />
+      <field name="TEIF4" mask="0x00008000" access="ro" description="Channel 4 transfer error flag" />
+      <field name="GIF5" mask="0x00010000" access="ro" description="Channel 5 global interrupt flag" />
+      <field name="TCIF5" mask="0x00020000" access="ro" description="Channel 5 transfer complete flag" />
+      <field name="HTIF5" mask="0x00040000" access="ro" description="Channel 5 half transfer flag" />
+      <field name="TEIF5" mask="0x00080000" access="ro" description="Channel 5 transfer error flag" />
+      <field name="GIF6" mask="0x00100000" access="ro" description="Channel 6 global interrupt flag" />
+      <field name="TCIF6" mask="0x00200000" access="ro" description="Channel 6 transfer complete flag" />
+      <field name="HTIF6" mask="0x00400000" access="ro" description="Channel 6 half transfer flag" />
+      <field name="TEIF6" mask="0x00800000" access="ro" description="Channel 6 transfer error flag" />
+      <field name="GIF7" mask="0x01000000" access="ro" description="Channel 7 global interrupt flag" />
+      <field name="TCIF7" mask="0x02000000" access="ro" description="Channel 7 transfer complete flag" />
+      <field name="HTIF7" mask="0x04000000" access="ro" description="Channel 7 half transfer flag" />
+      <field name="TEIF7" mask="0x08000000" access="ro" description="Channel 7 transfer error flag" />
+      <field name="GIF8" mask="0x10000000" access="ro" description="Channel 8 global interrupt flag" />
+      <field name="TCIF8" mask="0x20000000" access="ro" description="Channel 8 transfer complete flag" />
+      <field name="HTIF8" mask="0x40000000" access="ro" description="Channel 8 half transfer flag" />
+      <field name="TEIF8" mask="0x80000000" access="ro" description="Channel 8 transfer error flag" />
+    </register>
+    
+    <register name="IFCR" offset="0x04" reset="0x00000000" access="wo" description="Interrupt flag clear register">
+      <field name="CGIF1" mask="0x00000001" access="wo" description="Channel 1 global interrupt clear" />
+      <field name="CTCIF1" mask="0x00000002" access="wo" description="Channel 1 transfer complete clear" />
+      <field name="CHTIF1" mask="0x00000004" access="wo" description="Channel 1 half transfer clear" />
+      <field name="CTEIF1" mask="0x00000008" access="wo" description="Channel 1 transfer error clear" />
+      <field name="CGIF2" mask="0x00000010" access="wo" description="Channel 2 global interrupt clear" />
+      <field name="CTCIF2" mask="0x00000020" access="wo" description="Channel 2 transfer complete clear" />
+      <field name="CHTIF2" mask="0x00000040" access="wo" description="Channel 2 half transfer clear" />
+      <field name="CTEIF2" mask="0x00000080" access="wo" description="Channel 2 transfer error clear" />
+      <field name="CGIF3" mask="0x00000100" access="wo" description="Channel 3 global interrupt clear" />
+      <field name="CTCIF3" mask="0x00000200" access="wo" description="Channel 3 transfer complete clear" />
+      <field name="CHTIF3" mask="0x00000400" access="wo" description="Channel 3 half transfer clear" />
+      <field name="CTEIF3" mask="0x00000800" access="wo" description="Channel 3 transfer error clear" />
+      <field name="CGIF4" mask="0x00001000" access="wo" description="Channel 4 global interrupt clear" />
+      <field name="CTCIF4" mask="0x00002000" access="wo" description="Channel 4 transfer complete clear" />
+      <field name="CHTIF4" mask="0x00004000" access="wo" description="Channel 4 half transfer clear" />
+      <field name="CTEIF4" mask="0x00008000" access="wo" description="Channel 4 transfer error clear" />
+      <field name="CGIF5" mask="0x00010000" access="wo" description="Channel 5 global interrupt clear" />
+      <field name="CTCIF5" mask="0x00020000" access="wo" description="Channel 5 transfer complete clear" />
+      <field name="CHTIF5" mask="0x00040000" access="wo" description="Channel 5 half transfer clear" />
+      <field name="CTEIF5" mask="0x00080000" access="wo" description="Channel 5 transfer error clear" />
+      <field name="CGIF6" mask="0x00100000" access="wo" description="Channel 6 global interrupt clear" />
+      <field name="CTCIF6" mask="0x00200000" access="wo" description="Channel 6 transfer complete clear" />
+      <field name="CHTIF6" mask="0x00400000" access="wo" description="Channel 6 half transfer clear" />
+      <field name="CTEIF6" mask="0x00800000" access="wo" description="Channel 6 transfer error clear" />
+      <field name="CGIF7" mask="0x01000000" access="wo" description="Channel 7 global interrupt clear" />
+      <field name="CTCIF7" mask="0x02000000" access="wo" description="Channel 7 transfer complete clear" />
+      <field name="CHTIF7" mask="0x04000000" access="wo" description="Channel 7 half transfer clear" />
+      <field name="CTEIF7" mask="0x08000000" access="wo" description="Channel 7 transfer error clear" />
+      <field name="CGIF8" mask="0x10000000" access="wo" description="Channel 8 global interrupt clear" />
+      <field name="CTCIF8" mask="0x20000000" access="wo" description="Channel 8 transfer complete clear" />
+      <field name="CHTIF8" mask="0x40000000" access="wo" description="Channel 8 half transfer clear" />
+      <field name="CTEIF8" mask="0x80000000" access="wo" description="Channel 8 transfer error clear" />
+    </register>
+    
+    <!-- Per-channel registers grouped using <group> element -->
+    <group name="CH" offset="0x08" stride="0x14" range_min="1" range_max="8" description="DMA channel">
+      
+      <register name="CR" offset="0x00" reset="0x00000000" description="Channel configuration register">
+        <field name="EN" mask="0x00000001" access="rw" description="Channel enable" />
+        <field name="TCIE" mask="0x00000002" access="rw" description="Transfer complete interrupt enable" />
+        <field name="HTIE" mask="0x00000004" access="rw" description="Half transfer interrupt enable" />
+        <field name="TEIE" mask="0x00000008" access="rw" description="Transfer error interrupt enable" />
+        <field name="DIR" mask="0x00000010" access="rw" description="Data transfer direction">
+          <enum value="0x00000000" name="PeriphToMem" description="Read from peripheral" />
+          <enum value="0x00000010" name="MemToPeriph" description="Read from memory" />
+        </field>
+        <field name="CIRC" mask="0x00000020" access="rw" description="Circular mode" />
+        <field name="PINC" mask="0x00000040" access="rw" description="Peripheral increment mode" />
+        <field name="MINC" mask="0x00000080" access="rw" description="Memory increment mode" />
+        <field name="PSIZE" mask="0x00000300" access="rw" description="Peripheral size">
+          <enum value="0x00000000" name="Bits8" />
+          <enum value="0x00000100" name="Bits16" />
+          <enum value="0x00000200" name="Bits32" />
+        </field>
+        <field name="MSIZE" mask="0x00000C00" access="rw" description="Memory size">
+          <enum value="0x00000000" name="Bits8" />
+          <enum value="0x00000400" name="Bits16" />
+          <enum value="0x00000800" name="Bits32" />
+        </field>
+        <field name="PL" mask="0x00003000" access="rw" description="Priority level">
+          <enum value="0x00000000" name="Low" />
+          <enum value="0x00001000" name="Medium" />
+          <enum value="0x00002000" name="High" />
+          <enum value="0x00003000" name="VeryHigh" />
+        </field>
+        <field name="MEM2MEM" mask="0x00004000" access="rw" description="Memory to memory mode" />
+      </register>
+      
+      <register name="NDTR" offset="0x04" reset="0x00000000" description="Channel number of data to transfer register">
+        <field name="NDT" mask="0x0000FFFF" access="rw" description="Number of data to transfer" />
+      </register>
+      
+      <register name="PAR" offset="0x08" reset="0x00000000" description="Channel peripheral address register">
+        <field name="PA" mask="0xFFFFFFFF" access="rw" description="Peripheral address" />
+      </register>
+      
+      <register name="MAR" offset="0x0C" reset="0x00000000" description="Channel memory address register">
+        <field name="MA" mask="0xFFFFFFFF" access="rw" description="Memory address" />
+      </register>
+      
+    </group>
+    
+  </peripheral>
+  
+</device>

@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 FMC (Flexible Memory Controller) Peripheral
+  Extracted from RM0440 Rev 7
+  
+  Supports SRAM, NOR Flash, PSRAM, and NAND Flash
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="FMC" description="Flexible memory controller">
+    <instance id="1" base="0xA0000000" />
+    
+    <!-- NOR/PSRAM Bank control and timing (4 banks, using group) -->
+    <group name="BTR" offset="0x00" stride="0x08" range_min="1" range_max="4" description="NOR/PSRAM bank">
+      <register name="CR" offset="0x00" reset="0x000030DB" description="Chip-select control register">
+        <field name="MBKEN" mask="0x00000001" access="rw" description="Memory bank enable" />
+        <field name="MUXEN" mask="0x00000002" access="rw" description="Address/data multiplexing enable" />
+        <field name="MTYP" mask="0x0000000C" access="rw" description="Memory type">
+          <enum value="0x00000000" name="SRAM" />
+          <enum value="0x00000004" name="PSRAM" />
+          <enum value="0x00000008" name="NOR" />
+        </field>
+        <field name="MWID" mask="0x00000030" access="rw" description="Memory databus width">
+          <enum value="0x00000000" name="Bits8" />
+          <enum value="0x00000010" name="Bits16" />
+        </field>
+        <field name="FACCEN" mask="0x00000040" access="rw" description="Flash access enable" />
+        <field name="BURSTEN" mask="0x00000100" access="rw" description="Burst enable" />
+        <field name="WAITPOL" mask="0x00000200" access="rw" description="Wait signal polarity" />
+        <field name="WAITCFG" mask="0x00000800" access="rw" description="Wait timing configuration" />
+        <field name="WREN" mask="0x00001000" access="rw" description="Write enable" />
+        <field name="WAITEN" mask="0x00002000" access="rw" description="Wait enable" />
+        <field name="EXTMOD" mask="0x00004000" access="rw" description="Extended mode enable" />
+        <field name="ASYNCWAIT" mask="0x00008000" access="rw" description="Async wait" />
+        <field name="CPSIZE" mask="0x00070000" access="rw" description="CRAM page size" />
+        <field name="CBURSTRW" mask="0x00080000" access="rw" description="Write burst enable" />
+        <field name="CCLKEN" mask="0x00100000" access="rw" description="Continuous clock enable" />
+        <field name="WFDIS" mask="0x00200000" access="rw" description="Write FIFO disable" />
+        <field name="NBLSET" mask="0x00C00000" access="rw" description="Byte lane setup time" />
+      </register>
+      <register name="TR" offset="0x04" reset="0x0FFFFFFF" description="Chip-select timing register">
+        <field name="ADDSET" mask="0x0000000F" access="rw" description="Address setup phase duration" />
+        <field name="ADDHLD" mask="0x000000F0" access="rw" description="Address hold phase duration" />
+        <field name="DATAST" mask="0x0000FF00" access="rw" description="Data phase duration" />
+        <field name="BUSTURN" mask="0x000F0000" access="rw" description="Bus turnaround phase duration" />
+        <field name="CLKDIV" mask="0x00F00000" access="rw" description="Clock divide ratio" />
+        <field name="DATLAT" mask="0x0F000000" access="rw" description="Data latency" />
+        <field name="ACCMOD" mask="0x30000000" access="rw" description="Access mode" />
+      </register>
+    </group>
+    
+    <!-- Write timing registers (extended mode) -->
+    <group name="BWR" offset="0x104" stride="0x08" range_min="1" range_max="4" description="Write timing">
+      <register name="TR" offset="0x00" reset="0x0FFFFFFF" description="Write timing register">
+        <field name="ADDSET" mask="0x0000000F" access="rw" description="Address setup phase duration" />
+        <field name="ADDHLD" mask="0x000000F0" access="rw" description="Address hold phase duration" />
+        <field name="DATAST" mask="0x0000FF00" access="rw" description="Data phase duration" />
+        <field name="BUSTURN" mask="0x000F0000" access="rw" description="Bus turnaround phase duration" />
+        <field name="ACCMOD" mask="0x30000000" access="rw" description="Access mode" />
+      </register>
+    </group>
+    
+    <!-- NAND Flash registers (Bank 3) -->
+    <register name="PCR" offset="0x80" reset="0x00000018" description="NAND Flash control register">
+      <field name="PWAITEN" mask="0x00000002" access="rw" description="Wait feature enable" />
+      <field name="PBKEN" mask="0x00000004" access="rw" description="NAND Flash bank enable" />
+      <field name="PTYP" mask="0x00000008" access="rw" description="Memory type" />
+      <field name="PWID" mask="0x00000030" access="rw" description="Databus width" />
+      <field name="ECCEN" mask="0x00000040" access="rw" description="ECC computation enable" />
+      <field name="TCLR" mask="0x00001E00" access="rw" description="CLE to RE delay" />
+      <field name="TAR" mask="0x0001E000" access="rw" description="ALE to RE delay" />
+      <field name="ECCPS" mask="0x000E0000" access="rw" description="ECC page size" />
+    </register>
+    
+    <register name="SR" offset="0x84" reset="0x00000040" description="FIFO status and interrupt register">
+      <field name="IRS" mask="0x00000001" access="rw" description="Interrupt rising edge status" />
+      <field name="ILS" mask="0x00000002" access="rw" description="Interrupt high-level status" />
+      <field name="IFS" mask="0x00000004" access="rw" description="Interrupt falling edge status" />
+      <field name="IREN" mask="0x00000008" access="rw" description="Interrupt rising edge enable" />
+      <field name="ILEN" mask="0x00000010" access="rw" description="Interrupt high-level enable" />
+      <field name="IFEN" mask="0x00000020" access="rw" description="Interrupt falling edge enable" />
+      <field name="FEMPT" mask="0x00000040" access="ro" description="FIFO empty" />
+    </register>
+    
+    <register name="PMEM" offset="0x88" reset="0xFCFCFCFC" description="Common memory space timing register">
+      <field name="MEMSET" mask="0x000000FF" access="rw" description="Memory setup time" />
+      <field name="MEMWAIT" mask="0x0000FF00" access="rw" description="Memory wait time" />
+      <field name="MEMHOLD" mask="0x00FF0000" access="rw" description="Memory hold time" />
+      <field name="MEMHIZ" mask="0xFF000000" access="rw" description="Memory databus Hi-Z time" />
+    </register>
+    
+    <register name="PATT" offset="0x8C" reset="0xFCFCFCFC" description="Attribute memory space timing register">
+      <field name="ATTSET" mask="0x000000FF" access="rw" description="Attribute setup time" />
+      <field name="ATTWAIT" mask="0x0000FF00" access="rw" description="Attribute wait time" />
+      <field name="ATTHOLD" mask="0x00FF0000" access="rw" description="Attribute hold time" />
+      <field name="ATTHIZ" mask="0xFF000000" access="rw" description="Attribute databus Hi-Z time" />
+    </register>
+    
+    <register name="ECCR" offset="0x94" reset="0x00000000" access="ro" description="ECC result register">
+      <field name="ECC" mask="0xFFFFFFFF" access="ro" description="ECC computation result" />
+    </register>
+    
+  </peripheral>
+  
+</device>

@@ -1,0 +1,788 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 Timer Peripheral Family
+  Extracted from RM0440 Rev 7
+  
+  Inheritance hierarchy:
+  - TIM_BASIC (abstract) - Counter only (TIM6/7 base registers)
+    - TIM_BASIC_INST - Basic timers TIM6/7
+    - TIM_GP (abstract) - General purpose with 4 capture/compare channels
+      - TIM_GP32 - 32-bit GP timers TIM2/5
+      - TIM_GP16 - 16-bit GP timers TIM3/4
+      - TIM_ADV - Advanced timers TIM1/8/20 (6 channels, break, complementary)
+  - TIM_GP_LIM_BASE (abstract) - Limited GP base (TIM15/16/17)
+    - TIM_GP_LIM_2CH - TIM15 (2 channels, CH1 complementary)
+    - TIM_GP_LIM_1CH - TIM16/17 (1 channel, CH1 complementary)
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <!-- ========================================================================
+       TIM_BASIC - Abstract base for basic counter functionality (TIM6/7)
+       ======================================================================== -->
+  <peripheral name="TIM_BASIC" abstract="true" description="Basic timer counter">
+    
+    <register name="CR1" offset="0x00" reset="0x0000" description="Control register 1">
+      <field name="CEN" mask="0x0001" access="rw" description="Counter enable" />
+      <field name="UDIS" mask="0x0002" access="rw" description="Update disable" />
+      <field name="URS" mask="0x0004" access="rw" description="Update request source">
+        <enum value="0x0000" name="AnyEvent" description="Any event generates update" />
+        <enum value="0x0004" name="OverflowOnly" description="Only overflow generates update" />
+      </field>
+      <field name="OPM" mask="0x0008" access="rw" description="One-pulse mode" />
+      <field name="ARPE" mask="0x0080" access="rw" description="Auto-reload preload enable" />
+      <field name="UIFREMAP" mask="0x0800" access="rw" description="UIF status bit remapping" />
+      <field name="DITHEN" mask="0x1000" access="rw" description="Dithering enable" />
+    </register>
+    
+    <register name="CR2" offset="0x04" reset="0x0000" description="Control register 2">
+      <field name="MMS" mask="0x0070" access="rw" description="Master mode selection">
+        <enum value="0x0000" name="Reset" description="UG bit as TRGO" />
+        <enum value="0x0010" name="Enable" description="CNT_EN as TRGO" />
+        <enum value="0x0020" name="Update" description="Update event as TRGO" />
+      </field>
+    </register>
+    
+    <register name="DIER" offset="0x0C" reset="0x0000" description="DMA/interrupt enable register">
+      <field name="UIE" mask="0x0001" access="rw" description="Update interrupt enable" />
+      <field name="UDE" mask="0x0100" access="rw" description="Update DMA request enable" />
+    </register>
+    
+    <register name="SR" offset="0x10" reset="0x0000" description="Status register">
+      <field name="UIF" mask="0x0001" access="rc_w0" description="Update interrupt flag" />
+    </register>
+    
+    <register name="EGR" offset="0x14" reset="0x0000" access="wo" description="Event generation register">
+      <field name="UG" mask="0x0001" access="wo" description="Update generation" />
+    </register>
+    
+    <register name="CNT" offset="0x24" reset="0x00000000" description="Counter">
+      <field name="CNT" mask="0x0000FFFF" access="rw" description="Counter value" />
+      <field name="UIFCPY" mask="0x80000000" access="ro" description="UIF copy (if UIFREMAP=1)" />
+    </register>
+    
+    <register name="PSC" offset="0x28" reset="0x0000" description="Prescaler">
+      <field name="PSC" mask="0x0000FFFF" access="rw" description="Prescaler value" />
+    </register>
+    
+    <register name="ARR" offset="0x2C" reset="0x0000FFFF" description="Auto-reload register">
+      <field name="ARR" mask="0x0000FFFF" access="rw" description="Auto-reload value" />
+    </register>
+    
+  </peripheral>
+  
+  <!-- ========================================================================
+       TIM6/7 - Basic timer instances
+       ======================================================================== -->
+  <peripheral name="TIM_BASIC_INST" base="TIM_BASIC" description="Basic timer">
+    <instance id="6" base="0x40001000" />
+    <instance id="7" base="0x40001400" />
+  </peripheral>
+  
+  <!-- ========================================================================
+       TIM_GP - Abstract general-purpose timer with 4 channels
+       ======================================================================== -->
+  <peripheral name="TIM_GP" base="TIM_BASIC" abstract="true" description="General-purpose timer 4-channel">
+    
+    <!-- CR1 extensions for GP timers -->
+    <register name="CR1" extend="true">
+      <field name="DIR" mask="0x0010" access="rw" description="Direction">
+        <enum value="0x0000" name="Up" />
+        <enum value="0x0010" name="Down" />
+      </field>
+      <field name="CMS" mask="0x0060" access="rw" description="Center-aligned mode selection">
+        <enum value="0x0000" name="EdgeAligned" />
+        <enum value="0x0020" name="CenterAligned1" description="OC flags on down count" />
+        <enum value="0x0040" name="CenterAligned2" description="OC flags on up count" />
+        <enum value="0x0060" name="CenterAligned3" description="OC flags on both" />
+      </field>
+      <field name="CKD" mask="0x0300" access="rw" description="Clock division">
+        <enum value="0x0000" name="Div1" />
+        <enum value="0x0100" name="Div2" />
+        <enum value="0x0200" name="Div4" />
+      </field>
+    </register>
+    
+    <!-- CR2 extensions -->
+    <register name="CR2" extend="true">
+      <field name="CCDS" mask="0x0008" access="rw" description="Capture/compare DMA selection" />
+      <field name="TI1S" mask="0x0080" access="rw" description="TI1 selection (XOR of CH1-3)" />
+    </register>
+    
+    <register name="SMCR" offset="0x08" reset="0x00000000" description="Slave mode control register">
+      <field name="SMS" mask="0x00010007" access="rw" description="Slave mode selection">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00000001" name="Encoder1" description="Encoder mode 1" />
+        <enum value="0x00000002" name="Encoder2" description="Encoder mode 2" />
+        <enum value="0x00000003" name="Encoder3" description="Encoder mode 3" />
+        <enum value="0x00000004" name="Reset" description="Reset mode" />
+        <enum value="0x00000005" name="Gated" description="Gated mode" />
+        <enum value="0x00000006" name="Trigger" description="Trigger mode" />
+        <enum value="0x00000007" name="ExtClock" description="External clock mode 1" />
+        <enum value="0x00010000" name="CombinedReset" description="Combined reset + trigger" />
+      </field>
+      <field name="OCCS" mask="0x00000008" access="rw" description="OCREF clear selection" />
+      <field name="TS" mask="0x00300070" access="rw" description="Trigger selection">
+        <enum value="0x00000000" name="ITR0" />
+        <enum value="0x00000010" name="ITR1" />
+        <enum value="0x00000020" name="ITR2" />
+        <enum value="0x00000030" name="ITR3" />
+        <enum value="0x00000040" name="TI1F_ED" description="TI1 edge detector" />
+        <enum value="0x00000050" name="TI1FP1" description="Filtered TI1" />
+        <enum value="0x00000060" name="TI2FP2" description="Filtered TI2" />
+        <enum value="0x00000070" name="ETRF" description="External trigger" />
+      </field>
+      <field name="MSM" mask="0x00000080" access="rw" description="Master/slave mode" />
+      <field name="ETF" mask="0x00000F00" access="rw" description="External trigger filter" />
+      <field name="ETPS" mask="0x00003000" access="rw" description="External trigger prescaler">
+        <enum value="0x00000000" name="Div1" />
+        <enum value="0x00001000" name="Div2" />
+        <enum value="0x00002000" name="Div4" />
+        <enum value="0x00003000" name="Div8" />
+      </field>
+      <field name="ECE" mask="0x00004000" access="rw" description="External clock enable" />
+      <field name="ETP" mask="0x00008000" access="rw" description="External trigger polarity" />
+      <field name="SMSPE" mask="0x01000000" access="rw" description="SMS preload enable" />
+      <field name="SMSPS" mask="0x02000000" access="rw" description="SMS preload source" />
+    </register>
+    
+    <!-- DIER extensions for channels -->
+    <register name="DIER" extend="true">
+      <field name="CC1IE" mask="0x0002" access="rw" description="CC1 interrupt enable" />
+      <field name="CC2IE" mask="0x0004" access="rw" description="CC2 interrupt enable" />
+      <field name="CC3IE" mask="0x0008" access="rw" description="CC3 interrupt enable" />
+      <field name="CC4IE" mask="0x0010" access="rw" description="CC4 interrupt enable" />
+      <field name="TIE" mask="0x0040" access="rw" description="Trigger interrupt enable" />
+      <field name="CC1DE" mask="0x0200" access="rw" description="CC1 DMA request enable" />
+      <field name="CC2DE" mask="0x0400" access="rw" description="CC2 DMA request enable" />
+      <field name="CC3DE" mask="0x0800" access="rw" description="CC3 DMA request enable" />
+      <field name="CC4DE" mask="0x1000" access="rw" description="CC4 DMA request enable" />
+      <field name="TDE" mask="0x4000" access="rw" description="Trigger DMA request enable" />
+    </register>
+    
+    <!-- SR extensions -->
+    <register name="SR" extend="true">
+      <field name="CC1IF" mask="0x0002" access="rc_w0" description="CC1 interrupt flag" />
+      <field name="CC2IF" mask="0x0004" access="rc_w0" description="CC2 interrupt flag" />
+      <field name="CC3IF" mask="0x0008" access="rc_w0" description="CC3 interrupt flag" />
+      <field name="CC4IF" mask="0x0010" access="rc_w0" description="CC4 interrupt flag" />
+      <field name="TIF" mask="0x0040" access="rc_w0" description="Trigger interrupt flag" />
+      <field name="CC1OF" mask="0x0200" access="rc_w0" description="CC1 overcapture flag" />
+      <field name="CC2OF" mask="0x0400" access="rc_w0" description="CC2 overcapture flag" />
+      <field name="CC3OF" mask="0x0800" access="rc_w0" description="CC3 overcapture flag" />
+      <field name="CC4OF" mask="0x1000" access="rc_w0" description="CC4 overcapture flag" />
+    </register>
+    
+    <!-- EGR extensions -->
+    <register name="EGR" extend="true">
+      <field name="CC1G" mask="0x0002" access="wo" description="CC1 generation" />
+      <field name="CC2G" mask="0x0004" access="wo" description="CC2 generation" />
+      <field name="CC3G" mask="0x0008" access="wo" description="CC3 generation" />
+      <field name="CC4G" mask="0x0010" access="wo" description="CC4 generation" />
+      <field name="TG" mask="0x0040" access="wo" description="Trigger generation" />
+    </register>
+    
+    <!-- Capture/compare mode registers (output mode shown, input mode uses same offsets) -->
+    <register name="CCMR1" offset="0x18" reset="0x00000000" description="Capture/compare mode register 1">
+      <!-- Channel 1 -->
+      <field name="CC1S" mask="0x00000003" access="rw" description="CC1 selection">
+        <enum value="0x00000000" name="Output" />
+        <enum value="0x00000001" name="InputTI1" />
+        <enum value="0x00000002" name="InputTI2" />
+        <enum value="0x00000003" name="InputTRC" />
+      </field>
+      <field name="OC1FE" mask="0x00000004" access="rw" description="OC1 fast enable" />
+      <field name="OC1PE" mask="0x00000008" access="rw" description="OC1 preload enable" />
+      <field name="OC1M" mask="0x00010070" access="rw" description="OC1 mode">
+        <enum value="0x00000000" name="Frozen" />
+        <enum value="0x00000010" name="ActiveOnMatch" />
+        <enum value="0x00000020" name="InactiveOnMatch" />
+        <enum value="0x00000030" name="Toggle" />
+        <enum value="0x00000040" name="ForceInactive" />
+        <enum value="0x00000050" name="ForceActive" />
+        <enum value="0x00000060" name="PWM1" />
+        <enum value="0x00000070" name="PWM2" />
+        <enum value="0x00010000" name="RetrigOPM1" />
+        <enum value="0x00010010" name="RetrigOPM2" />
+        <enum value="0x00010040" name="CombinedPWM1" />
+        <enum value="0x00010050" name="CombinedPWM2" />
+        <enum value="0x00010060" name="AsymmetricPWM1" />
+        <enum value="0x00010070" name="AsymmetricPWM2" />
+      </field>
+      <field name="OC1CE" mask="0x00000080" access="rw" description="OC1 clear enable" />
+      <!-- Channel 2 -->
+      <field name="CC2S" mask="0x00000300" access="rw" description="CC2 selection" />
+      <field name="OC2FE" mask="0x00000400" access="rw" description="OC2 fast enable" />
+      <field name="OC2PE" mask="0x00000800" access="rw" description="OC2 preload enable" />
+      <field name="OC2M" mask="0x01007000" access="rw" description="OC2 mode" />
+      <field name="OC2CE" mask="0x00008000" access="rw" description="OC2 clear enable" />
+      <!-- Input capture fields (alternate interpretation) -->
+      <field name="IC1PSC" mask="0x0000000C" access="rw" description="IC1 prescaler" />
+      <field name="IC1F" mask="0x000000F0" access="rw" description="IC1 filter" />
+      <field name="IC2PSC" mask="0x00000C00" access="rw" description="IC2 prescaler" />
+      <field name="IC2F" mask="0x0000F000" access="rw" description="IC2 filter" />
+    </register>
+    
+    <register name="CCMR2" offset="0x1C" reset="0x00000000" description="Capture/compare mode register 2">
+      <!-- Channel 3 -->
+      <field name="CC3S" mask="0x00000003" access="rw" description="CC3 selection" />
+      <field name="OC3FE" mask="0x00000004" access="rw" description="OC3 fast enable" />
+      <field name="OC3PE" mask="0x00000008" access="rw" description="OC3 preload enable" />
+      <field name="OC3M" mask="0x00010070" access="rw" description="OC3 mode" />
+      <field name="OC3CE" mask="0x00000080" access="rw" description="OC3 clear enable" />
+      <!-- Channel 4 -->
+      <field name="CC4S" mask="0x00000300" access="rw" description="CC4 selection" />
+      <field name="OC4FE" mask="0x00000400" access="rw" description="OC4 fast enable" />
+      <field name="OC4PE" mask="0x00000800" access="rw" description="OC4 preload enable" />
+      <field name="OC4M" mask="0x01007000" access="rw" description="OC4 mode" />
+      <field name="OC4CE" mask="0x00008000" access="rw" description="OC4 clear enable" />
+      <!-- Input capture fields -->
+      <field name="IC3PSC" mask="0x0000000C" access="rw" description="IC3 prescaler" />
+      <field name="IC3F" mask="0x000000F0" access="rw" description="IC3 filter" />
+      <field name="IC4PSC" mask="0x00000C00" access="rw" description="IC4 prescaler" />
+      <field name="IC4F" mask="0x0000F000" access="rw" description="IC4 filter" />
+    </register>
+    
+    <register name="CCER" offset="0x20" reset="0x00000000" description="Capture/compare enable register">
+      <field name="CC1E" mask="0x0001" access="rw" description="CC1 output enable" />
+      <field name="CC1P" mask="0x0002" access="rw" description="CC1 output polarity" />
+      <field name="CC2E" mask="0x0010" access="rw" description="CC2 output enable" />
+      <field name="CC2P" mask="0x0020" access="rw" description="CC2 output polarity" />
+      <field name="CC3E" mask="0x0100" access="rw" description="CC3 output enable" />
+      <field name="CC3P" mask="0x0200" access="rw" description="CC3 output polarity" />
+      <field name="CC4E" mask="0x1000" access="rw" description="CC4 output enable" />
+      <field name="CC4P" mask="0x2000" access="rw" description="CC4 output polarity" />
+    </register>
+    
+    <register name="CCR1" offset="0x34" reset="0x00000000" description="Capture/compare register 1">
+      <field name="CCR1" mask="0x0000FFFF" access="rw" description="Capture/compare 1 value" />
+    </register>
+    
+    <register name="CCR2" offset="0x38" reset="0x00000000" description="Capture/compare register 2">
+      <field name="CCR2" mask="0x0000FFFF" access="rw" description="Capture/compare 2 value" />
+    </register>
+    
+    <register name="CCR3" offset="0x3C" reset="0x00000000" description="Capture/compare register 3">
+      <field name="CCR3" mask="0x0000FFFF" access="rw" description="Capture/compare 3 value" />
+    </register>
+    
+    <register name="CCR4" offset="0x40" reset="0x00000000" description="Capture/compare register 4">
+      <field name="CCR4" mask="0x0000FFFF" access="rw" description="Capture/compare 4 value" />
+    </register>
+    
+    <register name="DCR" offset="0x48" reset="0x00000000" description="DMA control register">
+      <field name="DBA" mask="0x001F" access="rw" description="DMA base address" />
+      <field name="DBL" mask="0x1F00" access="rw" description="DMA burst length" />
+    </register>
+    
+    <register name="DMAR" offset="0x4C" reset="0x00000000" description="DMA address for full transfer">
+      <field name="DMAB" mask="0xFFFFFFFF" access="rw" description="DMA register for burst" />
+    </register>
+    
+    <register name="AF1" offset="0x60" reset="0x00000001" description="Alternate function option register 1">
+      <field name="ETRSEL" mask="0x0003C000" access="rw" description="ETR source selection" />
+    </register>
+    
+    <register name="TISEL" offset="0x68" reset="0x00000000" description="Timer input selection register">
+      <field name="TI1SEL" mask="0x0000000F" access="rw" description="TI1 input selection" />
+      <field name="TI2SEL" mask="0x000000F0" access="rw" description="TI2 input selection" />
+      <field name="TI3SEL" mask="0x00000F00" access="rw" description="TI3 input selection" />
+      <field name="TI4SEL" mask="0x0000F000" access="rw" description="TI4 input selection" />
+    </register>
+    
+  </peripheral>
+  
+  <!-- ========================================================================
+       TIM2/5 - 32-bit General-purpose timers
+       ======================================================================== -->
+  <peripheral name="TIM_GP32" base="TIM_GP" description="32-bit general-purpose timer">
+    <instance id="2" base="0x40000000" />
+    <instance id="5" base="0x40000C00" />
+    
+    <!-- 32-bit counter and CCR registers -->
+    <register name="CNT" offset="0x24" reset="0x00000000" description="Counter">
+      <field name="CNT" mask="0x7FFFFFFF" access="rw" description="Counter value (32-bit)" />
+      <field name="UIFCPY" mask="0x80000000" access="ro" description="UIF copy" />
+    </register>
+    
+    <register name="ARR" offset="0x2C" reset="0xFFFFFFFF" description="Auto-reload register">
+      <field name="ARR" mask="0xFFFFFFFF" access="rw" description="Auto-reload value (32-bit)" />
+    </register>
+    
+    <register name="CCR1" offset="0x34" reset="0x00000000" description="Capture/compare register 1">
+      <field name="CCR1" mask="0xFFFFFFFF" access="rw" description="Capture/compare 1 value (32-bit)" />
+    </register>
+    
+    <register name="CCR2" offset="0x38" reset="0x00000000" description="Capture/compare register 2">
+      <field name="CCR2" mask="0xFFFFFFFF" access="rw" description="Capture/compare 2 value (32-bit)" />
+    </register>
+    
+    <register name="CCR3" offset="0x3C" reset="0x00000000" description="Capture/compare register 3">
+      <field name="CCR3" mask="0xFFFFFFFF" access="rw" description="Capture/compare 3 value (32-bit)" />
+    </register>
+    
+    <register name="CCR4" offset="0x40" reset="0x00000000" description="Capture/compare register 4">
+      <field name="CCR4" mask="0xFFFFFFFF" access="rw" description="Capture/compare 4 value (32-bit)" />
+    </register>
+  </peripheral>
+  
+  <!-- ========================================================================
+       TIM3/4 - 16-bit General-purpose timers
+       ======================================================================== -->
+  <peripheral name="TIM_GP16" base="TIM_GP" description="16-bit general-purpose timer">
+    <instance id="3" base="0x40000400" />
+    <instance id="4" base="0x40000800" />
+  </peripheral>
+  
+  <!-- ========================================================================
+       TIM_ADV - Advanced timers TIM1/8/20
+       ======================================================================== -->
+  <peripheral name="TIM_ADV" base="TIM_GP" description="Advanced timer with break and complementary outputs">
+    <instance id="1" base="0x40012C00" />
+    <instance id="8" base="0x40013400" />
+    <instance id="20" base="0x40015000" />
+    
+    <!-- CR2 extensions for advanced features -->
+    <register name="CR2" extend="true">
+      <field name="CCPC" mask="0x0001" access="rw" description="Capture/compare preloaded control" />
+      <field name="CCUS" mask="0x0004" access="rw" description="Capture/compare control update selection" />
+      <field name="MMS2" mask="0x00F00000" access="rw" description="Master mode selection 2 (TRGO2)" />
+      <field name="OIS1" mask="0x0100" access="rw" description="Output idle state 1" />
+      <field name="OIS1N" mask="0x0200" access="rw" description="Output idle state 1N" />
+      <field name="OIS2" mask="0x0400" access="rw" description="Output idle state 2" />
+      <field name="OIS2N" mask="0x0800" access="rw" description="Output idle state 2N" />
+      <field name="OIS3" mask="0x1000" access="rw" description="Output idle state 3" />
+      <field name="OIS3N" mask="0x2000" access="rw" description="Output idle state 3N" />
+      <field name="OIS4" mask="0x4000" access="rw" description="Output idle state 4" />
+      <field name="OIS4N" mask="0x8000" access="rw" description="Output idle state 4N" />
+      <field name="OIS5" mask="0x00010000" access="rw" description="Output idle state 5" />
+      <field name="OIS6" mask="0x00040000" access="rw" description="Output idle state 6" />
+    </register>
+    
+    <!-- DIER extensions -->
+    <register name="DIER" extend="true">
+      <field name="COMIE" mask="0x0020" access="rw" description="COM interrupt enable" />
+      <field name="BIE" mask="0x0080" access="rw" description="Break interrupt enable" />
+      <field name="COMDE" mask="0x2000" access="rw" description="COM DMA request enable" />
+    </register>
+    
+    <!-- SR extensions -->
+    <register name="SR" extend="true">
+      <field name="COMIF" mask="0x0020" access="rc_w0" description="COM interrupt flag" />
+      <field name="BIF" mask="0x0080" access="rc_w0" description="Break interrupt flag" />
+      <field name="B2IF" mask="0x0100" access="rc_w0" description="Break 2 interrupt flag" />
+      <field name="CC5IF" mask="0x00010000" access="rc_w0" description="CC5 interrupt flag" />
+      <field name="CC6IF" mask="0x00020000" access="rc_w0" description="CC6 interrupt flag" />
+    </register>
+    
+    <!-- EGR extensions -->
+    <register name="EGR" extend="true">
+      <field name="COMG" mask="0x0020" access="wo" description="COM generation" />
+      <field name="BG" mask="0x0080" access="wo" description="Break generation" />
+      <field name="B2G" mask="0x0100" access="wo" description="Break 2 generation" />
+    </register>
+    
+    <!-- CCER extensions for complementary outputs -->
+    <register name="CCER" extend="true">
+      <field name="CC1NE" mask="0x0004" access="rw" description="CC1N output enable" />
+      <field name="CC1NP" mask="0x0008" access="rw" description="CC1N output polarity" />
+      <field name="CC2NE" mask="0x0040" access="rw" description="CC2N output enable" />
+      <field name="CC2NP" mask="0x0080" access="rw" description="CC2N output polarity" />
+      <field name="CC3NE" mask="0x0400" access="rw" description="CC3N output enable" />
+      <field name="CC3NP" mask="0x0800" access="rw" description="CC3N output polarity" />
+      <field name="CC4NE" mask="0x4000" access="rw" description="CC4N output enable" />
+      <field name="CC4NP" mask="0x8000" access="rw" description="CC4N output polarity" />
+      <field name="CC5E" mask="0x00010000" access="rw" description="CC5 output enable" />
+      <field name="CC5P" mask="0x00020000" access="rw" description="CC5 output polarity" />
+      <field name="CC6E" mask="0x00100000" access="rw" description="CC6 output enable" />
+      <field name="CC6P" mask="0x00200000" access="rw" description="CC6 output polarity" />
+    </register>
+    
+    <register name="RCR" offset="0x30" reset="0x0000" description="Repetition counter register">
+      <field name="REP" mask="0xFFFF" access="rw" description="Repetition counter value" />
+    </register>
+    
+    <!-- Channel 5/6 (output compare only) -->
+    <register name="CCMR3" offset="0x54" reset="0x00000000" description="Capture/compare mode register 3">
+      <field name="OC5FE" mask="0x00000004" access="rw" description="OC5 fast enable" />
+      <field name="OC5PE" mask="0x00000008" access="rw" description="OC5 preload enable" />
+      <field name="OC5M" mask="0x00010070" access="rw" description="OC5 mode" />
+      <field name="OC5CE" mask="0x00000080" access="rw" description="OC5 clear enable" />
+      <field name="OC6FE" mask="0x00000400" access="rw" description="OC6 fast enable" />
+      <field name="OC6PE" mask="0x00000800" access="rw" description="OC6 preload enable" />
+      <field name="OC6M" mask="0x01007000" access="rw" description="OC6 mode" />
+      <field name="OC6CE" mask="0x00008000" access="rw" description="OC6 clear enable" />
+    </register>
+    
+    <register name="CCR5" offset="0x58" reset="0x00000000" description="Capture/compare register 5">
+      <field name="CCR5" mask="0x0000FFFF" access="rw" description="Capture/compare 5 value" />
+      <field name="GC5C1" mask="0x20000000" access="rw" description="Group channel 5 and channel 1" />
+      <field name="GC5C2" mask="0x40000000" access="rw" description="Group channel 5 and channel 2" />
+      <field name="GC5C3" mask="0x80000000" access="rw" description="Group channel 5 and channel 3" />
+    </register>
+    
+    <register name="CCR6" offset="0x5C" reset="0x00000000" description="Capture/compare register 6">
+      <field name="CCR6" mask="0x0000FFFF" access="rw" description="Capture/compare 6 value" />
+    </register>
+    
+    <register name="BDTR" offset="0x44" reset="0x00000000" description="Break and dead-time register">
+      <field name="DTG" mask="0x000000FF" access="rw" description="Dead-time generator setup" />
+      <field name="LOCK" mask="0x00000300" access="rw" description="Lock configuration">
+        <enum value="0x00000000" name="Off" />
+        <enum value="0x00000100" name="Level1" />
+        <enum value="0x00000200" name="Level2" />
+        <enum value="0x00000300" name="Level3" />
+      </field>
+      <field name="OSSI" mask="0x00000400" access="rw" description="Off-state selection for idle mode" />
+      <field name="OSSR" mask="0x00000800" access="rw" description="Off-state selection for run mode" />
+      <field name="BKE" mask="0x00001000" access="rw" description="Break enable" />
+      <field name="BKP" mask="0x00002000" access="rw" description="Break polarity" />
+      <field name="AOE" mask="0x00004000" access="rw" description="Automatic output enable" />
+      <field name="MOE" mask="0x00008000" access="rw" description="Main output enable" />
+      <field name="BKF" mask="0x000F0000" access="rw" description="Break filter" />
+      <field name="BK2F" mask="0x00F00000" access="rw" description="Break 2 filter" />
+      <field name="BK2E" mask="0x01000000" access="rw" description="Break 2 enable" />
+      <field name="BK2P" mask="0x02000000" access="rw" description="Break 2 polarity" />
+      <field name="BKDSRM" mask="0x04000000" access="rw" description="Break disarm" />
+      <field name="BK2DSRM" mask="0x08000000" access="rw" description="Break 2 disarm" />
+      <field name="BKBID" mask="0x10000000" access="rw" description="Break bidirectional" />
+      <field name="BK2BID" mask="0x20000000" access="rw" description="Break 2 bidirectional" />
+    </register>
+    
+    <!-- AF1 extensions for break inputs -->
+    <register name="AF1" extend="true">
+      <field name="BKINE" mask="0x00000001" access="rw" description="BKIN input enable" />
+      <field name="BKCMP1E" mask="0x00000002" access="rw" description="COMP1 break input enable" />
+      <field name="BKCMP2E" mask="0x00000004" access="rw" description="COMP2 break input enable" />
+      <field name="BKCMP3E" mask="0x00000008" access="rw" description="COMP3 break input enable" />
+      <field name="BKCMP4E" mask="0x00000010" access="rw" description="COMP4 break input enable" />
+      <field name="BKCMP5E" mask="0x00000020" access="rw" description="COMP5 break input enable" />
+      <field name="BKCMP6E" mask="0x00000040" access="rw" description="COMP6 break input enable" />
+      <field name="BKCMP7E" mask="0x00000080" access="rw" description="COMP7 break input enable" />
+      <field name="BKINP" mask="0x00000200" access="rw" description="BKIN input polarity" />
+      <field name="BKCMP1P" mask="0x00000400" access="rw" description="COMP1 break input polarity" />
+      <field name="BKCMP2P" mask="0x00000800" access="rw" description="COMP2 break input polarity" />
+      <field name="BKCMP3P" mask="0x00001000" access="rw" description="COMP3 break input polarity" />
+      <field name="BKCMP4P" mask="0x00002000" access="rw" description="COMP4 break input polarity" />
+    </register>
+    
+    <register name="AF2" offset="0x64" reset="0x00000001" description="Alternate function option register 2">
+      <field name="BK2INE" mask="0x00000001" access="rw" description="BK2IN input enable" />
+      <field name="BK2CMP1E" mask="0x00000002" access="rw" description="COMP1 break 2 input enable" />
+      <field name="BK2CMP2E" mask="0x00000004" access="rw" description="COMP2 break 2 input enable" />
+      <field name="BK2CMP3E" mask="0x00000008" access="rw" description="COMP3 break 2 input enable" />
+      <field name="BK2CMP4E" mask="0x00000010" access="rw" description="COMP4 break 2 input enable" />
+      <field name="BK2CMP5E" mask="0x00000020" access="rw" description="COMP5 break 2 input enable" />
+      <field name="BK2CMP6E" mask="0x00000040" access="rw" description="COMP6 break 2 input enable" />
+      <field name="BK2CMP7E" mask="0x00000080" access="rw" description="COMP7 break 2 input enable" />
+      <field name="BK2INP" mask="0x00000200" access="rw" description="BK2IN input polarity" />
+      <field name="BK2CMP1P" mask="0x00000400" access="rw" description="COMP1 break 2 input polarity" />
+      <field name="BK2CMP2P" mask="0x00000800" access="rw" description="COMP2 break 2 input polarity" />
+      <field name="BK2CMP3P" mask="0x00001000" access="rw" description="COMP3 break 2 input polarity" />
+      <field name="BK2CMP4P" mask="0x00002000" access="rw" description="COMP4 break 2 input polarity" />
+      <field name="OCRSEL" mask="0x00070000" access="rw" description="OCREF_CLR source selection" />
+    </register>
+    
+    <register name="DTR2" offset="0x54" reset="0x00000000" description="Dead-time register 2">
+      <field name="DTGF" mask="0x000000FF" access="rw" description="Dead-time falling edge generator" />
+      <field name="DTAE" mask="0x00010000" access="rw" description="Dead-time asymmetric enable" />
+      <field name="DTPE" mask="0x00020000" access="rw" description="Dead-time preload enable" />
+    </register>
+    
+    <register name="ECR" offset="0x58" reset="0x00000000" description="Encoder control register">
+      <field name="IE" mask="0x00000001" access="rw" description="Index enable" />
+      <field name="IDIR" mask="0x00000006" access="rw" description="Index direction" />
+      <field name="IBLK" mask="0x00000018" access="rw" description="Index blanking" />
+      <field name="FIDX" mask="0x00000020" access="rw" description="First index" />
+      <field name="IPOS" mask="0x000000C0" access="rw" description="Index positioning" />
+      <field name="PW" mask="0x0000FF00" access="rw" description="Pulse width" />
+      <field name="PWPRSC" mask="0x00070000" access="rw" description="Pulse width prescaler" />
+    </register>
+    
+  </peripheral>
+  
+  <!-- ========================================================================
+       TIM15 - General-purpose timer with 2 channels (CH1 complementary)
+       ======================================================================== -->
+  <peripheral name="TIM15" description="General-purpose timer 2-channel with break">
+    <instance id="15" base="0x40014000" />
+    
+    <register name="CR1" offset="0x00" reset="0x0000" description="Control register 1">
+      <field name="CEN" mask="0x0001" access="rw" description="Counter enable" />
+      <field name="UDIS" mask="0x0002" access="rw" description="Update disable" />
+      <field name="URS" mask="0x0004" access="rw" description="Update request source" />
+      <field name="OPM" mask="0x0008" access="rw" description="One-pulse mode" />
+      <field name="ARPE" mask="0x0080" access="rw" description="Auto-reload preload enable" />
+      <field name="CKD" mask="0x0300" access="rw" description="Clock division" />
+      <field name="UIFREMAP" mask="0x0800" access="rw" description="UIF status bit remapping" />
+      <field name="DITHEN" mask="0x1000" access="rw" description="Dithering enable" />
+    </register>
+    
+    <register name="CR2" offset="0x04" reset="0x0000" description="Control register 2">
+      <field name="CCPC" mask="0x0001" access="rw" description="Capture/compare preloaded control" />
+      <field name="CCUS" mask="0x0004" access="rw" description="Capture/compare control update selection" />
+      <field name="CCDS" mask="0x0008" access="rw" description="Capture/compare DMA selection" />
+      <field name="MMS" mask="0x0070" access="rw" description="Master mode selection" />
+      <field name="TI1S" mask="0x0080" access="rw" description="TI1 selection" />
+      <field name="OIS1" mask="0x0100" access="rw" description="Output idle state 1" />
+      <field name="OIS1N" mask="0x0200" access="rw" description="Output idle state 1N" />
+      <field name="OIS2" mask="0x0400" access="rw" description="Output idle state 2" />
+    </register>
+    
+    <register name="SMCR" offset="0x08" reset="0x00000000" description="Slave mode control register">
+      <field name="SMS" mask="0x00010007" access="rw" description="Slave mode selection" />
+      <field name="TS" mask="0x00300070" access="rw" description="Trigger selection" />
+      <field name="MSM" mask="0x00000080" access="rw" description="Master/slave mode" />
+      <field name="SMSPE" mask="0x01000000" access="rw" description="SMS preload enable" />
+      <field name="SMSPS" mask="0x02000000" access="rw" description="SMS preload source" />
+    </register>
+    
+    <register name="DIER" offset="0x0C" reset="0x0000" description="DMA/interrupt enable register">
+      <field name="UIE" mask="0x0001" access="rw" description="Update interrupt enable" />
+      <field name="CC1IE" mask="0x0002" access="rw" description="CC1 interrupt enable" />
+      <field name="CC2IE" mask="0x0004" access="rw" description="CC2 interrupt enable" />
+      <field name="COMIE" mask="0x0020" access="rw" description="COM interrupt enable" />
+      <field name="TIE" mask="0x0040" access="rw" description="Trigger interrupt enable" />
+      <field name="BIE" mask="0x0080" access="rw" description="Break interrupt enable" />
+      <field name="UDE" mask="0x0100" access="rw" description="Update DMA request enable" />
+      <field name="CC1DE" mask="0x0200" access="rw" description="CC1 DMA request enable" />
+      <field name="CC2DE" mask="0x0400" access="rw" description="CC2 DMA request enable" />
+      <field name="COMDE" mask="0x2000" access="rw" description="COM DMA request enable" />
+      <field name="TDE" mask="0x4000" access="rw" description="Trigger DMA request enable" />
+    </register>
+    
+    <register name="SR" offset="0x10" reset="0x0000" description="Status register">
+      <field name="UIF" mask="0x0001" access="rc_w0" description="Update interrupt flag" />
+      <field name="CC1IF" mask="0x0002" access="rc_w0" description="CC1 interrupt flag" />
+      <field name="CC2IF" mask="0x0004" access="rc_w0" description="CC2 interrupt flag" />
+      <field name="COMIF" mask="0x0020" access="rc_w0" description="COM interrupt flag" />
+      <field name="TIF" mask="0x0040" access="rc_w0" description="Trigger interrupt flag" />
+      <field name="BIF" mask="0x0080" access="rc_w0" description="Break interrupt flag" />
+      <field name="CC1OF" mask="0x0200" access="rc_w0" description="CC1 overcapture flag" />
+      <field name="CC2OF" mask="0x0400" access="rc_w0" description="CC2 overcapture flag" />
+    </register>
+    
+    <register name="EGR" offset="0x14" reset="0x0000" access="wo" description="Event generation register">
+      <field name="UG" mask="0x0001" access="wo" description="Update generation" />
+      <field name="CC1G" mask="0x0002" access="wo" description="CC1 generation" />
+      <field name="CC2G" mask="0x0004" access="wo" description="CC2 generation" />
+      <field name="COMG" mask="0x0020" access="wo" description="COM generation" />
+      <field name="TG" mask="0x0040" access="wo" description="Trigger generation" />
+      <field name="BG" mask="0x0080" access="wo" description="Break generation" />
+    </register>
+    
+    <register name="CCMR1" offset="0x18" reset="0x00000000" description="Capture/compare mode register 1">
+      <field name="CC1S" mask="0x00000003" access="rw" description="CC1 selection" />
+      <field name="OC1FE" mask="0x00000004" access="rw" description="OC1 fast enable" />
+      <field name="OC1PE" mask="0x00000008" access="rw" description="OC1 preload enable" />
+      <field name="OC1M" mask="0x00010070" access="rw" description="OC1 mode" />
+      <field name="CC2S" mask="0x00000300" access="rw" description="CC2 selection" />
+      <field name="OC2FE" mask="0x00000400" access="rw" description="OC2 fast enable" />
+      <field name="OC2PE" mask="0x00000800" access="rw" description="OC2 preload enable" />
+      <field name="OC2M" mask="0x01007000" access="rw" description="OC2 mode" />
+      <field name="IC1PSC" mask="0x0000000C" access="rw" description="IC1 prescaler" />
+      <field name="IC1F" mask="0x000000F0" access="rw" description="IC1 filter" />
+      <field name="IC2PSC" mask="0x00000C00" access="rw" description="IC2 prescaler" />
+      <field name="IC2F" mask="0x0000F000" access="rw" description="IC2 filter" />
+    </register>
+    
+    <register name="CCER" offset="0x20" reset="0x0000" description="Capture/compare enable register">
+      <field name="CC1E" mask="0x0001" access="rw" description="CC1 output enable" />
+      <field name="CC1P" mask="0x0002" access="rw" description="CC1 output polarity" />
+      <field name="CC1NE" mask="0x0004" access="rw" description="CC1N output enable" />
+      <field name="CC1NP" mask="0x0008" access="rw" description="CC1N output polarity" />
+      <field name="CC2E" mask="0x0010" access="rw" description="CC2 output enable" />
+      <field name="CC2P" mask="0x0020" access="rw" description="CC2 output polarity" />
+      <field name="CC2NP" mask="0x0080" access="rw" description="CC2N output polarity" />
+    </register>
+    
+    <register name="CNT" offset="0x24" reset="0x00000000" description="Counter">
+      <field name="CNT" mask="0x0000FFFF" access="rw" description="Counter value" />
+      <field name="UIFCPY" mask="0x80000000" access="ro" description="UIF copy" />
+    </register>
+    
+    <register name="PSC" offset="0x28" reset="0x0000" description="Prescaler">
+      <field name="PSC" mask="0x0000FFFF" access="rw" description="Prescaler value" />
+    </register>
+    
+    <register name="ARR" offset="0x2C" reset="0x0000FFFF" description="Auto-reload register">
+      <field name="ARR" mask="0x0000FFFF" access="rw" description="Auto-reload value" />
+    </register>
+    
+    <register name="RCR" offset="0x30" reset="0x0000" description="Repetition counter register">
+      <field name="REP" mask="0x00FF" access="rw" description="Repetition counter value" />
+    </register>
+    
+    <register name="CCR1" offset="0x34" reset="0x00000000" description="Capture/compare register 1">
+      <field name="CCR1" mask="0x0000FFFF" access="rw" description="Capture/compare 1 value" />
+    </register>
+    
+    <register name="CCR2" offset="0x38" reset="0x00000000" description="Capture/compare register 2">
+      <field name="CCR2" mask="0x0000FFFF" access="rw" description="Capture/compare 2 value" />
+    </register>
+    
+    <register name="BDTR" offset="0x44" reset="0x00000000" description="Break and dead-time register">
+      <field name="DTG" mask="0x000000FF" access="rw" description="Dead-time generator setup" />
+      <field name="LOCK" mask="0x00000300" access="rw" description="Lock configuration" />
+      <field name="OSSI" mask="0x00000400" access="rw" description="Off-state selection for idle mode" />
+      <field name="OSSR" mask="0x00000800" access="rw" description="Off-state selection for run mode" />
+      <field name="BKE" mask="0x00001000" access="rw" description="Break enable" />
+      <field name="BKP" mask="0x00002000" access="rw" description="Break polarity" />
+      <field name="AOE" mask="0x00004000" access="rw" description="Automatic output enable" />
+      <field name="MOE" mask="0x00008000" access="rw" description="Main output enable" />
+      <field name="BKF" mask="0x000F0000" access="rw" description="Break filter" />
+      <field name="BKDSRM" mask="0x04000000" access="rw" description="Break disarm" />
+      <field name="BKBID" mask="0x10000000" access="rw" description="Break bidirectional" />
+    </register>
+    
+    <register name="DCR" offset="0x48" reset="0x00000000" description="DMA control register">
+      <field name="DBA" mask="0x001F" access="rw" description="DMA base address" />
+      <field name="DBL" mask="0x1F00" access="rw" description="DMA burst length" />
+    </register>
+    
+    <register name="DMAR" offset="0x4C" reset="0x00000000" description="DMA address for full transfer">
+      <field name="DMAB" mask="0x0000FFFF" access="rw" description="DMA register for burst" />
+    </register>
+    
+    <register name="AF1" offset="0x60" reset="0x00000001" description="Alternate function option register 1">
+      <field name="BKINE" mask="0x00000001" access="rw" description="BKIN input enable" />
+      <field name="BKCMP1E" mask="0x00000002" access="rw" description="COMP1 break input enable" />
+      <field name="BKCMP2E" mask="0x00000004" access="rw" description="COMP2 break input enable" />
+      <field name="BKINP" mask="0x00000200" access="rw" description="BKIN input polarity" />
+      <field name="BKCMP1P" mask="0x00000400" access="rw" description="COMP1 break input polarity" />
+      <field name="BKCMP2P" mask="0x00000800" access="rw" description="COMP2 break input polarity" />
+    </register>
+    
+    <register name="TISEL" offset="0x68" reset="0x00000000" description="Timer input selection register">
+      <field name="TI1SEL" mask="0x0000000F" access="rw" description="TI1 input selection" />
+      <field name="TI2SEL" mask="0x000000F0" access="rw" description="TI2 input selection" />
+    </register>
+    
+  </peripheral>
+  
+  <!-- ========================================================================
+       TIM16/17 - General-purpose timer with 1 channel (CH1 complementary)
+       ======================================================================== -->
+  <peripheral name="TIM16_17" description="General-purpose timer 1-channel with break">
+    <instance id="16" base="0x40014400" />
+    <instance id="17" base="0x40014800" />
+    
+    <register name="CR1" offset="0x00" reset="0x0000" description="Control register 1">
+      <field name="CEN" mask="0x0001" access="rw" description="Counter enable" />
+      <field name="UDIS" mask="0x0002" access="rw" description="Update disable" />
+      <field name="URS" mask="0x0004" access="rw" description="Update request source" />
+      <field name="OPM" mask="0x0008" access="rw" description="One-pulse mode" />
+      <field name="ARPE" mask="0x0080" access="rw" description="Auto-reload preload enable" />
+      <field name="CKD" mask="0x0300" access="rw" description="Clock division" />
+      <field name="UIFREMAP" mask="0x0800" access="rw" description="UIF status bit remapping" />
+      <field name="DITHEN" mask="0x1000" access="rw" description="Dithering enable" />
+    </register>
+    
+    <register name="CR2" offset="0x04" reset="0x0000" description="Control register 2">
+      <field name="CCPC" mask="0x0001" access="rw" description="Capture/compare preloaded control" />
+      <field name="CCUS" mask="0x0004" access="rw" description="Capture/compare control update selection" />
+      <field name="CCDS" mask="0x0008" access="rw" description="Capture/compare DMA selection" />
+      <field name="OIS1" mask="0x0100" access="rw" description="Output idle state 1" />
+      <field name="OIS1N" mask="0x0200" access="rw" description="Output idle state 1N" />
+    </register>
+    
+    <register name="DIER" offset="0x0C" reset="0x0000" description="DMA/interrupt enable register">
+      <field name="UIE" mask="0x0001" access="rw" description="Update interrupt enable" />
+      <field name="CC1IE" mask="0x0002" access="rw" description="CC1 interrupt enable" />
+      <field name="COMIE" mask="0x0020" access="rw" description="COM interrupt enable" />
+      <field name="BIE" mask="0x0080" access="rw" description="Break interrupt enable" />
+      <field name="UDE" mask="0x0100" access="rw" description="Update DMA request enable" />
+      <field name="CC1DE" mask="0x0200" access="rw" description="CC1 DMA request enable" />
+      <field name="COMDE" mask="0x2000" access="rw" description="COM DMA request enable" />
+    </register>
+    
+    <register name="SR" offset="0x10" reset="0x0000" description="Status register">
+      <field name="UIF" mask="0x0001" access="rc_w0" description="Update interrupt flag" />
+      <field name="CC1IF" mask="0x0002" access="rc_w0" description="CC1 interrupt flag" />
+      <field name="COMIF" mask="0x0020" access="rc_w0" description="COM interrupt flag" />
+      <field name="BIF" mask="0x0080" access="rc_w0" description="Break interrupt flag" />
+      <field name="CC1OF" mask="0x0200" access="rc_w0" description="CC1 overcapture flag" />
+    </register>
+    
+    <register name="EGR" offset="0x14" reset="0x0000" access="wo" description="Event generation register">
+      <field name="UG" mask="0x0001" access="wo" description="Update generation" />
+      <field name="CC1G" mask="0x0002" access="wo" description="CC1 generation" />
+      <field name="COMG" mask="0x0020" access="wo" description="COM generation" />
+      <field name="BG" mask="0x0080" access="wo" description="Break generation" />
+    </register>
+    
+    <register name="CCMR1" offset="0x18" reset="0x00000000" description="Capture/compare mode register 1">
+      <field name="CC1S" mask="0x00000003" access="rw" description="CC1 selection" />
+      <field name="OC1FE" mask="0x00000004" access="rw" description="OC1 fast enable" />
+      <field name="OC1PE" mask="0x00000008" access="rw" description="OC1 preload enable" />
+      <field name="OC1M" mask="0x00010070" access="rw" description="OC1 mode" />
+      <field name="IC1PSC" mask="0x0000000C" access="rw" description="IC1 prescaler" />
+      <field name="IC1F" mask="0x000000F0" access="rw" description="IC1 filter" />
+    </register>
+    
+    <register name="CCER" offset="0x20" reset="0x0000" description="Capture/compare enable register">
+      <field name="CC1E" mask="0x0001" access="rw" description="CC1 output enable" />
+      <field name="CC1P" mask="0x0002" access="rw" description="CC1 output polarity" />
+      <field name="CC1NE" mask="0x0004" access="rw" description="CC1N output enable" />
+      <field name="CC1NP" mask="0x0008" access="rw" description="CC1N output polarity" />
+    </register>
+    
+    <register name="CNT" offset="0x24" reset="0x00000000" description="Counter">
+      <field name="CNT" mask="0x0000FFFF" access="rw" description="Counter value" />
+      <field name="UIFCPY" mask="0x80000000" access="ro" description="UIF copy" />
+    </register>
+    
+    <register name="PSC" offset="0x28" reset="0x0000" description="Prescaler">
+      <field name="PSC" mask="0x0000FFFF" access="rw" description="Prescaler value" />
+    </register>
+    
+    <register name="ARR" offset="0x2C" reset="0x0000FFFF" description="Auto-reload register">
+      <field name="ARR" mask="0x0000FFFF" access="rw" description="Auto-reload value" />
+    </register>
+    
+    <register name="RCR" offset="0x30" reset="0x0000" description="Repetition counter register">
+      <field name="REP" mask="0x00FF" access="rw" description="Repetition counter value" />
+    </register>
+    
+    <register name="CCR1" offset="0x34" reset="0x00000000" description="Capture/compare register 1">
+      <field name="CCR1" mask="0x0000FFFF" access="rw" description="Capture/compare 1 value" />
+    </register>
+    
+    <register name="BDTR" offset="0x44" reset="0x00000000" description="Break and dead-time register">
+      <field name="DTG" mask="0x000000FF" access="rw" description="Dead-time generator setup" />
+      <field name="LOCK" mask="0x00000300" access="rw" description="Lock configuration" />
+      <field name="OSSI" mask="0x00000400" access="rw" description="Off-state selection for idle mode" />
+      <field name="OSSR" mask="0x00000800" access="rw" description="Off-state selection for run mode" />
+      <field name="BKE" mask="0x00001000" access="rw" description="Break enable" />
+      <field name="BKP" mask="0x00002000" access="rw" description="Break polarity" />
+      <field name="AOE" mask="0x00004000" access="rw" description="Automatic output enable" />
+      <field name="MOE" mask="0x00008000" access="rw" description="Main output enable" />
+      <field name="BKF" mask="0x000F0000" access="rw" description="Break filter" />
+      <field name="BKDSRM" mask="0x04000000" access="rw" description="Break disarm" />
+      <field name="BKBID" mask="0x10000000" access="rw" description="Break bidirectional" />
+    </register>
+    
+    <register name="DCR" offset="0x48" reset="0x00000000" description="DMA control register">
+      <field name="DBA" mask="0x001F" access="rw" description="DMA base address" />
+      <field name="DBL" mask="0x1F00" access="rw" description="DMA burst length" />
+    </register>
+    
+    <register name="DMAR" offset="0x4C" reset="0x00000000" description="DMA address for full transfer">
+      <field name="DMAB" mask="0x0000FFFF" access="rw" description="DMA register for burst" />
+    </register>
+    
+    <register name="AF1" offset="0x60" reset="0x00000001" description="Alternate function option register 1">
+      <field name="BKINE" mask="0x00000001" access="rw" description="BKIN input enable" />
+      <field name="BKCMP1E" mask="0x00000002" access="rw" description="COMP1 break input enable" />
+      <field name="BKCMP2E" mask="0x00000004" access="rw" description="COMP2 break input enable" />
+      <field name="BKINP" mask="0x00000200" access="rw" description="BKIN input polarity" />
+      <field name="BKCMP1P" mask="0x00000400" access="rw" description="COMP1 break input polarity" />
+      <field name="BKCMP2P" mask="0x00000800" access="rw" description="COMP2 break input polarity" />
+    </register>
+    
+    <register name="TISEL" offset="0x68" reset="0x00000000" description="Timer input selection register">
+      <field name="TI1SEL" mask="0x0000000F" access="rw" description="TI1 input selection" />
+    </register>
+    
+  </peripheral>
+  
+</device>

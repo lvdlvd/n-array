@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 RTC (Real-Time Clock) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="RTC" description="Real-time clock">
+    <instance id="1" base="0x40002800" />
+    
+    <register name="TR" offset="0x00" reset="0x00000000" description="Time register">
+      <field name="SU" mask="0x0000000F" access="rw" description="Second units in BCD" />
+      <field name="ST" mask="0x00000070" access="rw" description="Second tens in BCD" />
+      <field name="MNU" mask="0x00000F00" access="rw" description="Minute units in BCD" />
+      <field name="MNT" mask="0x00007000" access="rw" description="Minute tens in BCD" />
+      <field name="HU" mask="0x000F0000" access="rw" description="Hour units in BCD" />
+      <field name="HT" mask="0x00300000" access="rw" description="Hour tens in BCD" />
+      <field name="PM" mask="0x00400000" access="rw" description="AM/PM notation" />
+    </register>
+    
+    <register name="DR" offset="0x04" reset="0x00002101" description="Date register">
+      <field name="DU" mask="0x0000000F" access="rw" description="Date units in BCD" />
+      <field name="DT" mask="0x00000030" access="rw" description="Date tens in BCD" />
+      <field name="MU" mask="0x00000F00" access="rw" description="Month units in BCD" />
+      <field name="MT" mask="0x00001000" access="rw" description="Month tens in BCD" />
+      <field name="WDU" mask="0x0000E000" access="rw" description="Weekday units" />
+      <field name="YU" mask="0x000F0000" access="rw" description="Year units in BCD" />
+      <field name="YT" mask="0x00F00000" access="rw" description="Year tens in BCD" />
+    </register>
+    
+    <register name="SSR" offset="0x08" reset="0x00000000" access="ro" description="Sub-second register">
+      <field name="SS" mask="0x0000FFFF" access="ro" description="Sub-second value" />
+    </register>
+    
+    <register name="ICSR" offset="0x0C" reset="0x00000007" description="Initialization and status register">
+      <field name="ALRAWF" mask="0x00000001" access="ro" description="Alarm A write flag" />
+      <field name="ALRBWF" mask="0x00000002" access="ro" description="Alarm B write flag" />
+      <field name="WUTWF" mask="0x00000004" access="ro" description="Wakeup timer write flag" />
+      <field name="SHPF" mask="0x00000008" access="ro" description="Shift operation pending" />
+      <field name="INITS" mask="0x00000010" access="ro" description="Initialization status flag" />
+      <field name="RSF" mask="0x00000020" access="rc_w0" description="Registers synchronization flag" />
+      <field name="INITF" mask="0x00000040" access="ro" description="Initialization flag" />
+      <field name="INIT" mask="0x00000080" access="rw" description="Initialization mode" />
+      <field name="RECALPF" mask="0x00010000" access="ro" description="Recalibration pending flag" />
+    </register>
+    
+    <register name="PRER" offset="0x10" reset="0x007F00FF" description="Prescaler register">
+      <field name="PREDIV_S" mask="0x00007FFF" access="rw" description="Synchronous prescaler factor" />
+      <field name="PREDIV_A" mask="0x007F0000" access="rw" description="Asynchronous prescaler factor" />
+    </register>
+    
+    <register name="WUTR" offset="0x14" reset="0x0000FFFF" description="Wakeup timer register">
+      <field name="WUT" mask="0x0000FFFF" access="rw" description="Wakeup auto-reload value" />
+    </register>
+    
+    <register name="CR" offset="0x18" reset="0x00000000" description="Control register">
+      <field name="WUCKSEL" mask="0x00000007" access="rw" description="Wakeup clock selection" />
+      <field name="TSEDGE" mask="0x00000008" access="rw" description="Timestamp event active edge" />
+      <field name="REFCKON" mask="0x00000010" access="rw" description="Reference clock detection enable" />
+      <field name="BYPSHAD" mask="0x00000020" access="rw" description="Bypass shadow registers" />
+      <field name="FMT" mask="0x00000040" access="rw" description="Hour format" />
+      <field name="ALRAE" mask="0x00000100" access="rw" description="Alarm A enable" />
+      <field name="ALRBE" mask="0x00000200" access="rw" description="Alarm B enable" />
+      <field name="WUTE" mask="0x00000400" access="rw" description="Wakeup timer enable" />
+      <field name="TSE" mask="0x00000800" access="rw" description="Timestamp enable" />
+      <field name="ALRAIE" mask="0x00001000" access="rw" description="Alarm A interrupt enable" />
+      <field name="ALRBIE" mask="0x00002000" access="rw" description="Alarm B interrupt enable" />
+      <field name="WUTIE" mask="0x00004000" access="rw" description="Wakeup timer interrupt enable" />
+      <field name="TSIE" mask="0x00008000" access="rw" description="Timestamp interrupt enable" />
+      <field name="ADD1H" mask="0x00010000" access="wo" description="Add 1 hour (summer time)" />
+      <field name="SUB1H" mask="0x00020000" access="wo" description="Subtract 1 hour (winter time)" />
+      <field name="BKP" mask="0x00040000" access="rw" description="Backup" />
+      <field name="COSEL" mask="0x00080000" access="rw" description="Calibration output selection" />
+      <field name="POL" mask="0x00100000" access="rw" description="Output polarity" />
+      <field name="OSEL" mask="0x00600000" access="rw" description="Output selection" />
+      <field name="COE" mask="0x00800000" access="rw" description="Calibration output enable" />
+      <field name="ITSE" mask="0x01000000" access="rw" description="Timestamp on internal event enable" />
+      <field name="TAMPTS" mask="0x02000000" access="rw" description="Tamper timestamp enable" />
+      <field name="TAMPOE" mask="0x04000000" access="rw" description="Tamper detection output enable" />
+      <field name="TAMPALRM_PU" mask="0x20000000" access="rw" description="TAMPALRM pull-up enable" />
+      <field name="TAMPALRM_TYPE" mask="0x40000000" access="rw" description="TAMPALRM output type" />
+      <field name="OUT2EN" mask="0x80000000" access="rw" description="RTC_OUT2 output enable" />
+    </register>
+    
+    <register name="WPR" offset="0x24" reset="0x00000000" access="wo" description="Write protection register">
+      <field name="KEY" mask="0x000000FF" access="wo" description="Write protection key (0xCA, 0x53)" />
+    </register>
+    
+    <register name="CALR" offset="0x28" reset="0x00000000" description="Calibration register">
+      <field name="CALM" mask="0x000001FF" access="rw" description="Calibration minus" />
+      <field name="CALW16" mask="0x00002000" access="rw" description="16-second calibration cycle" />
+      <field name="CALW8" mask="0x00004000" access="rw" description="8-second calibration cycle" />
+      <field name="CALP" mask="0x00008000" access="rw" description="Increase frequency by 488.5 ppm" />
+    </register>
+    
+    <register name="SHIFTR" offset="0x2C" reset="0x00000000" access="wo" description="Shift control register">
+      <field name="SUBFS" mask="0x00007FFF" access="wo" description="Subtract a fraction of a second" />
+      <field name="ADD1S" mask="0x80000000" access="wo" description="Add one second" />
+    </register>
+    
+    <register name="TSTR" offset="0x30" reset="0x00000000" access="ro" description="Timestamp time register">
+      <field name="SU" mask="0x0000000F" access="ro" description="Second units in BCD" />
+      <field name="ST" mask="0x00000070" access="ro" description="Second tens in BCD" />
+      <field name="MNU" mask="0x00000F00" access="ro" description="Minute units in BCD" />
+      <field name="MNT" mask="0x00007000" access="ro" description="Minute tens in BCD" />
+      <field name="HU" mask="0x000F0000" access="ro" description="Hour units in BCD" />
+      <field name="HT" mask="0x00300000" access="ro" description="Hour tens in BCD" />
+      <field name="PM" mask="0x00400000" access="ro" description="AM/PM notation" />
+    </register>
+    
+    <register name="TSDR" offset="0x34" reset="0x00000000" access="ro" description="Timestamp date register">
+      <field name="DU" mask="0x0000000F" access="ro" description="Date units in BCD" />
+      <field name="DT" mask="0x00000030" access="ro" description="Date tens in BCD" />
+      <field name="MU" mask="0x00000F00" access="ro" description="Month units in BCD" />
+      <field name="MT" mask="0x00001000" access="ro" description="Month tens in BCD" />
+      <field name="WDU" mask="0x0000E000" access="ro" description="Weekday units" />
+    </register>
+    
+    <register name="TSSSR" offset="0x38" reset="0x00000000" access="ro" description="Timestamp sub-second register">
+      <field name="SS" mask="0x0000FFFF" access="ro" description="Sub-second value" />
+    </register>
+    
+    <register name="ALRMAR" offset="0x40" reset="0x00000000" description="Alarm A register">
+      <field name="SU" mask="0x0000000F" access="rw" description="Second units in BCD" />
+      <field name="ST" mask="0x00000070" access="rw" description="Second tens in BCD" />
+      <field name="MSK1" mask="0x00000080" access="rw" description="Alarm A seconds mask" />
+      <field name="MNU" mask="0x00000F00" access="rw" description="Minute units in BCD" />
+      <field name="MNT" mask="0x00007000" access="rw" description="Minute tens in BCD" />
+      <field name="MSK2" mask="0x00008000" access="rw" description="Alarm A minutes mask" />
+      <field name="HU" mask="0x000F0000" access="rw" description="Hour units in BCD" />
+      <field name="HT" mask="0x00300000" access="rw" description="Hour tens in BCD" />
+      <field name="PM" mask="0x00400000" access="rw" description="AM/PM notation" />
+      <field name="MSK3" mask="0x00800000" access="rw" description="Alarm A hours mask" />
+      <field name="DU" mask="0x0F000000" access="rw" description="Date units or day in BCD" />
+      <field name="DT" mask="0x30000000" access="rw" description="Date tens in BCD" />
+      <field name="WDSEL" mask="0x40000000" access="rw" description="Week day selection" />
+      <field name="MSK4" mask="0x80000000" access="rw" description="Alarm A date mask" />
+    </register>
+    
+    <register name="ALRMASSR" offset="0x44" reset="0x00000000" description="Alarm A sub-second register">
+      <field name="SS" mask="0x00007FFF" access="rw" description="Sub-second value" />
+      <field name="MASKSS" mask="0x0F000000" access="rw" description="Mask the most significant bits" />
+    </register>
+    
+    <register name="ALRMBR" offset="0x48" reset="0x00000000" description="Alarm B register">
+      <field name="SU" mask="0x0000000F" access="rw" description="Second units in BCD" />
+      <field name="ST" mask="0x00000070" access="rw" description="Second tens in BCD" />
+      <field name="MSK1" mask="0x00000080" access="rw" description="Alarm B seconds mask" />
+      <field name="MNU" mask="0x00000F00" access="rw" description="Minute units in BCD" />
+      <field name="MNT" mask="0x00007000" access="rw" description="Minute tens in BCD" />
+      <field name="MSK2" mask="0x00008000" access="rw" description="Alarm B minutes mask" />
+      <field name="HU" mask="0x000F0000" access="rw" description="Hour units in BCD" />
+      <field name="HT" mask="0x00300000" access="rw" description="Hour tens in BCD" />
+      <field name="PM" mask="0x00400000" access="rw" description="AM/PM notation" />
+      <field name="MSK3" mask="0x00800000" access="rw" description="Alarm B hours mask" />
+      <field name="DU" mask="0x0F000000" access="rw" description="Date units or day in BCD" />
+      <field name="DT" mask="0x30000000" access="rw" description="Date tens in BCD" />
+      <field name="WDSEL" mask="0x40000000" access="rw" description="Week day selection" />
+      <field name="MSK4" mask="0x80000000" access="rw" description="Alarm B date mask" />
+    </register>
+    
+    <register name="ALRMBSSR" offset="0x4C" reset="0x00000000" description="Alarm B sub-second register">
+      <field name="SS" mask="0x00007FFF" access="rw" description="Sub-second value" />
+      <field name="MASKSS" mask="0x0F000000" access="rw" description="Mask the most significant bits" />
+    </register>
+    
+    <register name="SR" offset="0x50" reset="0x00000000" access="ro" description="Status register">
+      <field name="ALRAF" mask="0x00000001" access="ro" description="Alarm A flag" />
+      <field name="ALRBF" mask="0x00000002" access="ro" description="Alarm B flag" />
+      <field name="WUTF" mask="0x00000004" access="ro" description="Wakeup timer flag" />
+      <field name="TSF" mask="0x00000008" access="ro" description="Timestamp flag" />
+      <field name="TSOVF" mask="0x00000010" access="ro" description="Timestamp overflow flag" />
+      <field name="ITSF" mask="0x00000020" access="ro" description="Internal timestamp flag" />
+    </register>
+    
+    <register name="MISR" offset="0x54" reset="0x00000000" access="ro" description="Masked interrupt status register">
+      <field name="ALRAMF" mask="0x00000001" access="ro" description="Alarm A masked flag" />
+      <field name="ALRBMF" mask="0x00000002" access="ro" description="Alarm B masked flag" />
+      <field name="WUTMF" mask="0x00000004" access="ro" description="Wakeup timer masked flag" />
+      <field name="TSMF" mask="0x00000008" access="ro" description="Timestamp masked flag" />
+      <field name="TSOVMF" mask="0x00000010" access="ro" description="Timestamp overflow masked flag" />
+      <field name="ITSMF" mask="0x00000020" access="ro" description="Internal timestamp masked flag" />
+    </register>
+    
+    <register name="SCR" offset="0x5C" reset="0x00000000" access="wo" description="Status clear register">
+      <field name="CALRAF" mask="0x00000001" access="wo" description="Clear alarm A flag" />
+      <field name="CALRBF" mask="0x00000002" access="wo" description="Clear alarm B flag" />
+      <field name="CWUTF" mask="0x00000004" access="wo" description="Clear wakeup timer flag" />
+      <field name="CTSF" mask="0x00000008" access="wo" description="Clear timestamp flag" />
+      <field name="CTSOVF" mask="0x00000010" access="wo" description="Clear timestamp overflow flag" />
+      <field name="CITSF" mask="0x00000020" access="wo" description="Clear internal timestamp flag" />
+    </register>
+    
+  </peripheral>
+  
+</device>

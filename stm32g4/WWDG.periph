@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 WWDG (Window Watchdog) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="WWDG" description="System window watchdog">
+    <instance id="1" base="0x40002C00" />
+    
+    <register name="CR" offset="0x00" reset="0x0000007F" description="Control register">
+      <field name="T" mask="0x0000007F" access="rw" description="7-bit counter (MSB to LSB)">
+        <!-- Counter value, decremented every (4096 x 2^WDGTB) PCLK cycles -->
+        <!-- Reset generated when decremented from 0x40 to 0x3F -->
+      </field>
+      <field name="WDGA" mask="0x00000080" access="rs" description="Activation bit">
+        <enum value="0x00000000" name="Disabled" description="Watchdog disabled" />
+        <enum value="0x00000080" name="Enabled" description="Watchdog enabled" />
+      </field>
+    </register>
+    
+    <register name="CFR" offset="0x04" reset="0x0000007F" description="Configuration register">
+      <field name="W" mask="0x0000007F" access="rw" description="7-bit window value" />
+      <field name="EWI" mask="0x00000200" access="rs" description="Early wakeup interrupt">
+        <enum value="0x00000000" name="Disabled" description="EWI disabled" />
+        <enum value="0x00000200" name="Enabled" description="EWI enabled, interrupt when counter reaches 0x40" />
+      </field>
+      <field name="WDGTB" mask="0x00003800" access="rw" description="Timer base prescaler">
+        <enum value="0x00000000" name="Div1" description="CK counter clock (PCLK/4096) / 1" />
+        <enum value="0x00000800" name="Div2" description="CK counter clock (PCLK/4096) / 2" />
+        <enum value="0x00001000" name="Div4" description="CK counter clock (PCLK/4096) / 4" />
+        <enum value="0x00001800" name="Div8" description="CK counter clock (PCLK/4096) / 8" />
+        <enum value="0x00002000" name="Div16" description="CK counter clock (PCLK/4096) / 16" />
+        <enum value="0x00002800" name="Div32" description="CK counter clock (PCLK/4096) / 32" />
+        <enum value="0x00003000" name="Div64" description="CK counter clock (PCLK/4096) / 64" />
+        <enum value="0x00003800" name="Div128" description="CK counter clock (PCLK/4096) / 128" />
+      </field>
+    </register>
+    
+    <register name="SR" offset="0x08" reset="0x00000000" description="Status register">
+      <field name="EWIF" mask="0x00000001" access="rc_w0" description="Early wakeup interrupt flag">
+        <enum value="0x00000000" name="NoEvent" description="No early wakeup event" />
+        <enum value="0x00000001" name="Event" description="Counter reached 0x40" />
+      </field>
+    </register>
+    
+  </peripheral>
+  
+</device>

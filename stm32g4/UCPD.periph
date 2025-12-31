@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 UCPD (USB Type-C Power Delivery) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="UCPD" description="USB Type-C Power Delivery">
+    <instance id="1" base="0x4000A000" />
+    
+    <register name="CFG1" offset="0x00" reset="0x00000000" description="Configuration register 1">
+      <field name="HBITCLKDIV" mask="0x0000003F" access="rw" description="Half-bit clock divider" />
+      <field name="IFRGAP" mask="0x000007C0" access="rw" description="Interframe gap" />
+      <field name="TRANSWIN" mask="0x0000F800" access="rw" description="Transition window duration" />
+      <field name="PSC_USBPDCLK" mask="0x000E0000" access="rw" description="Pre-scaler for UCPD_CLK" />
+      <field name="RXORDSETEN" mask="0x1FF00000" access="rw" description="Rx ordered set enable" />
+      <field name="TXDMAEN" mask="0x20000000" access="rw" description="Tx DMA enable" />
+      <field name="RXDMAEN" mask="0x40000000" access="rw" description="Rx DMA enable" />
+      <field name="UCPDEN" mask="0x80000000" access="rw" description="UCPD peripheral enable" />
+    </register>
+    
+    <register name="CFG2" offset="0x04" reset="0x00000000" description="Configuration register 2">
+      <field name="RXFILTDIS" mask="0x00000001" access="rw" description="BMC decoder Rx pre-filter disable" />
+      <field name="RXFILT2N3" mask="0x00000002" access="rw" description="BMC decoder Rx pre-filter config" />
+      <field name="FORCECLK" mask="0x00000004" access="rw" description="Force clock enable" />
+      <field name="WUPEN" mask="0x00000008" access="rw" description="Wakeup/general purpose timer enable" />
+    </register>
+    
+    <register name="CR" offset="0x0C" reset="0x00000000" description="Control register">
+      <field name="TXMODE" mask="0x00000003" access="rw" description="Tx mode">
+        <enum value="0x00000000" name="HardReset" />
+        <enum value="0x00000001" name="CableReset" />
+        <enum value="0x00000002" name="BIST" />
+      </field>
+      <field name="TXSEND" mask="0x00000004" access="rs" description="Start transmission" />
+      <field name="TXHRST" mask="0x00000008" access="rs" description="Transmit hard reset" />
+      <field name="RXMODE" mask="0x00000010" access="rw" description="Rx mode" />
+      <field name="PHYRXEN" mask="0x00000020" access="rw" description="Phy Rx enable" />
+      <field name="PHYCCSEL" mask="0x00000040" access="rw" description="CC1/CC2 line selection for Rx/Tx" />
+      <field name="ANASUBMODE" mask="0x00000180" access="rw" description="Analog PHY sub-mode" />
+      <field name="ANAMODE" mask="0x00000200" access="rw" description="Analog PHY mode" />
+      <field name="CCENABLE" mask="0x00000C00" access="rw" description="CC line enable" />
+      <field name="FRSRXEN" mask="0x00010000" access="rw" description="FRS Rx enable" />
+      <field name="FRSTX" mask="0x00020000" access="rs" description="FRS transmit" />
+      <field name="RDCH" mask="0x00040000" access="rw" description="Rd/Rd on CC1/CC2" />
+      <field name="CC1TCDIS" mask="0x00100000" access="rw" description="CC1 type-C disable" />
+      <field name="CC2TCDIS" mask="0x00200000" access="rw" description="CC2 type-C disable" />
+    </register>
+    
+    <register name="IMR" offset="0x10" reset="0x00000000" description="Interrupt mask register">
+      <field name="TXISIE" mask="0x00000001" access="rw" description="Tx interrupt status IE" />
+      <field name="TXMSGDISCIE" mask="0x00000002" access="rw" description="Tx message discarded IE" />
+      <field name="TXMSGSENTIE" mask="0x00000004" access="rw" description="Tx message sent IE" />
+      <field name="TXMSGABTIE" mask="0x00000008" access="rw" description="Tx message abort IE" />
+      <field name="HABORTSTIE" mask="0x00000010" access="rw" description="Hard reset abort IE" />
+      <field name="HRSTDISCIE" mask="0x00000020" access="rw" description="Hard reset discarded IE" />
+      <field name="HRSTSENTIE" mask="0x00000040" access="rw" description="Hard reset sent IE" />
+      <field name="TXUNDIE" mask="0x00000080" access="rw" description="Tx underrun IE" />
+      <field name="RXNEIE" mask="0x00000100" access="rw" description="Rx not empty IE" />
+      <field name="RXORDDETIE" mask="0x00000200" access="rw" description="Rx ordered set detect IE" />
+      <field name="RXHRSTDETIE" mask="0x00000400" access="rw" description="Rx hard reset detect IE" />
+      <field name="RXOVRIE" mask="0x00000800" access="rw" description="Rx overflow IE" />
+      <field name="RXMSGENDIE" mask="0x00001000" access="rw" description="Rx message end IE" />
+      <field name="TYPECEVT1IE" mask="0x00004000" access="rw" description="Type-C event 1 IE" />
+      <field name="TYPECEVT2IE" mask="0x00008000" access="rw" description="Type-C event 2 IE" />
+      <field name="FRSEVTIE" mask="0x00100000" access="rw" description="FRS event IE" />
+    </register>
+    
+    <register name="SR" offset="0x14" reset="0x00000000" description="Status register">
+      <field name="TXIS" mask="0x00000001" access="ro" description="Tx interrupt status" />
+      <field name="TXMSGDISC" mask="0x00000002" access="rc_w1" description="Tx message discarded" />
+      <field name="TXMSGSENT" mask="0x00000004" access="rc_w1" description="Tx message sent" />
+      <field name="TXMSGABT" mask="0x00000008" access="rc_w1" description="Tx message abort" />
+      <field name="HRSTDISC" mask="0x00000020" access="rc_w1" description="Hard reset discarded" />
+      <field name="HRSTSENT" mask="0x00000040" access="rc_w1" description="Hard reset sent" />
+      <field name="TXUND" mask="0x00000080" access="rc_w1" description="Tx data underrun" />
+      <field name="RXNE" mask="0x00000100" access="ro" description="Rx not empty" />
+      <field name="RXORDDET" mask="0x00000200" access="rc_w1" description="Rx ordered set detected" />
+      <field name="RXHRSTDET" mask="0x00000400" access="rc_w1" description="Rx hard reset detected" />
+      <field name="RXOVR" mask="0x00000800" access="rc_w1" description="Rx overflow" />
+      <field name="RXMSGEND" mask="0x00001000" access="rc_w1" description="Rx message end" />
+      <field name="RXERR" mask="0x00002000" access="rc_w1" description="Rx error" />
+      <field name="TYPECEVT1" mask="0x00004000" access="rc_w1" description="Type-C event 1" />
+      <field name="TYPECEVT2" mask="0x00008000" access="rc_w1" description="Type-C event 2" />
+      <field name="TYPEC_VSTATE_CC1" mask="0x00030000" access="ro" description="CC1 voltage level" />
+      <field name="TYPEC_VSTATE_CC2" mask="0x000C0000" access="ro" description="CC2 voltage level" />
+      <field name="FRSEVT" mask="0x00100000" access="rc_w1" description="FRS event" />
+    </register>
+    
+    <register name="ICR" offset="0x18" reset="0x00000000" access="wo" description="Interrupt clear register">
+      <field name="TXMSGDISCCF" mask="0x00000002" access="wo" description="Clear Tx message discarded" />
+      <field name="TXMSGSENTCF" mask="0x00000004" access="wo" description="Clear Tx message sent" />
+      <field name="TXMSGABTCF" mask="0x00000008" access="wo" description="Clear Tx message abort" />
+      <field name="HRSTDISCCF" mask="0x00000020" access="wo" description="Clear hard reset discarded" />
+      <field name="HRSTSENTCF" mask="0x00000040" access="wo" description="Clear hard reset sent" />
+      <field name="TXUNDCF" mask="0x00000080" access="wo" description="Clear Tx underrun" />
+      <field name="RXORDDETCF" mask="0x00000200" access="wo" description="Clear Rx ordered set detected" />
+      <field name="RXHRSTDETCF" mask="0x00000400" access="wo" description="Clear Rx hard reset detected" />
+      <field name="RXOVRCF" mask="0x00000800" access="wo" description="Clear Rx overflow" />
+      <field name="RXMSGENDCF" mask="0x00001000" access="wo" description="Clear Rx message end" />
+      <field name="TYPECEVT1CF" mask="0x00004000" access="wo" description="Clear Type-C event 1" />
+      <field name="TYPECEVT2CF" mask="0x00008000" access="wo" description="Clear Type-C event 2" />
+      <field name="FRSEVTCF" mask="0x00100000" access="wo" description="Clear FRS event" />
+    </register>
+    
+    <register name="TX_ORDSET" offset="0x1C" reset="0x00000000" description="Tx ordered set type register">
+      <field name="TXORDSET" mask="0x000FFFFF" access="rw" description="Tx ordered set" />
+    </register>
+    
+    <register name="TX_PAYSZ" offset="0x20" reset="0x00000000" description="Tx payload size register">
+      <field name="TXPAYSZ" mask="0x000003FF" access="rw" description="Tx payload size in bytes" />
+    </register>
+    
+    <register name="TXDR" offset="0x24" reset="0x00000000" access="wo" description="Tx data register">
+      <field name="TXDATA" mask="0x000000FF" access="wo" description="Tx data byte" />
+    </register>
+    
+    <register name="RX_ORDSET" offset="0x28" reset="0x00000000" access="ro" description="Rx ordered set type register">
+      <field name="RXORDSET" mask="0x00000007" access="ro" description="Rx ordered set code" />
+      <field name="RXSOP3OF4" mask="0x00000008" access="ro" description="SOP3 of 4 match" />
+      <field name="RXSOPKINVALID" mask="0x00000070" access="ro" description="Rx K-codes corrupted" />
+    </register>
+    
+    <register name="RX_PAYSZ" offset="0x2C" reset="0x00000000" access="ro" description="Rx payload size register">
+      <field name="RXPAYSZ" mask="0x000003FF" access="ro" description="Rx payload size in bytes" />
+    </register>
+    
+    <register name="RXDR" offset="0x30" reset="0x00000000" access="ro" description="Rx data register">
+      <field name="RXDATA" mask="0x000000FF" access="ro" description="Rx data byte" />
+    </register>
+    
+    <register name="RX_ORDEXT1" offset="0x34" reset="0x00000000" access="ro" description="Rx ordered set extension 1">
+      <field name="RXSOPX1" mask="0x000FFFFF" access="ro" description="Rx SOP extension 1" />
+    </register>
+    
+    <register name="RX_ORDEXT2" offset="0x38" reset="0x00000000" access="ro" description="Rx ordered set extension 2">
+      <field name="RXSOPX2" mask="0x000FFFFF" access="ro" description="Rx SOP extension 2" />
+    </register>
+    
+  </peripheral>
+  
+</device>

@@ -1,0 +1,464 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 FDCAN (Flexible Data-rate Controller Area Network) Peripheral
+  Extracted from RM0440 Rev 7
+  Supports CAN 2.0 and CAN FD with bit rate switching
+  
+  Note: FDCAN uses shared Message RAM (SRAMCAN) at 0x4000A400 (2560 words).
+  The <ram_elements> section describes structures placed in Message RAM,
+  whose locations are configured via the referenced pointer registers.
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="FDCAN" description="Flexible data-rate controller area network">
+    <instance id="1" base="0x40006400" />
+    <instance id="2" base="0x40006800" />
+    <instance id="3" base="0x40006C00" />
+    
+    <!-- ================================================================
+         Core Registers (fixed offsets from peripheral base)
+         ================================================================ -->
+    
+    <register name="CREL" offset="0x00" reset="0x32141218" access="ro" description="Core release register">
+      <field name="DAY" mask="0x000000FF" access="ro" description="Timestamp day" />
+      <field name="MON" mask="0x0000FF00" access="ro" description="Timestamp month" />
+      <field name="YEAR" mask="0x000F0000" access="ro" description="Timestamp year" />
+      <field name="SUBSTEP" mask="0x00F00000" access="ro" description="Sub-step of core release" />
+      <field name="STEP" mask="0x0F000000" access="ro" description="Step of core release" />
+      <field name="REL" mask="0xF0000000" access="ro" description="Core release" />
+    </register>
+    
+    <register name="ENDN" offset="0x04" reset="0x87654321" access="ro" description="Endian register">
+      <field name="ETV" mask="0xFFFFFFFF" access="ro" description="Endianness test value (0x87654321)" />
+    </register>
+    
+    <register name="DBTP" offset="0x0C" reset="0x00000A33" description="Data bit timing and prescaler register">
+      <field name="DSJW" mask="0x0000000F" access="rw" description="Synchronization jump width (data)" />
+      <field name="DTSEG2" mask="0x000000F0" access="rw" description="Time segment after sample point (data)" />
+      <field name="DTSEG1" mask="0x00001F00" access="rw" description="Time segment before sample point (data)" />
+      <field name="DBRP" mask="0x001F0000" access="rw" description="Data bit rate prescaler" />
+      <field name="TDC" mask="0x00800000" access="rw" description="Transmitter delay compensation enable" />
+    </register>
+    
+    <register name="TEST" offset="0x10" reset="0x00000000" description="Test register">
+      <field name="LBCK" mask="0x00000010" access="rw" description="Loop back mode" />
+      <field name="TX" mask="0x00000060" access="rw" description="Control of transmit pin">
+        <enum value="0x00000000" name="Reset" description="TX controlled by CAN core" />
+        <enum value="0x00000020" name="SamplePoint" description="Sample point monitored" />
+        <enum value="0x00000040" name="Dominant" description="Dominant (0) level" />
+        <enum value="0x00000060" name="Recessive" description="Recessive (1) level" />
+      </field>
+      <field name="RX" mask="0x00000080" access="ro" description="Receive pin value" />
+    </register>
+    
+    <register name="RWD" offset="0x14" reset="0x00000000" description="RAM watchdog register">
+      <field name="WDC" mask="0x000000FF" access="rw" description="Watchdog configuration" />
+      <field name="WDV" mask="0x0000FF00" access="ro" description="Watchdog value" />
+    </register>
+    
+    <register name="CCCR" offset="0x18" reset="0x00000001" description="CC control register">
+      <field name="INIT" mask="0x00000001" access="rw" description="Initialization">
+        <enum value="0x00000000" name="Normal" />
+        <enum value="0x00000001" name="Init" />
+      </field>
+      <field name="CCE" mask="0x00000002" access="rw" description="Configuration change enable" />
+      <field name="ASM" mask="0x00000004" access="rw" description="ASM restricted operation mode" />
+      <field name="CSA" mask="0x00000008" access="ro" description="Clock stop acknowledge" />
+      <field name="CSR" mask="0x00000010" access="rw" description="Clock stop request" />
+      <field name="MON" mask="0x00000020" access="rw" description="Bus monitoring mode" />
+      <field name="DAR" mask="0x00000040" access="rw" description="Disable automatic retransmission" />
+      <field name="TEST" mask="0x00000080" access="rw" description="Test mode enable" />
+      <field name="FDOE" mask="0x00000100" access="rw" description="FD operation enable" />
+      <field name="BRSE" mask="0x00000200" access="rw" description="Bit rate switching enable" />
+      <field name="PXHD" mask="0x00001000" access="rw" description="Protocol exception handling disable" />
+      <field name="EFBI" mask="0x00002000" access="rw" description="Edge filtering during bus integration" />
+      <field name="TXP" mask="0x00004000" access="rw" description="Transmit pause" />
+      <field name="NISO" mask="0x00008000" access="rw" description="Non ISO operation (Bosch V1.0)" />
+    </register>
+    
+    <register name="NBTP" offset="0x1C" reset="0x06000A03" description="Nominal bit timing and prescaler">
+      <field name="NTSEG2" mask="0x0000007F" access="rw" description="Nominal time segment after sample point" />
+      <field name="NTSEG1" mask="0x0000FF00" access="rw" description="Nominal time segment before sample point" />
+      <field name="NBRP" mask="0x01FF0000" access="rw" description="Nominal bit rate prescaler" />
+      <field name="NSJW" mask="0xFE000000" access="rw" description="Nominal (re)synchronization jump width" />
+    </register>
+    
+    <register name="TSCC" offset="0x20" reset="0x00000000" description="Timestamp counter configuration">
+      <field name="TSS" mask="0x00000003" access="rw" description="Timestamp select">
+        <enum value="0x00000000" name="Zero" />
+        <enum value="0x00000001" name="Increment" />
+        <enum value="0x00000002" name="External" />
+      </field>
+      <field name="TCP" mask="0x000F0000" access="rw" description="Timestamp counter prescaler" />
+    </register>
+    
+    <register name="TSCV" offset="0x24" reset="0x00000000" description="Timestamp counter value">
+      <field name="TSC" mask="0x0000FFFF" access="ro" description="Timestamp counter" />
+    </register>
+    
+    <register name="TOCC" offset="0x28" reset="0xFFFF0000" description="Timeout counter configuration">
+      <field name="ETOC" mask="0x00000001" access="rw" description="Enable timeout counter" />
+      <field name="TOS" mask="0x00000006" access="rw" description="Timeout select">
+        <enum value="0x00000000" name="Continuous" />
+        <enum value="0x00000002" name="TxEventFIFO" />
+        <enum value="0x00000004" name="RxFIFO0" />
+        <enum value="0x00000006" name="RxFIFO1" />
+      </field>
+      <field name="TOP" mask="0xFFFF0000" access="rw" description="Timeout period" />
+    </register>
+    
+    <register name="TOCV" offset="0x2C" reset="0x0000FFFF" description="Timeout counter value">
+      <field name="TOC" mask="0x0000FFFF" access="ro" description="Timeout counter" />
+    </register>
+    
+    <register name="ECR" offset="0x40" reset="0x00000000" access="ro" description="Error counter register">
+      <field name="TEC" mask="0x000000FF" access="ro" description="Transmit error counter" />
+      <field name="REC" mask="0x00007F00" access="ro" description="Receive error counter" />
+      <field name="RP" mask="0x00008000" access="ro" description="Receive error passive" />
+      <field name="CEL" mask="0x00FF0000" access="ro" description="CAN error logging" />
+    </register>
+    
+    <register name="PSR" offset="0x44" reset="0x00000707" description="Protocol status register">
+      <field name="LEC" mask="0x00000007" access="ro" description="Last error code">
+        <enum value="0x00000000" name="NoError" />
+        <enum value="0x00000001" name="StuffError" />
+        <enum value="0x00000002" name="FormError" />
+        <enum value="0x00000003" name="AckError" />
+        <enum value="0x00000004" name="Bit1Error" />
+        <enum value="0x00000005" name="Bit0Error" />
+        <enum value="0x00000006" name="CRCError" />
+        <enum value="0x00000007" name="NoChange" />
+      </field>
+      <field name="ACT" mask="0x00000018" access="ro" description="Activity">
+        <enum value="0x00000000" name="Synchronizing" />
+        <enum value="0x00000008" name="Idle" />
+        <enum value="0x00000010" name="Receiver" />
+        <enum value="0x00000018" name="Transmitter" />
+      </field>
+      <field name="EP" mask="0x00000020" access="ro" description="Error passive" />
+      <field name="EW" mask="0x00000040" access="ro" description="Warning status" />
+      <field name="BO" mask="0x00000080" access="ro" description="Bus_Off status" />
+      <field name="DLEC" mask="0x00000700" access="ro" description="Data phase last error code" />
+      <field name="RESI" mask="0x00000800" access="ro" description="ESI of last received FD message" />
+      <field name="RBRS" mask="0x00001000" access="ro" description="BRS of last received FD message" />
+      <field name="REDL" mask="0x00002000" access="ro" description="Received FD message" />
+      <field name="PXE" mask="0x00004000" access="ro" description="Protocol exception event" />
+      <field name="TDCV" mask="0x007F0000" access="ro" description="Transmitter delay compensation value" />
+    </register>
+    
+    <register name="TDCR" offset="0x48" reset="0x00000000" description="Transmitter delay compensation">
+      <field name="TDCF" mask="0x0000007F" access="rw" description="TDC filter window length" />
+      <field name="TDCO" mask="0x00007F00" access="rw" description="TDC offset" />
+    </register>
+    
+    <register name="IR" offset="0x50" reset="0x00000000" description="Interrupt register">
+      <field name="RF0N" mask="0x00000001" access="rc_w1" description="Rx FIFO 0 new message" />
+      <field name="RF0F" mask="0x00000002" access="rc_w1" description="Rx FIFO 0 full" />
+      <field name="RF0L" mask="0x00000004" access="rc_w1" description="Rx FIFO 0 message lost" />
+      <field name="RF1N" mask="0x00000008" access="rc_w1" description="Rx FIFO 1 new message" />
+      <field name="RF1F" mask="0x00000010" access="rc_w1" description="Rx FIFO 1 full" />
+      <field name="RF1L" mask="0x00000020" access="rc_w1" description="Rx FIFO 1 message lost" />
+      <field name="HPM" mask="0x00000040" access="rc_w1" description="High-priority message" />
+      <field name="TC" mask="0x00000080" access="rc_w1" description="Transmission completed" />
+      <field name="TCF" mask="0x00000100" access="rc_w1" description="Transmission cancellation finished" />
+      <field name="TFE" mask="0x00000200" access="rc_w1" description="Tx FIFO empty" />
+      <field name="TEFN" mask="0x00000400" access="rc_w1" description="Tx event FIFO new entry" />
+      <field name="TEFF" mask="0x00000800" access="rc_w1" description="Tx event FIFO full" />
+      <field name="TEFL" mask="0x00001000" access="rc_w1" description="Tx event FIFO element lost" />
+      <field name="TSW" mask="0x00002000" access="rc_w1" description="Timestamp wraparound" />
+      <field name="MRAF" mask="0x00004000" access="rc_w1" description="Message RAM access failure" />
+      <field name="TOO" mask="0x00008000" access="rc_w1" description="Timeout occurred" />
+      <field name="ELO" mask="0x00010000" access="rc_w1" description="Error logging overflow" />
+      <field name="EP" mask="0x00020000" access="rc_w1" description="Error passive" />
+      <field name="EW" mask="0x00040000" access="rc_w1" description="Warning status" />
+      <field name="BO" mask="0x00080000" access="rc_w1" description="Bus_Off status" />
+      <field name="WDI" mask="0x00100000" access="rc_w1" description="Watchdog interrupt" />
+      <field name="PEA" mask="0x00200000" access="rc_w1" description="Protocol error in arbitration phase" />
+      <field name="PED" mask="0x00400000" access="rc_w1" description="Protocol error in data phase" />
+      <field name="ARA" mask="0x00800000" access="rc_w1" description="Access to reserved address" />
+    </register>
+    
+    <register name="IE" offset="0x54" reset="0x00000000" description="Interrupt enable">
+      <field name="RF0NE" mask="0x00000001" access="rw" description="Rx FIFO 0 new message IE" />
+      <field name="RF0FE" mask="0x00000002" access="rw" description="Rx FIFO 0 full IE" />
+      <field name="RF0LE" mask="0x00000004" access="rw" description="Rx FIFO 0 message lost IE" />
+      <field name="RF1NE" mask="0x00000008" access="rw" description="Rx FIFO 1 new message IE" />
+      <field name="RF1FE" mask="0x00000010" access="rw" description="Rx FIFO 1 full IE" />
+      <field name="RF1LE" mask="0x00000020" access="rw" description="Rx FIFO 1 message lost IE" />
+      <field name="HPME" mask="0x00000040" access="rw" description="High-priority message IE" />
+      <field name="TCE" mask="0x00000080" access="rw" description="Transmission completed IE" />
+      <field name="TCFE" mask="0x00000100" access="rw" description="Transmission cancellation finished IE" />
+      <field name="TFEE" mask="0x00000200" access="rw" description="Tx FIFO empty IE" />
+      <field name="TEFNE" mask="0x00000400" access="rw" description="Tx event FIFO new entry IE" />
+      <field name="TEFFE" mask="0x00000800" access="rw" description="Tx event FIFO full IE" />
+      <field name="TEFLE" mask="0x00001000" access="rw" description="Tx event FIFO element lost IE" />
+      <field name="TSWE" mask="0x00002000" access="rw" description="Timestamp wraparound IE" />
+      <field name="MRAFE" mask="0x00004000" access="rw" description="Message RAM access failure IE" />
+      <field name="TOOE" mask="0x00008000" access="rw" description="Timeout occurred IE" />
+      <field name="ELOE" mask="0x00010000" access="rw" description="Error logging overflow IE" />
+      <field name="EPE" mask="0x00020000" access="rw" description="Error passive IE" />
+      <field name="EWE" mask="0x00040000" access="rw" description="Warning status IE" />
+      <field name="BOE" mask="0x00080000" access="rw" description="Bus_Off status IE" />
+      <field name="WDIE" mask="0x00100000" access="rw" description="Watchdog interrupt IE" />
+      <field name="PEAE" mask="0x00200000" access="rw" description="Protocol error in arbitration phase IE" />
+      <field name="PEDE" mask="0x00400000" access="rw" description="Protocol error in data phase IE" />
+      <field name="ARAE" mask="0x00800000" access="rw" description="Access to reserved address IE" />
+    </register>
+    
+    <register name="ILS" offset="0x58" reset="0x00000000" description="Interrupt line select">
+      <field name="RXFIFO0" mask="0x00000001" access="rw" description="Rx FIFO 0 interrupts to line 1" />
+      <field name="RXFIFO1" mask="0x00000002" access="rw" description="Rx FIFO 1 interrupts to line 1" />
+      <field name="SMSG" mask="0x00000004" access="rw" description="Status message interrupts to line 1" />
+      <field name="TFERR" mask="0x00000008" access="rw" description="Tx FIFO error interrupts to line 1" />
+      <field name="MISC" mask="0x00000010" access="rw" description="Misc interrupts to line 1" />
+      <field name="BERR" mask="0x00000020" access="rw" description="Bit/line error interrupts to line 1" />
+      <field name="PERR" mask="0x00000040" access="rw" description="Protocol error interrupts to line 1" />
+    </register>
+    
+    <register name="ILE" offset="0x5C" reset="0x00000000" description="Interrupt line enable">
+      <field name="EINT0" mask="0x00000001" access="rw" description="Enable interrupt line 0" />
+      <field name="EINT1" mask="0x00000002" access="rw" description="Enable interrupt line 1" />
+    </register>
+    
+    <!-- Message RAM configuration registers -->
+    <register name="RXGFC" offset="0x80" reset="0x00000000" description="Global filter configuration">
+      <field name="RRFE" mask="0x00000001" access="rw" description="Reject remote frames extended" />
+      <field name="RRFS" mask="0x00000002" access="rw" description="Reject remote frames standard" />
+      <field name="ANFE" mask="0x0000000C" access="rw" description="Accept non-matching frames extended">
+        <enum value="0x00000000" name="RxFIFO0" />
+        <enum value="0x00000004" name="RxFIFO1" />
+        <enum value="0x00000008" name="Reject" />
+      </field>
+      <field name="ANFS" mask="0x00000030" access="rw" description="Accept non-matching frames standard">
+        <enum value="0x00000000" name="RxFIFO0" />
+        <enum value="0x00000010" name="RxFIFO1" />
+        <enum value="0x00000020" name="Reject" />
+      </field>
+      <field name="F1OM" mask="0x00000100" access="rw" description="FIFO 1 operation mode (overwrite)" />
+      <field name="F0OM" mask="0x00000200" access="rw" description="FIFO 0 operation mode (overwrite)" />
+      <field name="LSS" mask="0x001F0000" access="ro" description="List size standard (# filter elements)" />
+      <field name="LSE" mask="0x0F000000" access="ro" description="List size extended (# filter elements)" />
+    </register>
+    
+    <register name="XIDAM" offset="0x84" reset="0x1FFFFFFF" description="Extended ID AND mask">
+      <field name="EIDM" mask="0x1FFFFFFF" access="rw" description="Extended ID mask for Rx filtering" />
+    </register>
+    
+    <register name="HPMS" offset="0x88" reset="0x00000000" access="ro" description="High priority message status">
+      <field name="BIDX" mask="0x00000007" access="ro" description="Buffer index" />
+      <field name="MSI" mask="0x000000C0" access="ro" description="Message storage indicator">
+        <enum value="0x00000000" name="NoFIFO" />
+        <enum value="0x00000040" name="FIFOLost" />
+        <enum value="0x00000080" name="FIFO0" />
+        <enum value="0x000000C0" name="FIFO1" />
+      </field>
+      <field name="FIDX" mask="0x00007F00" access="ro" description="Filter index" />
+      <field name="FLST" mask="0x00008000" access="ro" description="Filter list (0=std, 1=ext)" />
+    </register>
+    
+    <register name="RXF0S" offset="0x90" reset="0x00000000" access="ro" description="Rx FIFO 0 status">
+      <field name="F0FL" mask="0x0000000F" access="ro" description="Rx FIFO 0 fill level" />
+      <field name="F0GI" mask="0x00000300" access="ro" description="Rx FIFO 0 get index" />
+      <field name="F0PI" mask="0x00030000" access="ro" description="Rx FIFO 0 put index" />
+      <field name="F0F" mask="0x01000000" access="ro" description="Rx FIFO 0 full" />
+      <field name="RF0L" mask="0x02000000" access="ro" description="Rx FIFO 0 message lost" />
+    </register>
+    
+    <register name="RXF0A" offset="0x94" reset="0x00000000" description="Rx FIFO 0 acknowledge">
+      <field name="F0AI" mask="0x00000007" access="rw" description="Rx FIFO 0 acknowledge index" />
+    </register>
+    
+    <register name="RXF1S" offset="0x98" reset="0x00000000" access="ro" description="Rx FIFO 1 status">
+      <field name="F1FL" mask="0x0000000F" access="ro" description="Rx FIFO 1 fill level" />
+      <field name="F1GI" mask="0x00000300" access="ro" description="Rx FIFO 1 get index" />
+      <field name="F1PI" mask="0x00030000" access="ro" description="Rx FIFO 1 put index" />
+      <field name="F1F" mask="0x01000000" access="ro" description="Rx FIFO 1 full" />
+      <field name="RF1L" mask="0x02000000" access="ro" description="Rx FIFO 1 message lost" />
+    </register>
+    
+    <register name="RXF1A" offset="0x9C" reset="0x00000000" description="Rx FIFO 1 acknowledge">
+      <field name="F1AI" mask="0x00000007" access="rw" description="Rx FIFO 1 acknowledge index" />
+    </register>
+    
+    <register name="TXBC" offset="0xC0" reset="0x00000000" description="Tx buffer configuration">
+      <field name="TFQM" mask="0x01000000" access="rw" description="Tx FIFO/Queue mode">
+        <enum value="0x00000000" name="FIFO" />
+        <enum value="0x01000000" name="Queue" />
+      </field>
+    </register>
+    
+    <register name="TXFQS" offset="0xC4" reset="0x00000003" access="ro" description="Tx FIFO/queue status">
+      <field name="TFFL" mask="0x00000007" access="ro" description="Tx FIFO free level" />
+      <field name="TFGI" mask="0x00000300" access="ro" description="Tx FIFO get index" />
+      <field name="TFQPI" mask="0x00030000" access="ro" description="Tx FIFO/queue put index" />
+      <field name="TFQF" mask="0x00200000" access="ro" description="Tx FIFO/queue full" />
+    </register>
+    
+    <register name="TXBRP" offset="0xC8" reset="0x00000000" access="ro" description="Tx buffer request pending">
+      <field name="TRP" mask="0x00000007" access="ro" description="Transmission request pending (bit per buffer)" />
+    </register>
+    
+    <register name="TXBAR" offset="0xCC" reset="0x00000000" description="Tx buffer add request">
+      <field name="AR" mask="0x00000007" access="rw" description="Add request (bit per buffer)" />
+    </register>
+    
+    <register name="TXBCR" offset="0xD0" reset="0x00000000" description="Tx buffer cancellation request">
+      <field name="CR" mask="0x00000007" access="rw" description="Cancellation request (bit per buffer)" />
+    </register>
+    
+    <register name="TXBTO" offset="0xD4" reset="0x00000000" access="ro" description="Tx buffer transmission occurred">
+      <field name="TO" mask="0x00000007" access="ro" description="Transmission occurred (bit per buffer)" />
+    </register>
+    
+    <register name="TXBCF" offset="0xD8" reset="0x00000000" access="ro" description="Tx buffer cancellation finished">
+      <field name="CF" mask="0x00000007" access="ro" description="Cancellation finished (bit per buffer)" />
+    </register>
+    
+    <register name="TXBTIE" offset="0xDC" reset="0x00000000" description="Tx buffer transmission interrupt enable">
+      <field name="TIE" mask="0x00000007" access="rw" description="Transmission interrupt enable (bit per buffer)" />
+    </register>
+    
+    <register name="TXBCIE" offset="0xE0" reset="0x00000000" description="Tx buffer cancellation finished interrupt enable">
+      <field name="CFIE" mask="0x00000007" access="rw" description="Cancellation finished IE (bit per buffer)" />
+    </register>
+    
+    <register name="TXEFS" offset="0xE4" reset="0x00000000" access="ro" description="Tx event FIFO status">
+      <field name="EFFL" mask="0x00000007" access="ro" description="Event FIFO fill level" />
+      <field name="EFGI" mask="0x00000300" access="ro" description="Event FIFO get index" />
+      <field name="EFPI" mask="0x00030000" access="ro" description="Event FIFO put index" />
+      <field name="EFF" mask="0x01000000" access="ro" description="Event FIFO full" />
+      <field name="TEFL" mask="0x02000000" access="ro" description="Tx event FIFO element lost" />
+    </register>
+    
+    <register name="TXEFA" offset="0xE8" reset="0x00000000" description="Tx event FIFO acknowledge">
+      <field name="EFAI" mask="0x00000003" access="rw" description="Event FIFO acknowledge index" />
+    </register>
+    
+    <register name="CKDIV" offset="0x100" reset="0x00000000" description="CFG clock divider">
+      <field name="PDIV" mask="0x0000000F" access="rw" description="Input clock divider">
+        <enum value="0x00000000" name="Div1" />
+        <enum value="0x00000001" name="Div2" />
+        <enum value="0x00000002" name="Div4" />
+        <enum value="0x00000003" name="Div6" />
+        <enum value="0x00000004" name="Div8" />
+        <enum value="0x00000005" name="Div10" />
+        <enum value="0x00000006" name="Div12" />
+        <enum value="0x00000007" name="Div14" />
+        <enum value="0x00000008" name="Div16" />
+        <enum value="0x00000009" name="Div18" />
+        <enum value="0x0000000A" name="Div20" />
+        <enum value="0x0000000B" name="Div22" />
+        <enum value="0x0000000C" name="Div24" />
+        <enum value="0x0000000D" name="Div26" />
+        <enum value="0x0000000E" name="Div28" />
+        <enum value="0x0000000F" name="Div30" />
+      </field>
+    </register>
+    
+    <!-- ================================================================
+         Message RAM Elements (located in SRAMCAN at runtime)
+         Base address: 0x4000A400 (shared by all FDCAN instances)
+         Size: 2560 words (10KB)
+         
+         These structures are placed in Message RAM; their locations
+         are configured implicitly based on filter sizes (LSS, LSE)
+         and FIFO/buffer configuration. See RM0440 Section 44.3.
+         ================================================================ -->
+    <ram_elements base="0x4000A400" size="10240" description="FDCAN Message RAM (SRAMCAN)">
+      
+      <!-- Standard ID Filter Element (1 word each) -->
+      <element name="SIDFE" size="4" description="Standard ID filter element">
+        <field name="SFID2" mask="0x000003FF" description="Standard filter ID 2 / mask" />
+        <field name="SFID1" mask="0x07FF0000" description="Standard filter ID 1" />
+        <field name="SFEC" mask="0x38000000" description="Standard filter element configuration">
+          <enum value="0x00000000" name="Disable" />
+          <enum value="0x08000000" name="StoreRxFIFO0" />
+          <enum value="0x10000000" name="StoreRxFIFO1" />
+          <enum value="0x18000000" name="Reject" />
+          <enum value="0x20000000" name="SetPriority" />
+          <enum value="0x28000000" name="SetPrioStoreRxFIFO0" />
+          <enum value="0x30000000" name="SetPrioStoreRxFIFO1" />
+        </field>
+        <field name="SFT" mask="0xC0000000" description="Standard filter type">
+          <enum value="0x00000000" name="Range" />
+          <enum value="0x40000000" name="DualID" />
+          <enum value="0x80000000" name="Classic" description="SFID1=filter, SFID2=mask" />
+          <enum value="0xC0000000" name="Disabled" />
+        </field>
+      </element>
+      
+      <!-- Extended ID Filter Element (2 words each) -->
+      <element name="EIDFE" size="8" description="Extended ID filter element">
+        <word index="0">
+          <field name="EFID1" mask="0x1FFFFFFF" description="Extended filter ID 1" />
+          <field name="EFEC" mask="0xE0000000" description="Extended filter element configuration" />
+        </word>
+        <word index="1">
+          <field name="EFID2" mask="0x1FFFFFFF" description="Extended filter ID 2 / mask" />
+          <field name="EFT" mask="0xC0000000" description="Extended filter type" />
+        </word>
+      </element>
+      
+      <!-- Rx FIFO Element (up to 18 words: 2 header + max 16 data) -->
+      <element name="RXFE" size="72" max_size="true" description="Rx FIFO element">
+        <word index="0">
+          <field name="ID" mask="0x1FFFFFFF" description="Identifier (11 or 29 bit)" />
+          <field name="RTR" mask="0x20000000" description="Remote transmission request" />
+          <field name="XTD" mask="0x40000000" description="Extended identifier" />
+          <field name="ESI" mask="0x80000000" description="Error state indicator" />
+        </word>
+        <word index="1">
+          <field name="RXTS" mask="0x0000FFFF" description="Rx timestamp" />
+          <field name="DLC" mask="0x000F0000" description="Data length code" />
+          <field name="BRS" mask="0x00100000" description="Bit rate switch" />
+          <field name="FDF" mask="0x00200000" description="FD format" />
+          <field name="FIDX" mask="0x7F000000" description="Filter index" />
+          <field name="ANMF" mask="0x80000000" description="Accepted non-matching frame" />
+        </word>
+        <!-- Data words 2-17 contain message payload (up to 64 bytes) -->
+      </element>
+      
+      <!-- Tx Buffer Element (up to 18 words: 2 header + max 16 data) -->
+      <element name="TXBE" size="72" max_size="true" description="Tx buffer element">
+        <word index="0">
+          <field name="ID" mask="0x1FFFFFFF" description="Identifier (11 or 29 bit)" />
+          <field name="RTR" mask="0x20000000" description="Remote transmission request" />
+          <field name="XTD" mask="0x40000000" description="Extended identifier" />
+          <field name="ESI" mask="0x80000000" description="Error state indicator" />
+        </word>
+        <word index="1">
+          <field name="DLC" mask="0x000F0000" description="Data length code" />
+          <field name="BRS" mask="0x00100000" description="Bit rate switch" />
+          <field name="FDF" mask="0x00200000" description="FD format" />
+          <field name="EFC" mask="0x00800000" description="Event FIFO control" />
+          <field name="MM" mask="0xFF000000" description="Message marker" />
+        </word>
+        <!-- Data words 2-17 contain message payload (up to 64 bytes) -->
+      </element>
+      
+      <!-- Tx Event FIFO Element (2 words) -->
+      <element name="TXEFE" size="8" description="Tx event FIFO element">
+        <word index="0">
+          <field name="ID" mask="0x1FFFFFFF" description="Identifier" />
+          <field name="RTR" mask="0x20000000" description="Remote transmission request" />
+          <field name="XTD" mask="0x40000000" description="Extended identifier" />
+          <field name="ESI" mask="0x80000000" description="Error state indicator" />
+        </word>
+        <word index="1">
+          <field name="TXTS" mask="0x0000FFFF" description="Tx timestamp" />
+          <field name="DLC" mask="0x000F0000" description="Data length code" />
+          <field name="BRS" mask="0x00100000" description="Bit rate switch" />
+          <field name="FDF" mask="0x00200000" description="FD format" />
+          <field name="ET" mask="0x00C00000" description="Event type">
+            <enum value="0x00400000" name="TxEvent" />
+            <enum value="0x00800000" name="TxCancelled" />
+          </field>
+          <field name="MM" mask="0xFF000000" description="Message marker" />
+        </word>
+      </element>
+      
+    </ram_elements>
+    
+  </peripheral>
+  
+</device>

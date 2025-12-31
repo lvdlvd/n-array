@@ -1,0 +1,170 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 I2C (Inter-Integrated Circuit) Peripheral
+  Extracted from RM0440 Rev 7
+  All instances support SMBus/PMBus
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="I2C" description="Inter-integrated circuit interface">
+    <instance id="1" base="0x40005400" />
+    <instance id="2" base="0x40005800" />
+    <instance id="3" base="0x40007800" />
+    <instance id="4" base="0x40008400" />
+    
+    <register name="CR1" offset="0x00" reset="0x00000000" description="Control register 1">
+      <field name="PE" mask="0x00000001" access="rw" description="Peripheral enable">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00000001" name="Enabled" />
+      </field>
+      <field name="TXIE" mask="0x00000002" access="rw" description="TX interrupt enable" />
+      <field name="RXIE" mask="0x00000004" access="rw" description="RX interrupt enable" />
+      <field name="ADDRIE" mask="0x00000008" access="rw" description="Address match interrupt enable (slave)" />
+      <field name="NACKIE" mask="0x00000010" access="rw" description="Not acknowledge received interrupt enable" />
+      <field name="STOPIE" mask="0x00000020" access="rw" description="Stop detection interrupt enable" />
+      <field name="TCIE" mask="0x00000040" access="rw" description="Transfer complete interrupt enable" />
+      <field name="ERRIE" mask="0x00000080" access="rw" description="Error interrupts enable" />
+      <field name="DNF" mask="0x00000F00" access="rw" description="Digital noise filter">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00000100" name="Filter1" description="1 x tI2CCLK" />
+        <enum value="0x00000200" name="Filter2" description="2 x tI2CCLK" />
+        <enum value="0x00000F00" name="Filter15" description="15 x tI2CCLK" />
+      </field>
+      <field name="ANFOFF" mask="0x00001000" access="rw" description="Analog noise filter OFF">
+        <enum value="0x00000000" name="Enabled" description="Analog filter enabled" />
+        <enum value="0x00001000" name="Disabled" description="Analog filter disabled" />
+      </field>
+      <field name="TXDMAEN" mask="0x00004000" access="rw" description="DMA transmission requests enable" />
+      <field name="RXDMAEN" mask="0x00008000" access="rw" description="DMA reception requests enable" />
+      <field name="SBC" mask="0x00010000" access="rw" description="Slave byte control" />
+      <field name="NOSTRETCH" mask="0x00020000" access="rw" description="Clock stretching disable">
+        <enum value="0x00000000" name="Enabled" description="Clock stretching enabled" />
+        <enum value="0x00020000" name="Disabled" description="Clock stretching disabled" />
+      </field>
+      <field name="WUPEN" mask="0x00040000" access="rw" description="Wakeup from Stop mode enable" />
+      <field name="GCEN" mask="0x00080000" access="rw" description="General call enable" />
+      <field name="SMBHEN" mask="0x00100000" access="rw" description="SMBus host address enable" />
+      <field name="SMBDEN" mask="0x00200000" access="rw" description="SMBus device default address enable" />
+      <field name="ALERTEN" mask="0x00400000" access="rw" description="SMBus alert enable" />
+      <field name="PECEN" mask="0x00800000" access="rw" description="PEC enable" />
+    </register>
+    
+    <register name="CR2" offset="0x04" reset="0x00000000" description="Control register 2">
+      <field name="SADD" mask="0x000003FF" access="rw" description="Slave address (master mode)" />
+      <field name="RD_WRN" mask="0x00000400" access="rw" description="Transfer direction (master mode)">
+        <enum value="0x00000000" name="Write" />
+        <enum value="0x00000400" name="Read" />
+      </field>
+      <field name="ADD10" mask="0x00000800" access="rw" description="10-bit addressing mode (master mode)">
+        <enum value="0x00000000" name="Bit7" description="7-bit addressing" />
+        <enum value="0x00000800" name="Bit10" description="10-bit addressing" />
+      </field>
+      <field name="HEAD10R" mask="0x00001000" access="rw" description="10-bit address header only read direction" />
+      <field name="START" mask="0x00002000" access="rs" description="Start generation" />
+      <field name="STOP" mask="0x00004000" access="rs" description="Stop generation" />
+      <field name="NACK" mask="0x00008000" access="rs" description="NACK generation (slave mode)" />
+      <field name="NBYTES" mask="0x00FF0000" access="rw" description="Number of bytes" />
+      <field name="RELOAD" mask="0x01000000" access="rw" description="NBYTES reload mode">
+        <enum value="0x00000000" name="Completed" description="Transfer completed after NBYTES" />
+        <enum value="0x01000000" name="NotCompleted" description="NBYTES reloaded after transfer" />
+      </field>
+      <field name="AUTOEND" mask="0x02000000" access="rw" description="Automatic end mode (master mode)">
+        <enum value="0x00000000" name="Software" description="Software end mode" />
+        <enum value="0x02000000" name="Automatic" description="Automatic STOP after NBYTES" />
+      </field>
+      <field name="PECBYTE" mask="0x04000000" access="rs" description="Packet error checking byte" />
+    </register>
+    
+    <register name="OAR1" offset="0x08" reset="0x00000000" description="Own address 1 register">
+      <field name="OA1" mask="0x000003FF" access="rw" description="Own address 1 (7 or 10 bit)" />
+      <field name="OA1MODE" mask="0x00000400" access="rw" description="Own address 1 10-bit mode">
+        <enum value="0x00000000" name="Bit7" />
+        <enum value="0x00000400" name="Bit10" />
+      </field>
+      <field name="OA1EN" mask="0x00008000" access="rw" description="Own address 1 enable" />
+    </register>
+    
+    <register name="OAR2" offset="0x0C" reset="0x00000000" description="Own address 2 register">
+      <field name="OA2" mask="0x000000FE" access="rw" description="Own address 2 (7-bit)" />
+      <field name="OA2MSK" mask="0x00000700" access="rw" description="Own address 2 masks">
+        <enum value="0x00000000" name="NoMask" description="No mask, all bits compared" />
+        <enum value="0x00000100" name="Mask1" description="OA2[1] masked" />
+        <enum value="0x00000200" name="Mask2" description="OA2[2:1] masked" />
+        <enum value="0x00000300" name="Mask3" description="OA2[3:1] masked" />
+        <enum value="0x00000400" name="Mask4" description="OA2[4:1] masked" />
+        <enum value="0x00000500" name="Mask5" description="OA2[5:1] masked" />
+        <enum value="0x00000600" name="Mask6" description="OA2[6:1] masked" />
+        <enum value="0x00000700" name="Mask7" description="OA2[7:1] masked, all addresses ACKed" />
+      </field>
+      <field name="OA2EN" mask="0x00008000" access="rw" description="Own address 2 enable" />
+    </register>
+    
+    <register name="TIMINGR" offset="0x10" reset="0x00000000" description="Timing register">
+      <field name="SCLL" mask="0x000000FF" access="rw" description="SCL low period (master mode)" />
+      <field name="SCLH" mask="0x0000FF00" access="rw" description="SCL high period (master mode)" />
+      <field name="SDADEL" mask="0x000F0000" access="rw" description="Data hold time" />
+      <field name="SCLDEL" mask="0x00F00000" access="rw" description="Data setup time" />
+      <field name="PRESC" mask="0xF0000000" access="rw" description="Timing prescaler" />
+    </register>
+    
+    <register name="TIMEOUTR" offset="0x14" reset="0x00000000" description="Timeout register">
+      <field name="TIMEOUTA" mask="0x00000FFF" access="rw" description="Bus timeout A" />
+      <field name="TIDLE" mask="0x00001000" access="rw" description="Idle clock timeout detection">
+        <enum value="0x00000000" name="SCLLow" description="TIMEOUTA detects SCL low timeout" />
+        <enum value="0x00001000" name="BusIdle" description="TIMEOUTA detects bus idle" />
+      </field>
+      <field name="TIMOUTEN" mask="0x00008000" access="rw" description="Clock timeout enable" />
+      <field name="TIMEOUTB" mask="0x0FFF0000" access="rw" description="Bus timeout B" />
+      <field name="TEXTEN" mask="0x80000000" access="rw" description="Extended clock timeout enable" />
+    </register>
+    
+    <register name="ISR" offset="0x18" reset="0x00000001" description="Interrupt and status register">
+      <field name="TXE" mask="0x00000001" access="rs" description="Transmit data register empty" />
+      <field name="TXIS" mask="0x00000002" access="rs" description="Transmit interrupt status" />
+      <field name="RXNE" mask="0x00000004" access="ro" description="Receive data register not empty" />
+      <field name="ADDR" mask="0x00000008" access="ro" description="Address matched (slave mode)" />
+      <field name="NACKF" mask="0x00000010" access="ro" description="Not acknowledge received flag" />
+      <field name="STOPF" mask="0x00000020" access="ro" description="Stop detection flag" />
+      <field name="TC" mask="0x00000040" access="ro" description="Transfer complete (master mode)" />
+      <field name="TCR" mask="0x00000080" access="ro" description="Transfer complete reload" />
+      <field name="BERR" mask="0x00000100" access="ro" description="Bus error" />
+      <field name="ARLO" mask="0x00000200" access="ro" description="Arbitration lost" />
+      <field name="OVR" mask="0x00000400" access="ro" description="Overrun/Underrun (slave mode)" />
+      <field name="PECERR" mask="0x00000800" access="ro" description="PEC error in reception" />
+      <field name="TIMEOUT" mask="0x00001000" access="ro" description="Timeout or tLOW detection flag" />
+      <field name="ALERT" mask="0x00002000" access="ro" description="SMBus alert" />
+      <field name="BUSY" mask="0x00008000" access="ro" description="Bus busy" />
+      <field name="DIR" mask="0x00010000" access="ro" description="Transfer direction (slave mode)">
+        <enum value="0x00000000" name="Write" description="Write transfer, slave receiver" />
+        <enum value="0x00010000" name="Read" description="Read transfer, slave transmitter" />
+      </field>
+      <field name="ADDCODE" mask="0x00FE0000" access="ro" description="Address match code (slave mode)" />
+    </register>
+    
+    <register name="ICR" offset="0x1C" reset="0x00000000" access="wo" description="Interrupt clear register">
+      <field name="ADDRCF" mask="0x00000008" access="wo" description="Address matched flag clear" />
+      <field name="NACKCF" mask="0x00000010" access="wo" description="Not acknowledge flag clear" />
+      <field name="STOPCF" mask="0x00000020" access="wo" description="Stop detection flag clear" />
+      <field name="BERRCF" mask="0x00000100" access="wo" description="Bus error flag clear" />
+      <field name="ARLOCF" mask="0x00000200" access="wo" description="Arbitration lost flag clear" />
+      <field name="OVRCF" mask="0x00000400" access="wo" description="Overrun/Underrun flag clear" />
+      <field name="PECCF" mask="0x00000800" access="wo" description="PEC error flag clear" />
+      <field name="TIMOUTCF" mask="0x00001000" access="wo" description="Timeout detection flag clear" />
+      <field name="ALERTCF" mask="0x00002000" access="wo" description="Alert flag clear" />
+    </register>
+    
+    <register name="PECR" offset="0x20" reset="0x00000000" access="ro" description="PEC register">
+      <field name="PEC" mask="0x000000FF" access="ro" description="Packet error checking register" />
+    </register>
+    
+    <register name="RXDR" offset="0x24" reset="0x00000000" access="ro" description="Receive data register">
+      <field name="RXDATA" mask="0x000000FF" access="ro" description="8-bit receive data" />
+    </register>
+    
+    <register name="TXDR" offset="0x28" reset="0x00000000" description="Transmit data register">
+      <field name="TXDATA" mask="0x000000FF" access="rw" description="8-bit transmit data" />
+    </register>
+    
+  </peripheral>
+  
+</device>

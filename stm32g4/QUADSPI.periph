@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 QUADSPI (Quad-SPI Interface) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="QUADSPI" description="Quad-SPI interface">
+    <instance id="1" base="0xA0001000" />
+    
+    <register name="CR" offset="0x00" reset="0x00000000" description="Control register">
+      <field name="EN" mask="0x00000001" access="rw" description="Enable" />
+      <field name="ABORT" mask="0x00000002" access="rs" description="Abort request" />
+      <field name="DMAEN" mask="0x00000004" access="rw" description="DMA enable" />
+      <field name="TCEN" mask="0x00000008" access="rw" description="Timeout counter enable" />
+      <field name="SSHIFT" mask="0x00000010" access="rw" description="Sample shift" />
+      <field name="DFM" mask="0x00000040" access="rw" description="Dual-flash mode" />
+      <field name="FSEL" mask="0x00000080" access="rw" description="Flash memory selection" />
+      <field name="FTHRES" mask="0x00000F00" access="rw" description="FIFO threshold level" />
+      <field name="TEIE" mask="0x00010000" access="rw" description="Transfer error interrupt enable" />
+      <field name="TCIE" mask="0x00020000" access="rw" description="Transfer complete interrupt enable" />
+      <field name="FTIE" mask="0x00040000" access="rw" description="FIFO threshold interrupt enable" />
+      <field name="SMIE" mask="0x00080000" access="rw" description="Status match interrupt enable" />
+      <field name="TOIE" mask="0x00100000" access="rw" description="Timeout interrupt enable" />
+      <field name="APMS" mask="0x00400000" access="rw" description="Automatic poll mode stop" />
+      <field name="PMM" mask="0x00800000" access="rw" description="Polling match mode" />
+      <field name="PRESCALER" mask="0xFF000000" access="rw" description="Clock prescaler" />
+    </register>
+    
+    <register name="DCR" offset="0x04" reset="0x00000000" description="Device configuration register">
+      <field name="CKMODE" mask="0x00000001" access="rw" description="Clock mode" />
+      <field name="CSHT" mask="0x00000700" access="rw" description="Chip select high time" />
+      <field name="FSIZE" mask="0x001F0000" access="rw" description="Flash memory size" />
+    </register>
+    
+    <register name="SR" offset="0x08" reset="0x00000000" access="ro" description="Status register">
+      <field name="TEF" mask="0x00000001" access="ro" description="Transfer error flag" />
+      <field name="TCF" mask="0x00000002" access="ro" description="Transfer complete flag" />
+      <field name="FTF" mask="0x00000004" access="ro" description="FIFO threshold flag" />
+      <field name="SMF" mask="0x00000008" access="ro" description="Status match flag" />
+      <field name="TOF" mask="0x00000010" access="ro" description="Timeout flag" />
+      <field name="BUSY" mask="0x00000020" access="ro" description="Busy" />
+      <field name="FLEVEL" mask="0x00001F00" access="ro" description="FIFO level" />
+    </register>
+    
+    <register name="FCR" offset="0x0C" reset="0x00000000" access="wo" description="Flag clear register">
+      <field name="CTEF" mask="0x00000001" access="wo" description="Clear transfer error flag" />
+      <field name="CTCF" mask="0x00000002" access="wo" description="Clear transfer complete flag" />
+      <field name="CSMF" mask="0x00000008" access="wo" description="Clear status match flag" />
+      <field name="CTOF" mask="0x00000010" access="wo" description="Clear timeout flag" />
+    </register>
+    
+    <register name="DLR" offset="0x10" reset="0x00000000" description="Data length register">
+      <field name="DL" mask="0xFFFFFFFF" access="rw" description="Data length" />
+    </register>
+    
+    <register name="CCR" offset="0x14" reset="0x00000000" description="Communication configuration register">
+      <field name="INSTRUCTION" mask="0x000000FF" access="rw" description="Instruction" />
+      <field name="IMODE" mask="0x00000300" access="rw" description="Instruction mode">
+        <enum value="0x00000000" name="None" />
+        <enum value="0x00000100" name="SingleLine" />
+        <enum value="0x00000200" name="TwoLines" />
+        <enum value="0x00000300" name="FourLines" />
+      </field>
+      <field name="ADMODE" mask="0x00000C00" access="rw" description="Address mode" />
+      <field name="ADSIZE" mask="0x00003000" access="rw" description="Address size">
+        <enum value="0x00000000" name="Bits8" />
+        <enum value="0x00001000" name="Bits16" />
+        <enum value="0x00002000" name="Bits24" />
+        <enum value="0x00003000" name="Bits32" />
+      </field>
+      <field name="ABMODE" mask="0x0000C000" access="rw" description="Alternate bytes mode" />
+      <field name="ABSIZE" mask="0x00030000" access="rw" description="Alternate bytes size" />
+      <field name="DCYC" mask="0x007C0000" access="rw" description="Dummy cycles" />
+      <field name="DMODE" mask="0x03000000" access="rw" description="Data mode" />
+      <field name="FMODE" mask="0x0C000000" access="rw" description="Functional mode">
+        <enum value="0x00000000" name="IndirectWrite" />
+        <enum value="0x04000000" name="IndirectRead" />
+        <enum value="0x08000000" name="AutoPolling" />
+        <enum value="0x0C000000" name="MemoryMapped" />
+      </field>
+      <field name="SIOO" mask="0x10000000" access="rw" description="Send instruction only once" />
+      <field name="DDRM" mask="0x80000000" access="rw" description="Double data rate mode" />
+    </register>
+    
+    <register name="AR" offset="0x18" reset="0x00000000" description="Address register">
+      <field name="ADDRESS" mask="0xFFFFFFFF" access="rw" description="Address" />
+    </register>
+    
+    <register name="ABR" offset="0x1C" reset="0x00000000" description="Alternate bytes register">
+      <field name="ALTERNATE" mask="0xFFFFFFFF" access="rw" description="Alternate bytes" />
+    </register>
+    
+    <register name="DR" offset="0x20" reset="0x00000000" description="Data register">
+      <field name="DATA" mask="0xFFFFFFFF" access="rw" description="Data" />
+    </register>
+    
+    <register name="PSMKR" offset="0x24" reset="0x00000000" description="Polling status mask register">
+      <field name="MASK" mask="0xFFFFFFFF" access="rw" description="Status mask" />
+    </register>
+    
+    <register name="PSMAR" offset="0x28" reset="0x00000000" description="Polling status match register">
+      <field name="MATCH" mask="0xFFFFFFFF" access="rw" description="Status match" />
+    </register>
+    
+    <register name="PIR" offset="0x2C" reset="0x00000000" description="Polling interval register">
+      <field name="INTERVAL" mask="0x0000FFFF" access="rw" description="Polling interval" />
+    </register>
+    
+    <register name="LPTR" offset="0x30" reset="0x00000000" description="Low-power timeout register">
+      <field name="TIMEOUT" mask="0x0000FFFF" access="rw" description="Timeout period" />
+    </register>
+    
+  </peripheral>
+  
+</device>

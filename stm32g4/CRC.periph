@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 CRC (Cyclic Redundancy Check) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="CRC" description="Cyclic redundancy check calculation unit">
+    <instance id="1" base="0x40023000" />
+    
+    <register name="DR" offset="0x00" reset="0xFFFFFFFF" description="Data register">
+      <field name="DR" mask="0xFFFFFFFF" access="rw" description="Data register bits" />
+    </register>
+    
+    <register name="IDR" offset="0x04" reset="0x00000000" description="Independent data register">
+      <field name="IDR" mask="0xFFFFFFFF" access="rw" description="General-purpose 32-bit data" />
+    </register>
+    
+    <register name="CR" offset="0x08" reset="0x00000000" description="Control register">
+      <field name="RESET" mask="0x00000001" access="rs" description="Reset CRC calculation unit" />
+      <field name="POLYSIZE" mask="0x00000018" access="rw" description="Polynomial size">
+        <enum value="0x00000000" name="Poly32" description="32-bit polynomial" />
+        <enum value="0x00000008" name="Poly16" description="16-bit polynomial" />
+        <enum value="0x00000010" name="Poly8" description="8-bit polynomial" />
+        <enum value="0x00000018" name="Poly7" description="7-bit polynomial" />
+      </field>
+      <field name="REV_IN" mask="0x00000060" access="rw" description="Reverse input data">
+        <enum value="0x00000000" name="None" description="Bit order not affected" />
+        <enum value="0x00000020" name="Byte" description="Bit reversal by byte" />
+        <enum value="0x00000040" name="HalfWord" description="Bit reversal by half-word" />
+        <enum value="0x00000060" name="Word" description="Bit reversal by word" />
+      </field>
+      <field name="REV_OUT" mask="0x00000080" access="rw" description="Reverse output data" />
+    </register>
+    
+    <register name="INIT" offset="0x10" reset="0xFFFFFFFF" description="Initial CRC value">
+      <field name="CRC_INIT" mask="0xFFFFFFFF" access="rw" description="Programmable initial CRC value" />
+    </register>
+    
+    <register name="POL" offset="0x14" reset="0x04C11DB7" description="CRC polynomial">
+      <field name="POL" mask="0xFFFFFFFF" access="rw" description="Programmable polynomial" />
+    </register>
+    
+  </peripheral>
+  
+</device>

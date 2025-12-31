@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 PWR (Power Control) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="PWR" description="Power control">
+    <instance id="1" base="0x40007000" />
+    
+    <register name="CR1" offset="0x00" reset="0x00000200" description="Power control register 1">
+      <field name="LPMS" mask="0x00000007" access="rw" description="Low-power mode selection">
+        <enum value="0x00000000" name="Stop0" />
+        <enum value="0x00000001" name="Stop1" />
+        <enum value="0x00000002" name="Stop2" />
+        <enum value="0x00000003" name="Standby" />
+        <enum value="0x00000004" name="Shutdown" />
+      </field>
+      <field name="FPD_STOP" mask="0x00000008" access="rw" description="Flash power-down in Stop mode" />
+      <field name="DBP" mask="0x00000100" access="rw" description="Disable backup domain write protection" />
+      <field name="VOS" mask="0x00000600" access="rw" description="Voltage scaling range selection">
+        <enum value="0x00000200" name="Range1" description="High performance (1.28V)" />
+        <enum value="0x00000400" name="Range2" description="Low power (1.0V)" />
+      </field>
+      <field name="LPR" mask="0x00004000" access="rw" description="Low-power run" />
+    </register>
+    
+    <register name="CR2" offset="0x04" reset="0x00000000" description="Power control register 2">
+      <field name="PVDE" mask="0x00000001" access="rw" description="Programmable voltage detector enable" />
+      <field name="PLS" mask="0x0000000E" access="rw" description="Programmable voltage detector level">
+        <enum value="0x00000000" name="Level0" description="2.0V" />
+        <enum value="0x00000002" name="Level1" description="2.2V" />
+        <enum value="0x00000004" name="Level2" description="2.4V" />
+        <enum value="0x00000006" name="Level3" description="2.5V" />
+        <enum value="0x00000008" name="Level4" description="2.6V" />
+        <enum value="0x0000000A" name="Level5" description="2.8V" />
+        <enum value="0x0000000C" name="Level6" description="2.9V" />
+        <enum value="0x0000000E" name="External" description="PVD_IN pin" />
+      </field>
+      <field name="PVMEN1" mask="0x00000010" access="rw" description="Peripheral voltage monitoring 1 enable (VDDA vs 1.62V)" />
+      <field name="PVMEN2" mask="0x00000020" access="rw" description="Peripheral voltage monitoring 2 enable (VDDA vs 2.2V)" />
+    </register>
+    
+    <register name="CR3" offset="0x08" reset="0x00008000" description="Power control register 3">
+      <field name="EWUP1" mask="0x00000001" access="rw" description="Enable wakeup pin WKUP1" />
+      <field name="EWUP2" mask="0x00000002" access="rw" description="Enable wakeup pin WKUP2" />
+      <field name="EWUP3" mask="0x00000004" access="rw" description="Enable wakeup pin WKUP3" />
+      <field name="EWUP4" mask="0x00000008" access="rw" description="Enable wakeup pin WKUP4" />
+      <field name="EWUP5" mask="0x00000010" access="rw" description="Enable wakeup pin WKUP5" />
+      <field name="RRS" mask="0x00000100" access="rw" description="SRAM2 retention in Standby mode" />
+      <field name="APC" mask="0x00000400" access="rw" description="Apply pull-up and pull-down configuration" />
+      <field name="UCPD1_STDBY" mask="0x00002000" access="rw" description="UCPD1 Standby mode" />
+      <field name="UCPD1_DBDIS" mask="0x00004000" access="rw" description="UCPD1 dead battery disable" />
+      <field name="EIWUL" mask="0x00008000" access="rw" description="Enable internal wakeup line" />
+    </register>
+    
+    <register name="CR4" offset="0x0C" reset="0x00000000" description="Power control register 4">
+      <field name="WP1" mask="0x00000001" access="rw" description="Wakeup pin WKUP1 polarity" />
+      <field name="WP2" mask="0x00000002" access="rw" description="Wakeup pin WKUP2 polarity" />
+      <field name="WP3" mask="0x00000004" access="rw" description="Wakeup pin WKUP3 polarity" />
+      <field name="WP4" mask="0x00000008" access="rw" description="Wakeup pin WKUP4 polarity" />
+      <field name="WP5" mask="0x00000010" access="rw" description="Wakeup pin WKUP5 polarity" />
+      <field name="VBE" mask="0x00000100" access="rw" description="VBAT battery charging enable" />
+      <field name="VBRS" mask="0x00000200" access="rw" description="VBAT battery charging resistor selection" />
+    </register>
+    
+    <register name="SR1" offset="0x10" reset="0x00000000" access="ro" description="Power status register 1">
+      <field name="WUF1" mask="0x00000001" access="ro" description="Wakeup flag 1" />
+      <field name="WUF2" mask="0x00000002" access="ro" description="Wakeup flag 2" />
+      <field name="WUF3" mask="0x00000004" access="ro" description="Wakeup flag 3" />
+      <field name="WUF4" mask="0x00000008" access="ro" description="Wakeup flag 4" />
+      <field name="WUF5" mask="0x00000010" access="ro" description="Wakeup flag 5" />
+      <field name="SBF" mask="0x00000100" access="ro" description="Standby flag" />
+      <field name="WUFI" mask="0x00008000" access="ro" description="Wakeup flag internal" />
+    </register>
+    
+    <register name="SR2" offset="0x14" reset="0x00000000" access="ro" description="Power status register 2">
+      <field name="REGLPS" mask="0x00000100" access="ro" description="Low-power regulator started" />
+      <field name="REGLPF" mask="0x00000200" access="ro" description="Low-power regulator flag" />
+      <field name="VOSF" mask="0x00000400" access="ro" description="Voltage scaling flag" />
+      <field name="PVDO" mask="0x00000800" access="ro" description="Programmable voltage detector output" />
+      <field name="PVMO1" mask="0x00001000" access="ro" description="Peripheral voltage monitoring output 1" />
+      <field name="PVMO2" mask="0x00002000" access="ro" description="Peripheral voltage monitoring output 2" />
+    </register>
+    
+    <register name="SCR" offset="0x18" reset="0x00000000" access="wo" description="Power status clear register">
+      <field name="CWUF1" mask="0x00000001" access="wo" description="Clear wakeup flag 1" />
+      <field name="CWUF2" mask="0x00000002" access="wo" description="Clear wakeup flag 2" />
+      <field name="CWUF3" mask="0x00000004" access="wo" description="Clear wakeup flag 3" />
+      <field name="CWUF4" mask="0x00000008" access="wo" description="Clear wakeup flag 4" />
+      <field name="CWUF5" mask="0x00000010" access="wo" description="Clear wakeup flag 5" />
+      <field name="CSBF" mask="0x00000100" access="wo" description="Clear standby flag" />
+    </register>
+    
+    <register name="PUCRA" offset="0x20" reset="0x00000000" description="Power Port A pull-up control register">
+      <field name="PU" mask="0x0000FFFF" access="rw" description="Port A pull-up bits" />
+    </register>
+    
+    <register name="PDCRA" offset="0x24" reset="0x00000000" description="Power Port A pull-down control register">
+      <field name="PD" mask="0x0000FFFF" access="rw" description="Port A pull-down bits" />
+    </register>
+    
+    <register name="PUCRB" offset="0x28" reset="0x00000000" description="Power Port B pull-up control register">
+      <field name="PU" mask="0x0000FFFF" access="rw" description="Port B pull-up bits" />
+    </register>
+    
+    <register name="PDCRB" offset="0x2C" reset="0x00000000" description="Power Port B pull-down control register">
+      <field name="PD" mask="0x0000FFFF" access="rw" description="Port B pull-down bits" />
+    </register>
+    
+    <register name="PUCRC" offset="0x30" reset="0x00000000" description="Power Port C pull-up control register">
+      <field name="PU" mask="0x0000FFFF" access="rw" description="Port C pull-up bits" />
+    </register>
+    
+    <register name="PDCRC" offset="0x34" reset="0x00000000" description="Power Port C pull-down control register">
+      <field name="PD" mask="0x0000FFFF" access="rw" description="Port C pull-down bits" />
+    </register>
+    
+    <register name="PUCRD" offset="0x38" reset="0x00000000" description="Power Port D pull-up control register">
+      <field name="PU" mask="0x0000FFFF" access="rw" description="Port D pull-up bits" />
+    </register>
+    
+    <register name="PDCRD" offset="0x3C" reset="0x00000000" description="Power Port D pull-down control register">
+      <field name="PD" mask="0x0000FFFF" access="rw" description="Port D pull-down bits" />
+    </register>
+    
+    <register name="PUCRE" offset="0x40" reset="0x00000000" description="Power Port E pull-up control register">
+      <field name="PU" mask="0x0000FFFF" access="rw" description="Port E pull-up bits" />
+    </register>
+    
+    <register name="PDCRE" offset="0x44" reset="0x00000000" description="Power Port E pull-down control register">
+      <field name="PD" mask="0x0000FFFF" access="rw" description="Port E pull-down bits" />
+    </register>
+    
+    <register name="PUCRF" offset="0x48" reset="0x00000000" description="Power Port F pull-up control register">
+      <field name="PU" mask="0x0000FFFF" access="rw" description="Port F pull-up bits" />
+    </register>
+    
+    <register name="PDCRF" offset="0x4C" reset="0x00000000" description="Power Port F pull-down control register">
+      <field name="PD" mask="0x0000FFFF" access="rw" description="Port F pull-down bits" />
+    </register>
+    
+    <register name="PUCRG" offset="0x50" reset="0x00000000" description="Power Port G pull-up control register">
+      <field name="PU" mask="0x000003FF" access="rw" description="Port G pull-up bits (PG0-9)" />
+    </register>
+    
+    <register name="PDCRG" offset="0x54" reset="0x00000000" description="Power Port G pull-down control register">
+      <field name="PD" mask="0x000003FF" access="rw" description="Port G pull-down bits (PG0-9)" />
+    </register>
+    
+    <register name="CR5" offset="0x80" reset="0x00000100" description="Power control register 5">
+      <field name="R1MODE" mask="0x00000100" access="rw" description="Main regulator Range 1 mode" />
+    </register>
+    
+  </peripheral>
+  
+</device>

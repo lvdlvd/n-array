@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 GPIO (General Purpose I/O) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="GPIO" description="General-purpose I/Os">
+    <instance id="A" base="0x48000000" />
+    <instance id="B" base="0x48000400" />
+    <instance id="C" base="0x48000800" />
+    <instance id="D" base="0x48000C00" />
+    <instance id="E" base="0x48001000" />
+    <instance id="F" base="0x48001400" />
+    <instance id="G" base="0x48001800" />
+    
+    <register name="MODER" offset="0x00" reset="0xFFFFFFFF" description="Port mode register">
+      <field name="MODE" mask="0xFFFFFFFF" access="rw" description="Port configuration bits (2 bits per pin, 00=Input, 01=Output, 10=AF, 11=Analog)" />
+    </register>
+    
+    <register name="OTYPER" offset="0x04" reset="0x00000000" description="Port output type register">
+      <field name="OT" mask="0x0000FFFF" access="rw" description="Port output type bits (0=Push-pull, 1=Open-drain)" />
+    </register>
+    
+    <register name="OSPEEDR" offset="0x08" reset="0x00000000" description="Port output speed register">
+      <field name="OSPEED" mask="0xFFFFFFFF" access="rw" description="Port output speed bits (2 bits per pin, 00=Low, 01=Medium, 10=High, 11=VeryHigh)" />
+    </register>
+    
+    <register name="PUPDR" offset="0x0C" reset="0x00000000" description="Port pull-up/pull-down register">
+      <field name="PUPD" mask="0xFFFFFFFF" access="rw" description="Port pull-up/down bits (2 bits per pin, 00=None, 01=PullUp, 10=PullDown)" />
+    </register>
+    
+    <register name="IDR" offset="0x10" reset="0x00000000" access="ro" description="Port input data register">
+      <field name="ID" mask="0x0000FFFF" access="ro" description="Port input data" />
+    </register>
+    
+    <register name="ODR" offset="0x14" reset="0x00000000" description="Port output data register">
+      <field name="OD" mask="0x0000FFFF" access="rw" description="Port output data" />
+    </register>
+    
+    <register name="BSRR" offset="0x18" reset="0x00000000" access="wo" description="Port bit set/reset register">
+      <field name="BS" mask="0x0000FFFF" access="wo" description="Port set bits (write 1 to set)" />
+      <field name="BR" mask="0xFFFF0000" access="wo" description="Port reset bits (write 1 to reset)" />
+    </register>
+    
+    <register name="LCKR" offset="0x1C" reset="0x00000000" description="Port configuration lock register">
+      <field name="LCK" mask="0x0000FFFF" access="rw" description="Port lock bits" />
+      <field name="LCKK" mask="0x00010000" access="rw" description="Lock key" />
+    </register>
+    
+    <register name="AFRL" offset="0x20" reset="0x00000000" description="Alternate function low register (pins 0-7)">
+      <field name="AFSEL0" mask="0x0000000F" access="rw" description="Alternate function pin 0" />
+      <field name="AFSEL1" mask="0x000000F0" access="rw" description="Alternate function pin 1" />
+      <field name="AFSEL2" mask="0x00000F00" access="rw" description="Alternate function pin 2" />
+      <field name="AFSEL3" mask="0x0000F000" access="rw" description="Alternate function pin 3" />
+      <field name="AFSEL4" mask="0x000F0000" access="rw" description="Alternate function pin 4" />
+      <field name="AFSEL5" mask="0x00F00000" access="rw" description="Alternate function pin 5" />
+      <field name="AFSEL6" mask="0x0F000000" access="rw" description="Alternate function pin 6" />
+      <field name="AFSEL7" mask="0xF0000000" access="rw" description="Alternate function pin 7" />
+    </register>
+    
+    <register name="AFRH" offset="0x24" reset="0x00000000" description="Alternate function high register (pins 8-15)">
+      <field name="AFSEL8" mask="0x0000000F" access="rw" description="Alternate function pin 8" />
+      <field name="AFSEL9" mask="0x000000F0" access="rw" description="Alternate function pin 9" />
+      <field name="AFSEL10" mask="0x00000F00" access="rw" description="Alternate function pin 10" />
+      <field name="AFSEL11" mask="0x0000F000" access="rw" description="Alternate function pin 11" />
+      <field name="AFSEL12" mask="0x000F0000" access="rw" description="Alternate function pin 12" />
+      <field name="AFSEL13" mask="0x00F00000" access="rw" description="Alternate function pin 13" />
+      <field name="AFSEL14" mask="0x0F000000" access="rw" description="Alternate function pin 14" />
+      <field name="AFSEL15" mask="0xF0000000" access="rw" description="Alternate function pin 15" />
+    </register>
+    
+    <register name="BRR" offset="0x28" reset="0x00000000" access="wo" description="Port bit reset register">
+      <field name="BR" mask="0x0000FFFF" access="wo" description="Port reset bits (write 1 to reset)" />
+    </register>
+    
+  </peripheral>
+  
+</device>

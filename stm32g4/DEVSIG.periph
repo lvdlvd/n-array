@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 Device Signature and Calibration Data
+  From RM0440 Chapter 48 and Datasheets Section 3.18
+  
+  These are read-only values programmed at factory.
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="DEVSIG" description="Device electronic signature">
+    <instance id="1" base="0x1FFF7500" />
+    
+    <!-- Package data -->
+    <register name="PACKAGE" offset="0x00" reset="0x00000000" access="ro" description="Package data">
+      <field name="PKG" mask="0x0000001F" access="ro" description="Package type">
+        <enum value="0x00000000" name="LQFP100" />
+        <enum value="0x00000002" name="LQFP64" />
+        <enum value="0x00000003" name="LQFP48_UFQFPN48" />
+        <enum value="0x00000007" name="UFQFPN32" />
+        <enum value="0x00000008" name="LQFP32" />
+        <enum value="0x0000000A" name="UFBGA100" />
+        <enum value="0x0000000B" name="LQFP128_UFBGA121" />
+        <enum value="0x0000000C" name="UFBGA64" />
+        <enum value="0x0000000D" name="WLCSP64" />
+        <enum value="0x0000000E" name="UFQFPN48" />
+      </field>
+    </register>
+    
+    <!-- Unique device ID (96 bits) at offset 0x90 from base -->
+    <register name="UID0" offset="0x90" reset="0x00000000" access="ro" description="Unique device ID word 0 (bits 31:0)">
+      <field name="UID" mask="0xFFFFFFFF" access="ro" description="X/Y coordinates on wafer" />
+    </register>
+    
+    <register name="UID1" offset="0x94" reset="0x00000000" access="ro" description="Unique device ID word 1 (bits 63:32)">
+      <field name="UID" mask="0xFFFFFFFF" access="ro" description="Wafer number and lot number" />
+    </register>
+    
+    <register name="UID2" offset="0x98" reset="0x00000000" access="ro" description="Unique device ID word 2 (bits 95:64)">
+      <field name="UID" mask="0xFFFFFFFF" access="ro" description="Lot number" />
+    </register>
+    
+    <!-- Flash size at offset 0xE0 from base -->
+    <register name="FLASHSIZE" offset="0xE0" reset="0x00000000" access="ro" description="Flash memory size">
+      <field name="FLASH_SIZE" mask="0x0000FFFF" access="ro" description="Flash size in KB" />
+    </register>
+    
+  </peripheral>
+  
+  <peripheral name="CALIB" description="Factory calibration data">
+    <instance id="1" base="0x1FFF75A8" />
+    
+    <!-- Temperature sensor calibration values -->
+    <register name="TS_CAL1" offset="0x00" reset="0x00000000" access="ro" description="Temperature sensor calibration at 30°C">
+      <field name="TS_CAL" mask="0x0000FFFF" access="ro" description="ADC raw data at 30°C, VDDA=3.0V" />
+    </register>
+    
+    <register name="TS_CAL2" offset="0x02" reset="0x00000000" access="ro" description="Temperature sensor calibration at 130°C">
+      <field name="TS_CAL" mask="0x0000FFFF" access="ro" description="ADC raw data at 130°C, VDDA=3.0V" />
+    </register>
+    
+    <!-- Internal reference voltage calibration at offset 0x0A from CALIB base -->
+    <register name="VREFINT_CAL" offset="0x0A" reset="0x00000000" access="ro" description="Internal voltage reference calibration">
+      <field name="VREFINT" mask="0x0000FFFF" access="ro" description="ADC raw data at VDDA=3.0V" />
+    </register>
+    
+  </peripheral>
+  
+</device>

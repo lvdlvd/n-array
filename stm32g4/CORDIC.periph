@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 CORDIC Co-processor Peripheral
+  Extracted from RM0440 Rev 7
+  
+  Hardware accelerator for trigonometric, hyperbolic, and other math functions
+  using the CORDIC algorithm (COordinate Rotation DIgital Computer).
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="CORDIC" description="CORDIC co-processor">
+    <instance id="1" base="0x40020C00" />
+    
+    <register name="CSR" offset="0x00" reset="0x00000050" description="Control/status register">
+      <field name="FUNC" mask="0x0000000F" access="rw" description="Function selection">
+        <enum value="0x00000000" name="Cosine" />
+        <enum value="0x00000001" name="Sine" />
+        <enum value="0x00000002" name="Phase" />
+        <enum value="0x00000003" name="Modulus" />
+        <enum value="0x00000004" name="Arctangent" />
+        <enum value="0x00000005" name="HyperbolicCosine" />
+        <enum value="0x00000006" name="HyperbolicSine" />
+        <enum value="0x00000007" name="Arctanh" />
+        <enum value="0x00000008" name="NaturalLog" />
+        <enum value="0x00000009" name="SquareRoot" />
+      </field>
+      <field name="PRECISION" mask="0x000000F0" access="rw" description="Precision (iterations/4, 1-15)" />
+      <field name="SCALE" mask="0x00000700" access="rw" description="Scaling factor (2^-n)" />
+      <field name="IEN" mask="0x00010000" access="rw" description="Interrupt enable" />
+      <field name="DMAREN" mask="0x00020000" access="rw" description="DMA read channel enable" />
+      <field name="DMAWEN" mask="0x00040000" access="rw" description="DMA write channel enable" />
+      <field name="NRES" mask="0x00080000" access="rw" description="Number of results (0=1 result, 1=2 results)" />
+      <field name="NARGS" mask="0x00100000" access="rw" description="Number of arguments (0=1 arg, 1=2 args)" />
+      <field name="RESSIZE" mask="0x00200000" access="rw" description="Result data width (0=32-bit, 1=16-bit)" />
+      <field name="ARGSIZE" mask="0x00400000" access="rw" description="Argument data width (0=32-bit, 1=16-bit)" />
+      <field name="RRDY" mask="0x80000000" access="ro" description="Result ready flag" />
+    </register>
+    
+    <register name="WDATA" offset="0x04" reset="0x00000000" access="wo" description="Argument register">
+      <field name="ARG" mask="0xFFFFFFFF" access="wo" description="Function input argument(s)" />
+    </register>
+    
+    <register name="RDATA" offset="0x08" reset="0x00000000" access="ro" description="Result register">
+      <field name="RES" mask="0xFFFFFFFF" access="ro" description="Function result(s)" />
+    </register>
+    
+  </peripheral>
+  
+</device>

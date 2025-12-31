@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ARM Cortex-M4 MPU (Memory Protection Unit)
+  Extracted from PM0214 Rev 10 - STM32 Cortex-M4 Programming Manual
+  
+  Base address: 0xE000ED90
+  8 configurable regions (0-7)
+-->
+<device name="CortexM4" reference_manual="PM0214" revision="10">
+  
+  <peripheral name="MPU" description="Memory Protection Unit">
+    <instance id="1" base="0xE000ED90" />
+    
+    <register name="TYPER" offset="0x00" reset="0x00000800" access="ro" 
+              description="MPU type register">
+      <field name="SEPARATE" mask="0x00000001" access="ro" 
+             description="0 = unified memory map" />
+      <field name="DREGION" mask="0x0000FF00" access="ro" 
+             description="Number of data regions (0x08 = 8 regions, 0x00 = no MPU)" />
+      <field name="IREGION" mask="0x00FF0000" access="ro" 
+             description="Number of instruction regions (always 0, unified map)" />
+    </register>
+    
+    <register name="CTRL" offset="0x04" reset="0x00000000" description="MPU control register">
+      <field name="ENABLE" mask="0x00000001" access="rw" description="MPU enable" />
+      <field name="HFNMIENA" mask="0x00000002" access="rw" 
+             description="Enable MPU during HardFault/NMI/FAULTMASK handlers" />
+      <field name="PRIVDEFENA" mask="0x00000004" access="rw" 
+             description="Enable default memory map for privileged access" />
+    </register>
+    
+    <register name="RNR" offset="0x08" reset="0x00000000" description="MPU region number register">
+      <field name="REGION" mask="0x000000FF" access="rw" 
+             description="Region number to access via RBAR/RASR (0-7)" />
+    </register>
+    
+    <register name="RBAR" offset="0x0C" reset="0x00000000" description="MPU region base address register">
+      <field name="REGION" mask="0x0000000F" access="rw" 
+             description="Region number (used when VALID=1)" />
+      <field name="VALID" mask="0x00000010" access="rw" 
+             description="1 = update RNR with REGION field" />
+      <field name="ADDR" mask="0xFFFFFFE0" access="rw" 
+             description="Region base address (aligned to region size)" />
+    </register>
+    
+    <register name="RASR" offset="0x10" reset="0x00000000" description="MPU region attribute and size register">
+      <field name="ENABLE" mask="0x00000001" access="rw" description="Region enable" />
+      <field name="SIZE" mask="0x0000003E" access="rw" 
+             description="Region size: 2^(SIZE+1) bytes (min 32B = SIZE 4)" />
+      <field name="SRD" mask="0x0000FF00" access="rw" 
+             description="Subregion disable bits (1 = subregion disabled)" />
+      <field name="B" mask="0x00010000" access="rw" description="Bufferable" />
+      <field name="C" mask="0x00020000" access="rw" description="Cacheable" />
+      <field name="S" mask="0x00040000" access="rw" description="Shareable" />
+      <field name="TEX" mask="0x00380000" access="rw" description="Type extension" />
+      <field name="AP" mask="0x07000000" access="rw" description="Access permission">
+        <enum value="0x00000000" name="NoAccess" description="No access" />
+        <enum value="0x01000000" name="PrivRW" description="Privileged RW only" />
+        <enum value="0x02000000" name="PrivRW_UnprivRO" description="Privileged RW, unprivileged RO" />
+        <enum value="0x03000000" name="FullAccess" description="Full access" />
+        <enum value="0x05000000" name="PrivRO" description="Privileged RO only" />
+        <enum value="0x06000000" name="RO" description="Privileged and unprivileged RO" />
+      </field>
+      <field name="XN" mask="0x10000000" access="rw" description="Execute never" />
+    </register>
+    
+    <!-- Alias registers for faster region programming (A1, A2, A3) -->
+    <register name="RBAR_A1" offset="0x14" reset="0x00000000" description="Alias 1 of RBAR">
+      <field name="REGION" mask="0x0000000F" access="rw" description="Region number" />
+      <field name="VALID" mask="0x00000010" access="rw" description="Update RNR" />
+      <field name="ADDR" mask="0xFFFFFFE0" access="rw" description="Base address" />
+    </register>
+    <register name="RASR_A1" offset="0x18" reset="0x00000000" description="Alias 1 of RASR">
+      <field name="ENABLE" mask="0x00000001" access="rw" description="Region enable" />
+      <field name="SIZE" mask="0x0000003E" access="rw" description="Region size" />
+      <field name="SRD" mask="0x0000FF00" access="rw" description="Subregion disable" />
+      <field name="B" mask="0x00010000" access="rw" description="Bufferable" />
+      <field name="C" mask="0x00020000" access="rw" description="Cacheable" />
+      <field name="S" mask="0x00040000" access="rw" description="Shareable" />
+      <field name="TEX" mask="0x00380000" access="rw" description="Type extension" />
+      <field name="AP" mask="0x07000000" access="rw" description="Access permission" />
+      <field name="XN" mask="0x10000000" access="rw" description="Execute never" />
+    </register>
+    
+    <register name="RBAR_A2" offset="0x1C" reset="0x00000000" description="Alias 2 of RBAR">
+      <field name="REGION" mask="0x0000000F" access="rw" description="Region number" />
+      <field name="VALID" mask="0x00000010" access="rw" description="Update RNR" />
+      <field name="ADDR" mask="0xFFFFFFE0" access="rw" description="Base address" />
+    </register>
+    <register name="RASR_A2" offset="0x20" reset="0x00000000" description="Alias 2 of RASR">
+      <field name="ENABLE" mask="0x00000001" access="rw" description="Region enable" />
+      <field name="SIZE" mask="0x0000003E" access="rw" description="Region size" />
+      <field name="SRD" mask="0x0000FF00" access="rw" description="Subregion disable" />
+      <field name="B" mask="0x00010000" access="rw" description="Bufferable" />
+      <field name="C" mask="0x00020000" access="rw" description="Cacheable" />
+      <field name="S" mask="0x00040000" access="rw" description="Shareable" />
+      <field name="TEX" mask="0x00380000" access="rw" description="Type extension" />
+      <field name="AP" mask="0x07000000" access="rw" description="Access permission" />
+      <field name="XN" mask="0x10000000" access="rw" description="Execute never" />
+    </register>
+    
+    <register name="RBAR_A3" offset="0x24" reset="0x00000000" description="Alias 3 of RBAR">
+      <field name="REGION" mask="0x0000000F" access="rw" description="Region number" />
+      <field name="VALID" mask="0x00000010" access="rw" description="Update RNR" />
+      <field name="ADDR" mask="0xFFFFFFE0" access="rw" description="Base address" />
+    </register>
+    <register name="RASR_A3" offset="0x28" reset="0x00000000" description="Alias 3 of RASR">
+      <field name="ENABLE" mask="0x00000001" access="rw" description="Region enable" />
+      <field name="SIZE" mask="0x0000003E" access="rw" description="Region size" />
+      <field name="SRD" mask="0x0000FF00" access="rw" description="Subregion disable" />
+      <field name="B" mask="0x00010000" access="rw" description="Bufferable" />
+      <field name="C" mask="0x00020000" access="rw" description="Cacheable" />
+      <field name="S" mask="0x00040000" access="rw" description="Shareable" />
+      <field name="TEX" mask="0x00380000" access="rw" description="Type extension" />
+      <field name="AP" mask="0x07000000" access="rw" description="Access permission" />
+      <field name="XN" mask="0x10000000" access="rw" description="Execute never" />
+    </register>
+    
+  </peripheral>
+  
+</device>

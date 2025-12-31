@@ -1,0 +1,407 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 USART/UART/LPUART Peripheral Family
+  Extracted from RM0440 Rev 7
+  
+  Inheritance hierarchy:
+  - USART_BASE (abstract) - common async UART functionality
+    - USART - full featured (sync, LIN, IrDA, smartcard, SPI slave, auto-baud, rx timeout)
+    - UART - reduced (LIN, IrDA, auto-baud, rx timeout, but no sync/smartcard/SPI slave)
+    - LPUART - low-power async only (no LIN, IrDA, sync, smartcard, auto-baud, rx timeout)
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <!-- ========================================================================
+       USART_BASE - Abstract base with common registers/fields for all variants
+       ======================================================================== -->
+  <peripheral name="USART_BASE" abstract="true" description="UART base functionality">
+    
+    <register name="CR1" offset="0x00" reset="0x00000000" description="Control register 1">
+      <field name="UE" mask="0x00000001" access="rw" description="USART enable">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00000001" name="Enabled" />
+      </field>
+      <field name="UESM" mask="0x00000002" access="rw" description="USART enable in low-power mode">
+        <enum value="0x00000000" name="Disabled" description="Cannot wake MCU from low-power" />
+        <enum value="0x00000002" name="Enabled" description="Can wake MCU from low-power" />
+      </field>
+      <field name="RE" mask="0x00000004" access="rw" description="Receiver enable">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00000004" name="Enabled" />
+      </field>
+      <field name="TE" mask="0x00000008" access="rw" description="Transmitter enable">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00000008" name="Enabled" />
+      </field>
+      <field name="IDLEIE" mask="0x00000010" access="rw" description="IDLE interrupt enable" />
+      <field name="RXNEIE" mask="0x00000020" access="rw" description="RXNE/RXFNE interrupt enable" />
+      <field name="TCIE" mask="0x00000040" access="rw" description="Transmission complete interrupt enable" />
+      <field name="TXEIE" mask="0x00000080" access="rw" description="TXE/TXFNF interrupt enable" />
+      <field name="PEIE" mask="0x00000100" access="rw" description="Parity error interrupt enable" />
+      <field name="PS" mask="0x00000200" access="rw" description="Parity selection">
+        <enum value="0x00000000" name="Even" />
+        <enum value="0x00000200" name="Odd" />
+      </field>
+      <field name="PCE" mask="0x00000400" access="rw" description="Parity control enable">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00000400" name="Enabled" />
+      </field>
+      <field name="WAKE" mask="0x00000800" access="rw" description="Receiver wakeup method">
+        <enum value="0x00000000" name="IdleLine" />
+        <enum value="0x00000800" name="AddressMark" />
+      </field>
+      <field name="M0" mask="0x00001000" access="rw" description="Word length bit 0" />
+      <field name="MME" mask="0x00002000" access="rw" description="Mute mode enable">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x00002000" name="Enabled" />
+      </field>
+      <field name="CMIE" mask="0x00004000" access="rw" description="Character match interrupt enable" />
+      <field name="OVER8" mask="0x00008000" access="rw" description="Oversampling mode">
+        <enum value="0x00000000" name="Over16" description="Oversampling by 16" />
+        <enum value="0x00008000" name="Over8" description="Oversampling by 8" />
+      </field>
+      <field name="DEDT" mask="0x001F0000" access="rw" description="Driver enable de-assertion time" />
+      <field name="DEAT" mask="0x03E00000" access="rw" description="Driver enable assertion time" />
+      <field name="M1" mask="0x10000000" access="rw" description="Word length bit 1" />
+      <field name="FIFOEN" mask="0x20000000" access="rw" description="FIFO mode enable">
+        <enum value="0x00000000" name="Disabled" />
+        <enum value="0x20000000" name="Enabled" />
+      </field>
+      <field name="TXFEIE" mask="0x40000000" access="rw" description="TXFIFO empty interrupt enable" />
+      <field name="RXFFIE" mask="0x80000000" access="rw" description="RXFIFO full interrupt enable" />
+    </register>
+    
+    <register name="CR2" offset="0x04" reset="0x00000000" description="Control register 2">
+      <field name="ADDM7" mask="0x00000010" access="rw" description="7-bit/4-bit address detection">
+        <enum value="0x00000000" name="Bit4" description="4-bit address detection" />
+        <enum value="0x00000010" name="Bit7" description="7-bit address detection" />
+      </field>
+      <field name="STOP" mask="0x00003000" access="rw" description="Stop bits">
+        <enum value="0x00000000" name="Stop1" description="1 stop bit" />
+        <enum value="0x00001000" name="Stop0p5" description="0.5 stop bit" />
+        <enum value="0x00002000" name="Stop2" description="2 stop bits" />
+        <enum value="0x00003000" name="Stop1p5" description="1.5 stop bits" />
+      </field>
+      <field name="SWAP" mask="0x00008000" access="rw" description="Swap TX/RX pins">
+        <enum value="0x00000000" name="Standard" />
+        <enum value="0x00008000" name="Swapped" />
+      </field>
+      <field name="RXINV" mask="0x00010000" access="rw" description="RX pin active level inversion" />
+      <field name="TXINV" mask="0x00020000" access="rw" description="TX pin active level inversion" />
+      <field name="DATAINV" mask="0x00040000" access="rw" description="Binary data inversion" />
+      <field name="MSBFIRST" mask="0x00080000" access="rw" description="Most significant bit first">
+        <enum value="0x00000000" name="LSBFirst" />
+        <enum value="0x00080000" name="MSBFirst" />
+      </field>
+      <field name="ADD" mask="0xFF000000" access="rw" description="Address of the USART node" />
+    </register>
+    
+    <register name="CR3" offset="0x08" reset="0x00000000" description="Control register 3">
+      <field name="EIE" mask="0x00000001" access="rw" description="Error interrupt enable" />
+      <field name="HDSEL" mask="0x00000008" access="rw" description="Half-duplex selection">
+        <enum value="0x00000000" name="FullDuplex" />
+        <enum value="0x00000008" name="HalfDuplex" />
+      </field>
+      <field name="DMAR" mask="0x00000040" access="rw" description="DMA enable receiver" />
+      <field name="DMAT" mask="0x00000080" access="rw" description="DMA enable transmitter" />
+      <field name="RTSE" mask="0x00000100" access="rw" description="RTS enable" />
+      <field name="CTSE" mask="0x00000200" access="rw" description="CTS enable" />
+      <field name="CTSIE" mask="0x00000400" access="rw" description="CTS interrupt enable" />
+      <field name="OVRDIS" mask="0x00001000" access="rw" description="Overrun disable" />
+      <field name="DDRE" mask="0x00002000" access="rw" description="DMA disable on reception error" />
+      <field name="DEM" mask="0x00004000" access="rw" description="Driver enable mode" />
+      <field name="DEP" mask="0x00008000" access="rw" description="Driver enable polarity">
+        <enum value="0x00000000" name="ActiveHigh" />
+        <enum value="0x00008000" name="ActiveLow" />
+      </field>
+      <field name="WUS" mask="0x00300000" access="rw" description="Wakeup from low-power mode interrupt flag selection">
+        <enum value="0x00000000" name="AddressMatch" />
+        <enum value="0x00200000" name="StartBit" />
+        <enum value="0x00300000" name="RXNE" />
+      </field>
+      <field name="WUFIE" mask="0x00400000" access="rw" description="Wakeup from low-power mode interrupt enable" />
+      <field name="TXFTIE" mask="0x00800000" access="rw" description="TXFIFO threshold interrupt enable" />
+      <field name="RXFTCFG" mask="0x0E000000" access="rw" description="Receive FIFO threshold configuration">
+        <enum value="0x00000000" name="Eighth" description="RXFIFO 1/8 full" />
+        <enum value="0x02000000" name="Quarter" description="RXFIFO 1/4 full" />
+        <enum value="0x04000000" name="Half" description="RXFIFO 1/2 full" />
+        <enum value="0x06000000" name="ThreeQuarter" description="RXFIFO 3/4 full" />
+        <enum value="0x08000000" name="SevenEighth" description="RXFIFO 7/8 full" />
+        <enum value="0x0A000000" name="Full" description="RXFIFO full" />
+      </field>
+      <field name="RXFTIE" mask="0x10000000" access="rw" description="RXFIFO threshold interrupt enable" />
+      <field name="TXFTCFG" mask="0xE0000000" access="rw" description="TXFIFO threshold configuration">
+        <enum value="0x00000000" name="Eighth" description="TXFIFO 1/8 empty" />
+        <enum value="0x20000000" name="Quarter" description="TXFIFO 1/4 empty" />
+        <enum value="0x40000000" name="Half" description="TXFIFO 1/2 empty" />
+        <enum value="0x60000000" name="ThreeQuarter" description="TXFIFO 3/4 empty" />
+        <enum value="0x80000000" name="SevenEighth" description="TXFIFO 7/8 empty" />
+        <enum value="0xA0000000" name="Empty" description="TXFIFO empty" />
+      </field>
+    </register>
+    
+    <register name="BRR" offset="0x0C" reset="0x00000000" description="Baud rate register">
+      <field name="BRR" mask="0x0000FFFF" access="rw" description="USART baud rate" />
+    </register>
+    
+    <register name="RQR" offset="0x18" reset="0x00000000" access="wo" description="Request register">
+      <field name="MMRQ" mask="0x00000004" access="wo" description="Mute mode request" />
+      <field name="RXFRQ" mask="0x00000008" access="wo" description="Receive data flush request" />
+      <field name="TXFRQ" mask="0x00000010" access="wo" description="Transmit data flush request" />
+    </register>
+    
+    <register name="ISR" offset="0x1C" reset="0x000000C0" description="Interrupt and status register">
+      <field name="PE" mask="0x00000001" access="ro" description="Parity error" />
+      <field name="FE" mask="0x00000002" access="ro" description="Framing error" />
+      <field name="NE" mask="0x00000004" access="ro" description="Noise detection flag" />
+      <field name="ORE" mask="0x00000008" access="ro" description="Overrun error" />
+      <field name="IDLE" mask="0x00000010" access="ro" description="Idle line detected" />
+      <field name="RXNE" mask="0x00000020" access="ro" description="Read data register not empty / RXFIFO not empty" />
+      <field name="TC" mask="0x00000040" access="ro" description="Transmission complete" />
+      <field name="TXE" mask="0x00000080" access="ro" description="Transmit data register empty / TXFIFO not full" />
+      <field name="CTSIF" mask="0x00000200" access="ro" description="CTS interrupt flag" />
+      <field name="CTS" mask="0x00000400" access="ro" description="CTS flag" />
+      <field name="BUSY" mask="0x00010000" access="ro" description="Busy flag" />
+      <field name="CMF" mask="0x00020000" access="ro" description="Character match flag" />
+      <field name="SBKF" mask="0x00040000" access="ro" description="Send break flag" />
+      <field name="RWU" mask="0x00080000" access="ro" description="Receiver wakeup from Mute mode" />
+      <field name="WUF" mask="0x00100000" access="ro" description="Wakeup from low-power mode flag" />
+      <field name="TEACK" mask="0x00200000" access="ro" description="Transmit enable acknowledge flag" />
+      <field name="REACK" mask="0x00400000" access="ro" description="Receive enable acknowledge flag" />
+      <field name="TXFE" mask="0x00800000" access="ro" description="TXFIFO empty" />
+      <field name="RXFF" mask="0x01000000" access="ro" description="RXFIFO full" />
+      <field name="RXFT" mask="0x04000000" access="ro" description="RXFIFO threshold flag" />
+      <field name="TXFT" mask="0x08000000" access="ro" description="TXFIFO threshold flag" />
+    </register>
+    
+    <register name="ICR" offset="0x20" reset="0x00000000" access="wo" description="Interrupt flag clear register">
+      <field name="PECF" mask="0x00000001" access="wo" description="Parity error clear flag" />
+      <field name="FECF" mask="0x00000002" access="wo" description="Framing error clear flag" />
+      <field name="NECF" mask="0x00000004" access="wo" description="Noise detected clear flag" />
+      <field name="ORECF" mask="0x00000008" access="wo" description="Overrun error clear flag" />
+      <field name="IDLECF" mask="0x00000010" access="wo" description="Idle line detected clear flag" />
+      <field name="TXFECF" mask="0x00000020" access="wo" description="TXFIFO empty clear flag" />
+      <field name="TCCF" mask="0x00000040" access="wo" description="Transmission complete clear flag" />
+      <field name="CTSCF" mask="0x00000200" access="wo" description="CTS clear flag" />
+      <field name="CMCF" mask="0x00020000" access="wo" description="Character match clear flag" />
+      <field name="WUCF" mask="0x00100000" access="wo" description="Wakeup from low-power mode clear flag" />
+    </register>
+    
+    <register name="RDR" offset="0x24" reset="0x00000000" access="ro" description="Receive data register">
+      <field name="RDR" mask="0x000001FF" access="ro" description="Receive data value" />
+    </register>
+    
+    <register name="TDR" offset="0x28" reset="0x00000000" description="Transmit data register">
+      <field name="TDR" mask="0x000001FF" access="rw" description="Transmit data value" />
+    </register>
+    
+    <register name="PRESC" offset="0x2C" reset="0x00000000" description="Prescaler register">
+      <field name="PRESCALER" mask="0x0000000F" access="rw" description="Clock prescaler">
+        <enum value="0x00000000" name="Div1" />
+        <enum value="0x00000001" name="Div2" />
+        <enum value="0x00000002" name="Div4" />
+        <enum value="0x00000003" name="Div6" />
+        <enum value="0x00000004" name="Div8" />
+        <enum value="0x00000005" name="Div10" />
+        <enum value="0x00000006" name="Div12" />
+        <enum value="0x00000007" name="Div16" />
+        <enum value="0x00000008" name="Div32" />
+        <enum value="0x00000009" name="Div64" />
+        <enum value="0x0000000A" name="Div128" />
+        <enum value="0x0000000B" name="Div256" />
+      </field>
+    </register>
+    
+  </peripheral>
+  
+  <!-- ========================================================================
+       USART - Full featured USART (sync, LIN, IrDA, smartcard, SPI slave)
+       ======================================================================== -->
+  <peripheral name="USART" base="USART_BASE" description="Full USART with sync/smartcard/LIN/IrDA">
+    <instance id="1" base="0x40013800" />
+    <instance id="2" base="0x40004400" />
+    <instance id="3" base="0x40004800" />
+    
+    <!-- CR1 extensions -->
+    <register name="CR1" extend="true">
+      <field name="RTOIE" mask="0x04000000" access="rw" description="Receiver timeout interrupt enable" />
+      <field name="EOBIE" mask="0x08000000" access="rw" description="End of block interrupt enable" />
+    </register>
+    
+    <!-- CR2 extensions for sync/LIN/auto-baud/rx-timeout/SPI-slave -->
+    <register name="CR2" extend="true">
+      <field name="SLVEN" mask="0x00000001" access="rw" description="Synchronous slave mode enable" />
+      <field name="DIS_NSS" mask="0x00000008" access="rw" description="Slave select (NSS) pin ignore" />
+      <field name="LBDL" mask="0x00000020" access="rw" description="LIN break detection length">
+        <enum value="0x00000000" name="Bit10" />
+        <enum value="0x00000020" name="Bit11" />
+      </field>
+      <field name="LBDIE" mask="0x00000040" access="rw" description="LIN break detection interrupt enable" />
+      <field name="LBCL" mask="0x00000100" access="rw" description="Last bit clock pulse" />
+      <field name="CPHA" mask="0x00000200" access="rw" description="Clock phase">
+        <enum value="0x00000000" name="FirstEdge" />
+        <enum value="0x00000200" name="SecondEdge" />
+      </field>
+      <field name="CPOL" mask="0x00000400" access="rw" description="Clock polarity">
+        <enum value="0x00000000" name="IdleLow" />
+        <enum value="0x00000400" name="IdleHigh" />
+      </field>
+      <field name="CLKEN" mask="0x00000800" access="rw" description="Clock enable (sync mode)" />
+      <field name="LINEN" mask="0x00004000" access="rw" description="LIN mode enable" />
+      <field name="ABREN" mask="0x00100000" access="rw" description="Auto baud rate enable" />
+      <field name="ABRMOD" mask="0x00600000" access="rw" description="Auto baud rate mode">
+        <enum value="0x00000000" name="StartBit" description="Start bit measurement" />
+        <enum value="0x00200000" name="FallEdge" description="Falling edge to falling edge" />
+        <enum value="0x00400000" name="Frame7F" description="0x7F frame detection" />
+        <enum value="0x00600000" name="Frame55" description="0x55 frame detection" />
+      </field>
+      <field name="RTOEN" mask="0x00800000" access="rw" description="Receiver timeout enable" />
+    </register>
+    
+    <!-- CR3 extensions for IrDA/smartcard -->
+    <register name="CR3" extend="true">
+      <field name="IREN" mask="0x00000002" access="rw" description="IrDA mode enable" />
+      <field name="IRLP" mask="0x00000004" access="rw" description="IrDA low-power">
+        <enum value="0x00000000" name="Normal" />
+        <enum value="0x00000004" name="LowPower" />
+      </field>
+      <field name="NACK" mask="0x00000010" access="rw" description="Smartcard NACK enable" />
+      <field name="SCEN" mask="0x00000020" access="rw" description="Smartcard mode enable" />
+      <field name="ONEBIT" mask="0x00000800" access="rw" description="One sample bit method enable" />
+      <field name="SCARCNT" mask="0x000E0000" access="rw" description="Smartcard auto-retry count" />
+      <field name="TCBGTIE" mask="0x01000000" access="rw" description="Transmission complete before guard time interrupt enable" />
+    </register>
+    
+    <!-- RQR extensions -->
+    <register name="RQR" extend="true">
+      <field name="ABRRQ" mask="0x00000001" access="wo" description="Auto baud rate request" />
+      <field name="SBKRQ" mask="0x00000002" access="wo" description="Send break request" />
+    </register>
+    
+    <!-- ISR extensions -->
+    <register name="ISR" extend="true">
+      <field name="LBDF" mask="0x00000100" access="ro" description="LIN break detection flag" />
+      <field name="RTOF" mask="0x00000800" access="ro" description="Receiver timeout" />
+      <field name="EOBF" mask="0x00001000" access="ro" description="End of block flag" />
+      <field name="UDR" mask="0x00002000" access="ro" description="SPI slave underrun error flag" />
+      <field name="ABRE" mask="0x00004000" access="ro" description="Auto baud rate error" />
+      <field name="ABRF" mask="0x00008000" access="ro" description="Auto baud rate flag" />
+      <field name="TCBGT" mask="0x02000000" access="ro" description="Transmission complete before guard time" />
+    </register>
+    
+    <!-- ICR extensions -->
+    <register name="ICR" extend="true">
+      <field name="LBDCF" mask="0x00000100" access="wo" description="LIN break detection clear flag" />
+      <field name="TCBGTCF" mask="0x00000080" access="wo" description="Transmission complete before guard time clear flag" />
+      <field name="RTOCF" mask="0x00000800" access="wo" description="Receiver timeout clear flag" />
+      <field name="EOBCF" mask="0x00001000" access="wo" description="End of block clear flag" />
+      <field name="UDRCF" mask="0x00002000" access="wo" description="SPI slave underrun clear flag" />
+    </register>
+    
+    <!-- USART-only registers -->
+    <register name="GTPR" offset="0x10" reset="0x00000000" description="Guard time and prescaler register">
+      <field name="PSC" mask="0x000000FF" access="rw" description="Prescaler value (IrDA/smartcard)" />
+      <field name="GT" mask="0x0000FF00" access="rw" description="Guard time value (smartcard)" />
+    </register>
+    
+    <register name="RTOR" offset="0x14" reset="0x00000000" description="Receiver timeout register">
+      <field name="RTO" mask="0x00FFFFFF" access="rw" description="Receiver timeout value" />
+      <field name="BLEN" mask="0xFF000000" access="rw" description="Block length" />
+    </register>
+    
+  </peripheral>
+  
+  <!-- ========================================================================
+       UART - Reduced UART (LIN, IrDA, auto-baud, rx-timeout, no sync/smartcard)
+       ======================================================================== -->
+  <peripheral name="UART" base="USART_BASE" description="UART with LIN/IrDA but no sync/smartcard">
+    <instance id="4" base="0x40004C00" />
+    <instance id="5" base="0x40005000" />
+    
+    <!-- CR1 extensions -->
+    <register name="CR1" extend="true">
+      <field name="RTOIE" mask="0x04000000" access="rw" description="Receiver timeout interrupt enable" />
+    </register>
+    
+    <!-- CR2 extensions for LIN/auto-baud/rx-timeout (no sync/SPI-slave) -->
+    <register name="CR2" extend="true">
+      <field name="LBDL" mask="0x00000020" access="rw" description="LIN break detection length">
+        <enum value="0x00000000" name="Bit10" />
+        <enum value="0x00000020" name="Bit11" />
+      </field>
+      <field name="LBDIE" mask="0x00000040" access="rw" description="LIN break detection interrupt enable" />
+      <field name="LINEN" mask="0x00004000" access="rw" description="LIN mode enable" />
+      <field name="ABREN" mask="0x00100000" access="rw" description="Auto baud rate enable" />
+      <field name="ABRMOD" mask="0x00600000" access="rw" description="Auto baud rate mode">
+        <enum value="0x00000000" name="StartBit" />
+        <enum value="0x00200000" name="FallEdge" />
+        <enum value="0x00400000" name="Frame7F" />
+        <enum value="0x00600000" name="Frame55" />
+      </field>
+      <field name="RTOEN" mask="0x00800000" access="rw" description="Receiver timeout enable" />
+    </register>
+    
+    <!-- CR3 extensions for IrDA (no smartcard) -->
+    <register name="CR3" extend="true">
+      <field name="IREN" mask="0x00000002" access="rw" description="IrDA mode enable" />
+      <field name="IRLP" mask="0x00000004" access="rw" description="IrDA low-power" />
+      <field name="ONEBIT" mask="0x00000800" access="rw" description="One sample bit method enable" />
+    </register>
+    
+    <!-- RQR extensions -->
+    <register name="RQR" extend="true">
+      <field name="ABRRQ" mask="0x00000001" access="wo" description="Auto baud rate request" />
+      <field name="SBKRQ" mask="0x00000002" access="wo" description="Send break request" />
+    </register>
+    
+    <!-- ISR extensions -->
+    <register name="ISR" extend="true">
+      <field name="LBDF" mask="0x00000100" access="ro" description="LIN break detection flag" />
+      <field name="RTOF" mask="0x00000800" access="ro" description="Receiver timeout" />
+      <field name="ABRE" mask="0x00004000" access="ro" description="Auto baud rate error" />
+      <field name="ABRF" mask="0x00008000" access="ro" description="Auto baud rate flag" />
+    </register>
+    
+    <!-- ICR extensions -->
+    <register name="ICR" extend="true">
+      <field name="LBDCF" mask="0x00000100" access="wo" description="LIN break detection clear flag" />
+      <field name="RTOCF" mask="0x00000800" access="wo" description="Receiver timeout clear flag" />
+    </register>
+    
+    <!-- UART has RTOR but not GTPR -->
+    <register name="RTOR" offset="0x14" reset="0x00000000" description="Receiver timeout register">
+      <field name="RTO" mask="0x00FFFFFF" access="rw" description="Receiver timeout value" />
+      <field name="BLEN" mask="0xFF000000" access="rw" description="Block length" />
+    </register>
+    
+  </peripheral>
+  
+  <!-- ========================================================================
+       LPUART - Low-power UART (async only, no LIN/IrDA/sync/smartcard/auto-baud)
+       ======================================================================== -->
+  <peripheral name="LPUART" base="USART_BASE" description="Low-power UART (async only)">
+    <instance id="1" base="0x40008000" />
+    
+    <!-- CR2: exclude unsupported features, restrict STOP bits -->
+    <register name="CR2" extend="true">
+      <!-- LPUART only supports STOP=00 (1 bit) and STOP=10 (2 bits) -->
+      <field name="STOP" mask="0x00003000" access="rw" description="Stop bits">
+        <enum value="0x00000000" name="Stop1" description="1 stop bit" />
+        <enum value="0x00002000" name="Stop2" description="2 stop bits" />
+      </field>
+    </register>
+    
+    <!-- CR3: exclude ONEBIT (not in LPUART) - base CR3 is sufficient -->
+    
+    <!-- RQR: exclude ABRRQ/SBKRQ (not in LPUART) - base RQR is sufficient -->
+    
+    <!-- BRR has different format for LPUART (20-bit) -->
+    <register name="BRR" offset="0x0C" reset="0x00000000" description="Baud rate register">
+      <field name="BRR" mask="0x000FFFFF" access="rw" description="LPUART baud rate (20-bit)" />
+    </register>
+    
+    <!-- LPUART has no GTPR or RTOR registers -->
+    
+  </peripheral>
+  
+</device>

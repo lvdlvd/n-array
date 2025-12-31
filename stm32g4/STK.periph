@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  ARM Cortex-M4 SysTick Timer
+  Extracted from PM0214 Rev 10 - STM32 Cortex-M4 Programming Manual
+  
+  Base address: 0xE000E010
+  24-bit down counter for RTOS tick or simple delay
+-->
+<device name="CortexM4" reference_manual="PM0214" revision="10">
+  
+  <peripheral name="STK" description="SysTick Timer">
+    <instance id="1" base="0xE000E010" />
+    
+    <register name="CTRL" offset="0x00" reset="0x00000000" description="Control and status register">
+      <field name="ENABLE" mask="0x00000001" access="rw" description="Counter enable" />
+      <field name="TICKINT" mask="0x00000002" access="rw" description="Exception request enable" />
+      <field name="CLKSOURCE" mask="0x00000004" access="rw" description="Clock source">
+        <enum value="0x00000000" name="AHB_DIV8" description="AHB/8" />
+        <enum value="0x00000004" name="AHB" description="Processor clock (AHB)" />
+      </field>
+      <field name="COUNTFLAG" mask="0x00010000" access="ro" 
+             description="Returns 1 if timer counted to 0 since last read" />
+    </register>
+    
+    <register name="LOAD" offset="0x04" reset="0x00000000" description="Reload value register">
+      <field name="RELOAD" mask="0x00FFFFFF" access="rw" 
+             description="Value to load into VAL when counter reaches 0 (0x000001-0xFFFFFF)" />
+    </register>
+    
+    <register name="VAL" offset="0x08" reset="0x00000000" description="Current value register">
+      <field name="CURRENT" mask="0x00FFFFFF" access="rw" 
+             description="Current counter value. Write any value to clear to 0 and clear COUNTFLAG" />
+    </register>
+    
+    <register name="CALIB" offset="0x0C" reset="0x00000000" access="ro" description="Calibration value register">
+      <field name="TENMS" mask="0x00FFFFFF" access="ro" 
+             description="Reload value for 10ms tick at max clock/8 (product dependent)" />
+      <field name="SKEW" mask="0x40000000" access="ro" 
+             description="1 = TENMS is inexact due to clock frequency" />
+      <field name="NOREF" mask="0x80000000" access="ro" 
+             description="1 = No separate reference clock (uses processor clock)" />
+    </register>
+    
+  </peripheral>
+  
+</device>

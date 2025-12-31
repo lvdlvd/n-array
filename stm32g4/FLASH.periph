@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 Flash Memory Interface Peripheral
+  Extracted from RM0440 Rev 7
+  
+  Three product categories with different Flash sizes:
+  - Category 2: Up to 128KB, single bank (STM32G431, G441)
+  - Category 3: Up to 256KB, dual bank optional (STM32G471, G473, G474, G483, G484)
+  - Category 4: Up to 512KB, single bank (STM32G491, G4A1)
+  
+  Inheritance: FLASH_BASE (abstract) -> FLASH_CAT2, FLASH_CAT3, FLASH_CAT4
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <!-- ========================================================================
+       FLASH_BASE - Abstract base with common registers
+       ======================================================================== -->
+  <peripheral name="FLASH_BASE" abstract="true" description="Flash memory interface">
+    
+    <register name="ACR" offset="0x00" reset="0x00040601" description="Flash access control register">
+      <field name="LATENCY" mask="0x0000000F" access="rw" description="Read latency">
+        <enum value="0x00000000" name="WS0" description="Zero wait states" />
+        <enum value="0x00000001" name="WS1" description="One wait state" />
+        <enum value="0x00000002" name="WS2" description="Two wait states" />
+        <enum value="0x00000003" name="WS3" description="Three wait states" />
+        <enum value="0x00000004" name="WS4" description="Four wait states" />
+        <enum value="0x00000005" name="WS5" description="Five wait states" />
+        <enum value="0x00000006" name="WS6" description="Six wait states" />
+        <enum value="0x00000007" name="WS7" description="Seven wait states" />
+        <enum value="0x00000008" name="WS8" description="Eight wait states" />
+        <enum value="0x00000009" name="WS9" description="Nine wait states" />
+        <enum value="0x0000000A" name="WS10" description="Ten wait states" />
+        <enum value="0x0000000B" name="WS11" description="Eleven wait states" />
+        <enum value="0x0000000C" name="WS12" description="Twelve wait states" />
+        <enum value="0x0000000D" name="WS13" description="Thirteen wait states" />
+        <enum value="0x0000000E" name="WS14" description="Fourteen wait states" />
+        <enum value="0x0000000F" name="WS15" description="Fifteen wait states" />
+      </field>
+      <field name="PRFTEN" mask="0x00000100" access="rw" description="Prefetch enable" />
+      <field name="ICEN" mask="0x00000200" access="rw" description="Instruction cache enable" />
+      <field name="DCEN" mask="0x00000400" access="rw" description="Data cache enable" />
+      <field name="ICRST" mask="0x00000800" access="rw" description="Instruction cache reset" />
+      <field name="DCRST" mask="0x00001000" access="rw" description="Data cache reset" />
+      <field name="RUN_PD" mask="0x00002000" access="rw" description="Flash power-down mode during Run" />
+      <field name="SLEEP_PD" mask="0x00004000" access="rw" description="Flash power-down mode during Sleep" />
+      <field name="DBG_SWEN" mask="0x00040000" access="rw" description="Debug software enable" />
+    </register>
+    
+    <register name="PDKEYR" offset="0x04" reset="0x00000000" access="wo" description="Power-down key register">
+      <field name="PDKEYR" mask="0xFFFFFFFF" access="wo" description="Power-down key (0x04152637, 0xFAFBFCFD)" />
+    </register>
+    
+    <register name="KEYR" offset="0x08" reset="0x00000000" access="wo" description="Flash key register">
+      <field name="KEYR" mask="0xFFFFFFFF" access="wo" description="Flash key (0x45670123, 0xCDEF89AB)" />
+    </register>
+    
+    <register name="OPTKEYR" offset="0x0C" reset="0x00000000" access="wo" description="Option byte key register">
+      <field name="OPTKEYR" mask="0xFFFFFFFF" access="wo" description="Option key (0x08192A3B, 0x4C5D6E7F)" />
+    </register>
+    
+    <register name="SR" offset="0x10" reset="0x00000000" description="Flash status register">
+      <field name="EOP" mask="0x00000001" access="rc_w1" description="End of operation" />
+      <field name="OPERR" mask="0x00000002" access="rc_w1" description="Operation error" />
+      <field name="PROGERR" mask="0x00000008" access="rc_w1" description="Programming error" />
+      <field name="WRPERR" mask="0x00000010" access="rc_w1" description="Write protection error" />
+      <field name="PGAERR" mask="0x00000020" access="rc_w1" description="Programming alignment error" />
+      <field name="SIZERR" mask="0x00000040" access="rc_w1" description="Size error" />
+      <field name="PGSERR" mask="0x00000080" access="rc_w1" description="Programming sequence error" />
+      <field name="MISSERR" mask="0x00000100" access="rc_w1" description="Fast programming data miss error" />
+      <field name="FASTERR" mask="0x00000200" access="rc_w1" description="Fast programming error" />
+      <field name="RDERR" mask="0x00004000" access="rc_w1" description="PCROP read error" />
+      <field name="OPTVERR" mask="0x00008000" access="rc_w1" description="Option validity error" />
+      <field name="BSY" mask="0x00010000" access="ro" description="Busy" />
+    </register>
+    
+    <register name="CR" offset="0x14" reset="0xC0000000" description="Flash control register">
+      <field name="PG" mask="0x00000001" access="rw" description="Programming" />
+      <field name="PER" mask="0x00000002" access="rw" description="Page erase" />
+      <field name="MER1" mask="0x00000004" access="rw" description="Bank 1 mass erase" />
+      <field name="PNB" mask="0x000003F8" access="rw" description="Page number (bits 6:0 at positions 9:3)" />
+      <field name="STRT" mask="0x00010000" access="rs" description="Start erase" />
+      <field name="OPTSTRT" mask="0x00020000" access="rs" description="Options modification start" />
+      <field name="FSTPG" mask="0x00040000" access="rw" description="Fast programming" />
+      <field name="EOPIE" mask="0x01000000" access="rw" description="End of operation interrupt enable" />
+      <field name="ERRIE" mask="0x02000000" access="rw" description="Error interrupt enable" />
+      <field name="RDERRIE" mask="0x04000000" access="rw" description="PCROP read error interrupt enable" />
+      <field name="OBL_LAUNCH" mask="0x08000000" access="rc_w1" description="Force option byte loading" />
+      <field name="SEC_PROT1" mask="0x10000000" access="rs" description="Securable memory area bank 1 protection" />
+      <field name="OPTLOCK" mask="0x40000000" access="rs" description="Options lock" />
+      <field name="LOCK" mask="0x80000000" access="rs" description="Flash control register lock" />
+    </register>
+    
+    <register name="ECCR" offset="0x18" reset="0x00000000" description="Flash ECC register">
+      <field name="ADDR_ECC" mask="0x0007FFFF" access="ro" description="ECC fail address" />
+      <field name="SYSF_ECC" mask="0x00400000" access="ro" description="System Flash ECC fail" />
+      <field name="ECCCIE" mask="0x01000000" access="rw" description="ECC correction interrupt enable" />
+      <field name="ECCC" mask="0x40000000" access="rc_w1" description="ECC correction" />
+      <field name="ECCD" mask="0x80000000" access="rc_w1" description="ECC detection (NMI)" />
+    </register>
+    
+    <register name="OPTR" offset="0x20" reset="0xF0000000" description="Flash option register">
+      <field name="RDP" mask="0x000000FF" access="rw" description="Read protection level">
+        <enum value="0x000000AA" name="Level0" description="No protection" />
+        <enum value="0x000000CC" name="Level2" description="Chip protection (irreversible)" />
+        <!-- Any other value = Level 1 -->
+      </field>
+      <field name="BOR_LEV" mask="0x00000700" access="rw" description="BOR reset level">
+        <enum value="0x00000000" name="Level0" description="1.7V" />
+        <enum value="0x00000100" name="Level1" description="2.0V" />
+        <enum value="0x00000200" name="Level2" description="2.2V" />
+        <enum value="0x00000300" name="Level3" description="2.5V" />
+        <enum value="0x00000400" name="Level4" description="2.8V" />
+      </field>
+      <field name="nRST_STOP" mask="0x00001000" access="rw" description="Reset on Stop mode" />
+      <field name="nRST_STDBY" mask="0x00002000" access="rw" description="Reset on Standby mode" />
+      <field name="nRST_SHDW" mask="0x00004000" access="rw" description="Reset on Shutdown mode" />
+      <field name="IWDG_SW" mask="0x00010000" access="rw" description="Independent watchdog selection" />
+      <field name="IWDG_STOP" mask="0x00020000" access="rw" description="IWDG counter freeze in Stop mode" />
+      <field name="IWDG_STDBY" mask="0x00040000" access="rw" description="IWDG counter freeze in Standby mode" />
+      <field name="WWDG_SW" mask="0x00080000" access="rw" description="Window watchdog selection" />
+      <field name="nBOOT1" mask="0x00800000" access="rw" description="Boot configuration" />
+      <field name="SRAM_PE" mask="0x01000000" access="rw" description="SRAM parity check enable" />
+      <field name="CCMSRAM_RST" mask="0x02000000" access="rw" description="CCMSRAM erase on reset" />
+      <field name="nSWBOOT0" mask="0x04000000" access="rw" description="Software BOOT0" />
+      <field name="nBOOT0" mask="0x08000000" access="rw" description="nBOOT0 option bit" />
+      <field name="NRST_MODE" mask="0x30000000" access="rw" description="NRST pin mode">
+        <enum value="0x10000000" name="Reset" description="Reset input only" />
+        <enum value="0x20000000" name="GPIO" description="GPIO" />
+        <enum value="0x30000000" name="Bidirectional" description="Bidirectional reset" />
+      </field>
+      <field name="IRHEN" mask="0x40000000" access="rw" description="Internal reset holder enable" />
+    </register>
+    
+    <register name="PCROP1SR" offset="0x24" reset="0xFFFF0000" description="Flash PCROP1 start address register">
+      <field name="PCROP1_STRT" mask="0x00007FFF" access="rw" description="PCROP1 area start offset" />
+    </register>
+    
+    <register name="PCROP1ER" offset="0x28" reset="0x00000000" description="Flash PCROP1 end address register">
+      <field name="PCROP1_END" mask="0x00007FFF" access="rw" description="PCROP1 area end offset" />
+      <field name="PCROP_RDP" mask="0x80000000" access="rw" description="PCROP area preserved on RDP level regression" />
+    </register>
+    
+    <register name="WRP1AR" offset="0x2C" reset="0x00000000" description="Flash WRP area A address register">
+      <field name="WRP1A_STRT" mask="0x0000007F" access="rw" description="WRP area A start offset" />
+      <field name="WRP1A_END" mask="0x007F0000" access="rw" description="WRP area A end offset" />
+    </register>
+    
+    <register name="WRP1BR" offset="0x30" reset="0x00000000" description="Flash WRP area B address register">
+      <field name="WRP1B_STRT" mask="0x0000007F" access="rw" description="WRP area B start offset" />
+      <field name="WRP1B_END" mask="0x007F0000" access="rw" description="WRP area B end offset" />
+    </register>
+    
+    <register name="SEC1R" offset="0x70" reset="0xFFFFFE00" description="Flash securable area bank 1 register">
+      <field name="BOOT_LOCK" mask="0x00010000" access="rw" description="Boot lock" />
+      <!-- SEC_SIZE1 field width varies by category - defined in derived peripherals -->
+    </register>
+    
+  </peripheral>
+  
+  <!-- ========================================================================
+       FLASH - Category 2 (single bank, up to 128KB)
+       STM32G431, STM32G441
+       ======================================================================== -->
+  <peripheral name="FLASH" base="FLASH_BASE" prodcategory="2" description="Flash memory interface (Category 2)">
+    <instance id="1" base="0x40022000" />
+    
+    <!-- SEC1R with 7-bit SEC_SIZE1 field -->
+    <register name="SEC1R" offset="0x70" reset="0xFFFFFE00" description="Flash securable area register">
+      <field name="SEC_SIZE1" mask="0x0000007F" access="rw" description="Securable memory area size (7-bit)" />
+      <field name="BOOT_LOCK" mask="0x00010000" access="rw" description="Boot lock" />
+    </register>
+    
+  </peripheral>
+  
+  <!-- ========================================================================
+       FLASH - Category 3 (dual bank optional, up to 256KB)
+       STM32G471, STM32G473, STM32G474, STM32G483, STM32G484
+       ======================================================================== -->
+  <peripheral name="FLASH" base="FLASH_BASE" prodcategory="3" description="Flash memory interface (Category 3)">
+    <instance id="1" base="0x40022000" />
+    
+    <!-- CR extensions for dual bank -->
+    <register name="CR" extend="true">
+      <field name="BKER" mask="0x00000800" access="rw" description="Bank erase selection">
+        <enum value="0x00000000" name="Bank1" />
+        <enum value="0x00000800" name="Bank2" />
+      </field>
+      <field name="MER2" mask="0x00008000" access="rw" description="Bank 2 mass erase" />
+      <field name="SEC_PROT2" mask="0x20000000" access="rs" description="Securable memory area bank 2 protection" />
+    </register>
+    
+    <!-- ECCR extensions for dual bank -->
+    <register name="ECCR" extend="true">
+      <field name="BK_ECC" mask="0x00200000" access="ro" description="ECC fail bank" />
+      <field name="ECCC2" mask="0x10000000" access="rc_w1" description="ECC correction bank 2 (DBANK=0 only)" />
+      <field name="ECCD2" mask="0x20000000" access="rc_w1" description="ECC detection bank 2 (DBANK=0 only)" />
+    </register>
+    
+    <!-- OPTR extensions for dual bank -->
+    <register name="OPTR" extend="true">
+      <field name="BFB2" mask="0x00100000" access="rw" description="Boot from bank 2" />
+      <field name="DBANK" mask="0x00400000" access="rw" description="Dual bank mode">
+        <enum value="0x00000000" name="SingleBank" description="Single bank with contiguous addresses" />
+        <enum value="0x00400000" name="DualBank" description="Dual bank mode" />
+      </field>
+    </register>
+    
+    <!-- SEC1R with 8-bit SEC_SIZE1 field -->
+    <register name="SEC1R" offset="0x70" reset="0xFFFFFE00" description="Flash securable area bank 1 register">
+      <field name="SEC_SIZE1" mask="0x000000FF" access="rw" description="Securable memory area size bank 1 (8-bit)" />
+      <field name="BOOT_LOCK" mask="0x00010000" access="rw" description="Boot lock" />
+    </register>
+    
+    <!-- Bank 2 registers (Cat3 only) -->
+    <register name="PCROP2SR" offset="0x44" reset="0xFFFF0000" description="Flash PCROP2 start address register">
+      <field name="PCROP2_STRT" mask="0x00007FFF" access="rw" description="PCROP2 area start offset" />
+    </register>
+    
+    <register name="PCROP2ER" offset="0x48" reset="0x00000000" description="Flash PCROP2 end address register">
+      <field name="PCROP2_END" mask="0x00007FFF" access="rw" description="PCROP2 area end offset" />
+    </register>
+    
+    <register name="WRP2AR" offset="0x4C" reset="0x00000000" description="Flash Bank 2 WRP area A address register">
+      <field name="WRP2A_STRT" mask="0x0000007F" access="rw" description="WRP2 area A start offset" />
+      <field name="WRP2A_END" mask="0x007F0000" access="rw" description="WRP2 area A end offset" />
+    </register>
+    
+    <register name="WRP2BR" offset="0x50" reset="0x00000000" description="Flash Bank 2 WRP area B address register">
+      <field name="WRP2B_STRT" mask="0x0000007F" access="rw" description="WRP2 area B start offset" />
+      <field name="WRP2B_END" mask="0x007F0000" access="rw" description="WRP2 area B end offset" />
+    </register>
+    
+    <register name="SEC2R" offset="0x74" reset="0x0000FF00" description="Flash securable area bank 2 register">
+      <field name="SEC_SIZE2" mask="0x000000FF" access="rw" description="Securable memory area size bank 2" />
+    </register>
+    
+  </peripheral>
+  
+  <!-- ========================================================================
+       FLASH - Category 4 (single bank, up to 512KB)
+       STM32G491, STM32G4A1
+       ======================================================================== -->
+  <peripheral name="FLASH" base="FLASH_BASE" prodcategory="4" description="Flash memory interface (Category 4)">
+    <instance id="1" base="0x40022000" />
+    
+    <!-- Larger PNB field for more pages -->
+    <register name="CR" extend="true">
+      <field name="PNB" mask="0x000007F8" access="rw" description="Page number (bits 7:0 at positions 10:3)" />
+    </register>
+    
+    <!-- SEC1R with 9-bit SEC_SIZE1 field -->
+    <register name="SEC1R" offset="0x70" reset="0xFFFFFE00" description="Flash securable area register">
+      <field name="SEC_SIZE1" mask="0x000001FF" access="rw" description="Securable memory area size (9-bit)" />
+      <field name="BOOT_LOCK" mask="0x00010000" access="rw" description="Boot lock" />
+    </register>
+    
+  </peripheral>
+  
+</device>

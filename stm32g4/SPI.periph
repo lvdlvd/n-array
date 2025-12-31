@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 SPI (Serial Peripheral Interface) Peripheral
+  Extracted from RM0440 Rev 7
+  Note: SPI2 and SPI3 also support I2S mode
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="SPI" description="Serial peripheral interface">
+    <instance id="1" base="0x40013000" />
+    <instance id="2" base="0x40003800" />
+    <instance id="3" base="0x40003C00" />
+    
+    <register name="CR1" offset="0x00" reset="0x0000" description="Control register 1">
+      <field name="CPHA" mask="0x0001" access="rw" description="Clock phase">
+        <enum value="0x0000" name="FirstEdge" description="First clock transition is first data capture edge" />
+        <enum value="0x0001" name="SecondEdge" description="Second clock transition is first data capture edge" />
+      </field>
+      <field name="CPOL" mask="0x0002" access="rw" description="Clock polarity">
+        <enum value="0x0000" name="IdleLow" description="CK to 0 when idle" />
+        <enum value="0x0002" name="IdleHigh" description="CK to 1 when idle" />
+      </field>
+      <field name="MSTR" mask="0x0004" access="rw" description="Master selection">
+        <enum value="0x0000" name="Slave" />
+        <enum value="0x0004" name="Master" />
+      </field>
+      <field name="BR" mask="0x0038" access="rw" description="Baud rate control">
+        <enum value="0x0000" name="Div2" description="fPCLK/2" />
+        <enum value="0x0008" name="Div4" description="fPCLK/4" />
+        <enum value="0x0010" name="Div8" description="fPCLK/8" />
+        <enum value="0x0018" name="Div16" description="fPCLK/16" />
+        <enum value="0x0020" name="Div32" description="fPCLK/32" />
+        <enum value="0x0028" name="Div64" description="fPCLK/64" />
+        <enum value="0x0030" name="Div128" description="fPCLK/128" />
+        <enum value="0x0038" name="Div256" description="fPCLK/256" />
+      </field>
+      <field name="SPE" mask="0x0040" access="rw" description="SPI enable">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x0040" name="Enabled" />
+      </field>
+      <field name="LSBFIRST" mask="0x0080" access="rw" description="Frame format">
+        <enum value="0x0000" name="MSBFirst" />
+        <enum value="0x0080" name="LSBFirst" />
+      </field>
+      <field name="SSI" mask="0x0100" access="rw" description="Internal slave select" />
+      <field name="SSM" mask="0x0200" access="rw" description="Software slave management">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x0200" name="Enabled" />
+      </field>
+      <field name="RXONLY" mask="0x0400" access="rw" description="Receive only mode">
+        <enum value="0x0000" name="FullDuplex" />
+        <enum value="0x0400" name="ReceiveOnly" />
+      </field>
+      <field name="CRCL" mask="0x0800" access="rw" description="CRC length">
+        <enum value="0x0000" name="CRC8" description="8-bit CRC" />
+        <enum value="0x0800" name="CRC16" description="16-bit CRC" />
+      </field>
+      <field name="CRCNEXT" mask="0x1000" access="rw" description="Transmit CRC next" />
+      <field name="CRCEN" mask="0x2000" access="rw" description="Hardware CRC calculation enable">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x2000" name="Enabled" />
+      </field>
+      <field name="BIDIOE" mask="0x4000" access="rw" description="Output enable in bidirectional mode">
+        <enum value="0x0000" name="Receive" />
+        <enum value="0x4000" name="Transmit" />
+      </field>
+      <field name="BIDIMODE" mask="0x8000" access="rw" description="Bidirectional data mode">
+        <enum value="0x0000" name="TwoLine" description="2-line unidirectional" />
+        <enum value="0x8000" name="OneLine" description="1-line bidirectional" />
+      </field>
+    </register>
+    
+    <register name="CR2" offset="0x04" reset="0x0700" description="Control register 2">
+      <field name="RXDMAEN" mask="0x0001" access="rw" description="Rx buffer DMA enable">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x0001" name="Enabled" />
+      </field>
+      <field name="TXDMAEN" mask="0x0002" access="rw" description="Tx buffer DMA enable">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x0002" name="Enabled" />
+      </field>
+      <field name="SSOE" mask="0x0004" access="rw" description="SS output enable">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x0004" name="Enabled" />
+      </field>
+      <field name="NSSP" mask="0x0008" access="rw" description="NSS pulse management">
+        <enum value="0x0000" name="NoPulse" />
+        <enum value="0x0008" name="PulseGenerated" />
+      </field>
+      <field name="FRF" mask="0x0010" access="rw" description="Frame format">
+        <enum value="0x0000" name="Motorola" />
+        <enum value="0x0010" name="TI" />
+      </field>
+      <field name="ERRIE" mask="0x0020" access="rw" description="Error interrupt enable">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x0020" name="Enabled" />
+      </field>
+      <field name="RXNEIE" mask="0x0040" access="rw" description="RX buffer not empty interrupt enable">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x0040" name="Enabled" />
+      </field>
+      <field name="TXEIE" mask="0x0080" access="rw" description="TX buffer empty interrupt enable">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x0080" name="Enabled" />
+      </field>
+      <field name="DS" mask="0x0F00" access="rw" description="Data size">
+        <enum value="0x0300" name="Bits4" />
+        <enum value="0x0400" name="Bits5" />
+        <enum value="0x0500" name="Bits6" />
+        <enum value="0x0600" name="Bits7" />
+        <enum value="0x0700" name="Bits8" />
+        <enum value="0x0800" name="Bits9" />
+        <enum value="0x0900" name="Bits10" />
+        <enum value="0x0A00" name="Bits11" />
+        <enum value="0x0B00" name="Bits12" />
+        <enum value="0x0C00" name="Bits13" />
+        <enum value="0x0D00" name="Bits14" />
+        <enum value="0x0E00" name="Bits15" />
+        <enum value="0x0F00" name="Bits16" />
+      </field>
+      <field name="FRXTH" mask="0x1000" access="rw" description="FIFO reception threshold">
+        <enum value="0x0000" name="Half" description="RXNE on 1/2 FIFO (16-bit)" />
+        <enum value="0x1000" name="Quarter" description="RXNE on 1/4 FIFO (8-bit)" />
+      </field>
+      <field name="LDMA_RX" mask="0x2000" access="rw" description="Last DMA transfer for reception">
+        <enum value="0x0000" name="Even" />
+        <enum value="0x2000" name="Odd" />
+      </field>
+      <field name="LDMA_TX" mask="0x4000" access="rw" description="Last DMA transfer for transmission">
+        <enum value="0x0000" name="Even" />
+        <enum value="0x4000" name="Odd" />
+      </field>
+    </register>
+    
+    <register name="SR" offset="0x08" reset="0x0002" description="Status register">
+      <field name="RXNE" mask="0x0001" access="ro" description="Receive buffer not empty">
+        <enum value="0x0000" name="Empty" />
+        <enum value="0x0001" name="NotEmpty" />
+      </field>
+      <field name="TXE" mask="0x0002" access="ro" description="Transmit buffer empty">
+        <enum value="0x0000" name="NotEmpty" />
+        <enum value="0x0002" name="Empty" />
+      </field>
+      <field name="CHSIDE" mask="0x0004" access="ro" description="Channel side (I2S)">
+        <enum value="0x0000" name="Left" />
+        <enum value="0x0004" name="Right" />
+      </field>
+      <field name="UDR" mask="0x0008" access="ro" description="Underrun flag (I2S)" />
+      <field name="CRCERR" mask="0x0010" access="rc_w0" description="CRC error flag" />
+      <field name="MODF" mask="0x0020" access="ro" description="Mode fault" />
+      <field name="OVR" mask="0x0040" access="ro" description="Overrun flag" />
+      <field name="BSY" mask="0x0080" access="ro" description="Busy flag">
+        <enum value="0x0000" name="NotBusy" />
+        <enum value="0x0080" name="Busy" />
+      </field>
+      <field name="FRE" mask="0x0100" access="ro" description="Frame format error" />
+      <field name="FRLVL" mask="0x0600" access="ro" description="FIFO reception level">
+        <enum value="0x0000" name="Empty" />
+        <enum value="0x0200" name="Quarter" />
+        <enum value="0x0400" name="Half" />
+        <enum value="0x0600" name="Full" />
+      </field>
+      <field name="FTLVL" mask="0x1800" access="ro" description="FIFO transmission level">
+        <enum value="0x0000" name="Empty" />
+        <enum value="0x0800" name="Quarter" />
+        <enum value="0x1000" name="Half" />
+        <enum value="0x1800" name="Full" />
+      </field>
+    </register>
+    
+    <register name="DR" offset="0x0C" reset="0x0000" description="Data register">
+      <field name="DR" mask="0xFFFF" access="rw" description="Data register" />
+    </register>
+    
+    <register name="CRCPR" offset="0x10" reset="0x0007" description="CRC polynomial register">
+      <field name="CRCPOLY" mask="0xFFFF" access="rw" description="CRC polynomial" />
+    </register>
+    
+    <register name="RXCRCR" offset="0x14" reset="0x0000" access="ro" description="Rx CRC register">
+      <field name="RXCRC" mask="0xFFFF" access="ro" description="Rx CRC" />
+    </register>
+    
+    <register name="TXCRCR" offset="0x18" reset="0x0000" access="ro" description="Tx CRC register">
+      <field name="TXCRC" mask="0xFFFF" access="ro" description="Tx CRC" />
+    </register>
+    
+    <register name="I2SCFGR" offset="0x1C" reset="0x0000" description="I2S configuration register">
+      <instance id="2" /><instance id="3" />
+      <field name="CHLEN" mask="0x0001" access="rw" description="Channel length">
+        <enum value="0x0000" name="Bits16" />
+        <enum value="0x0001" name="Bits32" />
+      </field>
+      <field name="DATLEN" mask="0x0006" access="rw" description="Data length">
+        <enum value="0x0000" name="Bits16" />
+        <enum value="0x0002" name="Bits24" />
+        <enum value="0x0004" name="Bits32" />
+      </field>
+      <field name="CKPOL" mask="0x0008" access="rw" description="Steady state clock polarity">
+        <enum value="0x0000" name="IdleLow" />
+        <enum value="0x0008" name="IdleHigh" />
+      </field>
+      <field name="I2SSTD" mask="0x0030" access="rw" description="I2S standard selection">
+        <enum value="0x0000" name="Philips" />
+        <enum value="0x0010" name="MSB" description="MSB justified" />
+        <enum value="0x0020" name="LSB" description="LSB justified" />
+        <enum value="0x0030" name="PCM" />
+      </field>
+      <field name="PCMSYNC" mask="0x0080" access="rw" description="PCM frame synchronization">
+        <enum value="0x0000" name="Short" />
+        <enum value="0x0080" name="Long" />
+      </field>
+      <field name="I2SCFG" mask="0x0300" access="rw" description="I2S configuration mode">
+        <enum value="0x0000" name="SlaveTx" />
+        <enum value="0x0100" name="SlaveRx" />
+        <enum value="0x0200" name="MasterTx" />
+        <enum value="0x0300" name="MasterRx" />
+      </field>
+      <field name="I2SE" mask="0x0400" access="rw" description="I2S enable">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x0400" name="Enabled" />
+      </field>
+      <field name="I2SMOD" mask="0x0800" access="rw" description="I2S mode selection">
+        <enum value="0x0000" name="SPI" />
+        <enum value="0x0800" name="I2S" />
+      </field>
+      <field name="ASTRTEN" mask="0x1000" access="rw" description="Asynchronous start enable" />
+    </register>
+    
+    <register name="I2SPR" offset="0x20" reset="0x0002" description="I2S prescaler register">
+      <instance id="2" /><instance id="3" />
+      <field name="I2SDIV" mask="0x00FF" access="rw" description="I2S linear prescaler" />
+      <field name="ODD" mask="0x0100" access="rw" description="Odd factor for prescaler">
+        <enum value="0x0000" name="Even" />
+        <enum value="0x0100" name="Odd" />
+      </field>
+      <field name="MCKOE" mask="0x0200" access="rw" description="Master clock output enable">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x0200" name="Enabled" />
+      </field>
+    </register>
+    
+  </peripheral>
+  
+</device>

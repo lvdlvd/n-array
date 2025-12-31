@@ -1,0 +1,359 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 HRTIM (High-Resolution Timer) Peripheral
+  Extracted from RM0440 Rev 7
+  
+  High-resolution timer for motor control and power conversion.
+  Contains Master Timer + 6 Timer Units (A-F) + Common registers.
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="HRTIM" description="High-resolution timer">
+    <instance id="1" base="0x40016800" />
+    
+    <!-- ============ MASTER TIMER REGISTERS (0x000 - 0x07F) ============ -->
+    <register name="MCR" offset="0x000" reset="0x00000000" description="Master timer control register">
+      <field name="CK_PSC" mask="0x00000007" access="rw" description="Clock prescaler" />
+      <field name="CONT" mask="0x00000008" access="rw" description="Continuous mode" />
+      <field name="RETRIG" mask="0x00000010" access="rw" description="Re-triggerable mode" />
+      <field name="HALF" mask="0x00000020" access="rw" description="Half mode" />
+      <field name="INTLVD" mask="0x000000C0" access="rw" description="Interleaved mode" />
+      <field name="SYNC_IN" mask="0x00000300" access="rw" description="Sync input" />
+      <field name="SYNCRSTM" mask="0x00000400" access="rw" description="Sync resets master" />
+      <field name="SYNCSTRTM" mask="0x00000800" access="rw" description="Sync starts master" />
+      <field name="SYNC_OUT" mask="0x00003000" access="rw" description="Sync output" />
+      <field name="SYNC_SRC" mask="0x0000C000" access="rw" description="Sync source" />
+      <field name="MCEN" mask="0x00010000" access="rw" description="Master counter enable" />
+      <field name="TACEN" mask="0x00020000" access="rw" description="Timer A counter enable" />
+      <field name="TBCEN" mask="0x00040000" access="rw" description="Timer B counter enable" />
+      <field name="TCCEN" mask="0x00080000" access="rw" description="Timer C counter enable" />
+      <field name="TDCEN" mask="0x00100000" access="rw" description="Timer D counter enable" />
+      <field name="TECEN" mask="0x00200000" access="rw" description="Timer E counter enable" />
+      <field name="TFCEN" mask="0x00400000" access="rw" description="Timer F counter enable" />
+      <field name="DACSYNC" mask="0x06000000" access="rw" description="DAC sync" />
+      <field name="PREEN" mask="0x08000000" access="rw" description="Preload enable" />
+      <field name="MREPU" mask="0x20000000" access="rw" description="Master rep update" />
+      <field name="BRSTDMA" mask="0xC0000000" access="rw" description="Burst DMA" />
+    </register>
+    
+    <register name="MISR" offset="0x004" reset="0x00000000" access="ro" description="Master timer interrupt status register">
+      <field name="MCMP1" mask="0x00000001" access="ro" description="Master compare 1" />
+      <field name="MCMP2" mask="0x00000002" access="ro" description="Master compare 2" />
+      <field name="MCMP3" mask="0x00000004" access="ro" description="Master compare 3" />
+      <field name="MCMP4" mask="0x00000008" access="ro" description="Master compare 4" />
+      <field name="MREP" mask="0x00000010" access="ro" description="Master repetition" />
+      <field name="SYNC" mask="0x00000020" access="ro" description="Sync input" />
+      <field name="MUPD" mask="0x00000040" access="ro" description="Master update" />
+    </register>
+    
+    <register name="MICR" offset="0x008" reset="0x00000000" access="wo" description="Master timer interrupt clear register">
+      <field name="MCMP1C" mask="0x00000001" access="wo" description="Clear master compare 1" />
+      <field name="MCMP2C" mask="0x00000002" access="wo" description="Clear master compare 2" />
+      <field name="MCMP3C" mask="0x00000004" access="wo" description="Clear master compare 3" />
+      <field name="MCMP4C" mask="0x00000008" access="wo" description="Clear master compare 4" />
+      <field name="MREPC" mask="0x00000010" access="wo" description="Clear master repetition" />
+      <field name="SYNCC" mask="0x00000020" access="wo" description="Clear sync input" />
+      <field name="MUPDC" mask="0x00000040" access="wo" description="Clear master update" />
+    </register>
+    
+    <register name="MDIER" offset="0x00C" reset="0x00000000" description="Master timer DMA/interrupt enable register">
+      <field name="MCMP1IE" mask="0x00000001" access="rw" description="Master compare 1 interrupt enable" />
+      <field name="MCMP2IE" mask="0x00000002" access="rw" description="Master compare 2 interrupt enable" />
+      <field name="MCMP3IE" mask="0x00000004" access="rw" description="Master compare 3 interrupt enable" />
+      <field name="MCMP4IE" mask="0x00000008" access="rw" description="Master compare 4 interrupt enable" />
+      <field name="MREPIE" mask="0x00000010" access="rw" description="Master repetition interrupt enable" />
+      <field name="SYNCIE" mask="0x00000020" access="rw" description="Sync input interrupt enable" />
+      <field name="MUPDIE" mask="0x00000040" access="rw" description="Master update interrupt enable" />
+      <field name="MCMP1DE" mask="0x00010000" access="rw" description="Master compare 1 DMA enable" />
+      <field name="MCMP2DE" mask="0x00020000" access="rw" description="Master compare 2 DMA enable" />
+      <field name="MCMP3DE" mask="0x00040000" access="rw" description="Master compare 3 DMA enable" />
+      <field name="MCMP4DE" mask="0x00080000" access="rw" description="Master compare 4 DMA enable" />
+      <field name="MREPDE" mask="0x00100000" access="rw" description="Master repetition DMA enable" />
+      <field name="SYNCDE" mask="0x00200000" access="rw" description="Sync input DMA enable" />
+      <field name="MUPDDE" mask="0x00400000" access="rw" description="Master update DMA enable" />
+    </register>
+    
+    <register name="MCNTR" offset="0x010" reset="0x00000000" description="Master timer counter register">
+      <field name="MCNT" mask="0x0000FFFF" access="rw" description="Counter value" />
+    </register>
+    
+    <register name="MPER" offset="0x014" reset="0x0000FFFF" description="Master timer period register">
+      <field name="MPER" mask="0x0000FFFF" access="rw" description="Period value" />
+    </register>
+    
+    <register name="MREP" offset="0x018" reset="0x00000000" description="Master timer repetition register">
+      <field name="MREP" mask="0x000000FF" access="rw" description="Repetition counter value" />
+    </register>
+    
+    <register name="MCMP1R" offset="0x01C" reset="0x00000000" description="Master timer compare 1 register">
+      <field name="MCMP1" mask="0x0000FFFF" access="rw" description="Compare value" />
+    </register>
+    
+    <register name="MCMP2R" offset="0x024" reset="0x00000000" description="Master timer compare 2 register">
+      <field name="MCMP2" mask="0x0000FFFF" access="rw" description="Compare value" />
+    </register>
+    
+    <register name="MCMP3R" offset="0x028" reset="0x00000000" description="Master timer compare 3 register">
+      <field name="MCMP3" mask="0x0000FFFF" access="rw" description="Compare value" />
+    </register>
+    
+    <register name="MCMP4R" offset="0x02C" reset="0x00000000" description="Master timer compare 4 register">
+      <field name="MCMP4" mask="0x0000FFFF" access="rw" description="Compare value" />
+    </register>
+    
+    <!-- ============ TIMER UNITS A-F (stride 0x80) ============ -->
+    <!-- Timer A: 0x080, B: 0x100, C: 0x180, D: 0x200, E: 0x280, F: 0x300 -->
+    <group name="TIM" offset="0x080" stride="0x80" range_min="0" range_max="5" description="Timer unit (A=0, B=1, C=2, D=3, E=4, F=5)">
+      
+      <register name="CR" offset="0x00" reset="0x00000000" description="Timer control register">
+        <field name="CK_PSC" mask="0x00000007" access="rw" description="Clock prescaler" />
+        <field name="CONT" mask="0x00000008" access="rw" description="Continuous mode" />
+        <field name="RETRIG" mask="0x00000010" access="rw" description="Retrigger mode" />
+        <field name="HALF" mask="0x00000020" access="rw" description="Half mode enable" />
+        <field name="PUSH" mask="0x00000040" access="rw" description="Push-pull mode enable" />
+        <field name="INTLVD" mask="0x00000180" access="rw" description="Interleaved mode" />
+        <field name="RSYNCU" mask="0x00000200" access="rw" description="Re-sync update" />
+        <field name="SYNCRSTx" mask="0x00000400" access="rw" description="Sync resets timer" />
+        <field name="SYNCSTRTx" mask="0x00000800" access="rw" description="Sync starts timer" />
+        <field name="DELCMP2" mask="0x00003000" access="rw" description="Delayed compare 2 mode" />
+        <field name="DELCMP4" mask="0x0000C000" access="rw" description="Delayed compare 4 mode" />
+        <field name="TFU" mask="0x00010000" access="rw" description="Timer F update" />
+        <field name="TxREPU" mask="0x00020000" access="rw" description="Timer rep update" />
+        <field name="TxRSTU" mask="0x00040000" access="rw" description="Timer reset update" />
+        <field name="TAU" mask="0x00080000" access="rw" description="Timer A update" />
+        <field name="TBU" mask="0x00100000" access="rw" description="Timer B update" />
+        <field name="TCU" mask="0x00200000" access="rw" description="Timer C update" />
+        <field name="TDU" mask="0x00400000" access="rw" description="Timer D update" />
+        <field name="TEU" mask="0x00800000" access="rw" description="Timer E update" />
+        <field name="MSTU" mask="0x01000000" access="rw" description="Master timer update" />
+        <field name="DACSYNC" mask="0x06000000" access="rw" description="DAC sync" />
+        <field name="PREEN" mask="0x08000000" access="rw" description="Preload enable" />
+        <field name="UPDGAT" mask="0xF0000000" access="rw" description="Update gating" />
+      </register>
+      
+      <register name="ISR" offset="0x04" reset="0x00000000" access="ro" description="Timer interrupt status register">
+        <field name="CMP1" mask="0x00000001" access="ro" description="Compare 1 interrupt" />
+        <field name="CMP2" mask="0x00000002" access="ro" description="Compare 2 interrupt" />
+        <field name="CMP3" mask="0x00000004" access="ro" description="Compare 3 interrupt" />
+        <field name="CMP4" mask="0x00000008" access="ro" description="Compare 4 interrupt" />
+        <field name="REP" mask="0x00000010" access="ro" description="Repetition interrupt" />
+        <field name="UPD" mask="0x00000040" access="ro" description="Update interrupt" />
+        <field name="CPT1" mask="0x00000080" access="ro" description="Capture 1 interrupt" />
+        <field name="CPT2" mask="0x00000100" access="ro" description="Capture 2 interrupt" />
+        <field name="SETx1" mask="0x00000200" access="ro" description="Output 1 set interrupt" />
+        <field name="RSTx1" mask="0x00000400" access="ro" description="Output 1 reset interrupt" />
+        <field name="SETx2" mask="0x00000800" access="ro" description="Output 2 set interrupt" />
+        <field name="RSTx2" mask="0x00001000" access="ro" description="Output 2 reset interrupt" />
+        <field name="RST" mask="0x00002000" access="ro" description="Reset interrupt" />
+        <field name="DLYPRT" mask="0x00004000" access="ro" description="Delayed protection" />
+        <field name="CPPSTAT" mask="0x00010000" access="ro" description="Current push-pull status" />
+        <field name="IPPSTAT" mask="0x00020000" access="ro" description="Idle push-pull status" />
+        <field name="O1STAT" mask="0x00040000" access="ro" description="Output 1 state" />
+        <field name="O2STAT" mask="0x00080000" access="ro" description="Output 2 state" />
+        <field name="O1CPY" mask="0x00100000" access="ro" description="Output 1 copy" />
+        <field name="O2CPY" mask="0x00200000" access="ro" description="Output 2 copy" />
+      </register>
+      
+      <register name="ICR" offset="0x08" reset="0x00000000" access="wo" description="Timer interrupt clear register">
+        <field name="CMP1C" mask="0x00000001" access="wo" description="Clear compare 1" />
+        <field name="CMP2C" mask="0x00000002" access="wo" description="Clear compare 2" />
+        <field name="CMP3C" mask="0x00000004" access="wo" description="Clear compare 3" />
+        <field name="CMP4C" mask="0x00000008" access="wo" description="Clear compare 4" />
+        <field name="REPC" mask="0x00000010" access="wo" description="Clear repetition" />
+        <field name="UPDC" mask="0x00000040" access="wo" description="Clear update" />
+        <field name="CPT1C" mask="0x00000080" access="wo" description="Clear capture 1" />
+        <field name="CPT2C" mask="0x00000100" access="wo" description="Clear capture 2" />
+        <field name="SET1xC" mask="0x00000200" access="wo" description="Clear output 1 set" />
+        <field name="RST1xC" mask="0x00000400" access="wo" description="Clear output 1 reset" />
+        <field name="SET2xC" mask="0x00000800" access="wo" description="Clear output 2 set" />
+        <field name="RST2xC" mask="0x00001000" access="wo" description="Clear output 2 reset" />
+        <field name="RSTC" mask="0x00002000" access="wo" description="Clear reset" />
+        <field name="DLYPRTC" mask="0x00004000" access="wo" description="Clear delayed protection" />
+      </register>
+      
+      <register name="DIER" offset="0x0C" reset="0x00000000" description="Timer DMA/interrupt enable register" />
+      
+      <register name="CNTR" offset="0x10" reset="0x00000000" description="Timer counter register">
+        <field name="CNT" mask="0x0000FFFF" access="rw" description="Counter value" />
+      </register>
+      
+      <register name="PER" offset="0x14" reset="0x0000FFFF" description="Timer period register">
+        <field name="PER" mask="0x0000FFFF" access="rw" description="Period value" />
+      </register>
+      
+      <register name="REP" offset="0x18" reset="0x00000000" description="Timer repetition register">
+        <field name="REP" mask="0x000000FF" access="rw" description="Repetition counter" />
+      </register>
+      
+      <register name="CMP1R" offset="0x1C" reset="0x00000000" description="Timer compare 1 register">
+        <field name="CMP1" mask="0x0000FFFF" access="rw" description="Compare value" />
+      </register>
+      
+      <register name="CMP1CR" offset="0x20" reset="0x00000000" description="Timer compare 1 compound register">
+        <field name="CMP1" mask="0x0000FFFF" access="rw" description="Compare value" />
+        <field name="REP" mask="0x00FF0000" access="rw" description="Repetition value" />
+      </register>
+      
+      <register name="CMP2R" offset="0x24" reset="0x00000000" description="Timer compare 2 register" />
+      <register name="CMP3R" offset="0x28" reset="0x00000000" description="Timer compare 3 register" />
+      <register name="CMP4R" offset="0x2C" reset="0x00000000" description="Timer compare 4 register" />
+      
+      <register name="CPT1R" offset="0x30" reset="0x00000000" access="ro" description="Timer capture 1 register">
+        <field name="CPT1" mask="0x0000FFFF" access="ro" description="Capture value" />
+        <field name="DIR" mask="0x00010000" access="ro" description="Timer direction" />
+      </register>
+      
+      <register name="CPT2R" offset="0x34" reset="0x00000000" access="ro" description="Timer capture 2 register" />
+      
+      <register name="DTR" offset="0x38" reset="0x00000000" description="Timer deadtime register">
+        <field name="DTR" mask="0x000001FF" access="rw" description="Deadtime rising value" />
+        <field name="SDTR" mask="0x00000200" access="rw" description="Sign deadtime rising" />
+        <field name="DTPRSC" mask="0x00001C00" access="rw" description="Deadtime prescaler" />
+        <field name="DTRSLK" mask="0x00004000" access="rw" description="Deadtime rising sign lock" />
+        <field name="DTRLK" mask="0x00008000" access="rw" description="Deadtime rising lock" />
+        <field name="DTF" mask="0x01FF0000" access="rw" description="Deadtime falling value" />
+        <field name="SDTF" mask="0x02000000" access="rw" description="Sign deadtime falling" />
+        <field name="DTFSLK" mask="0x40000000" access="rw" description="Deadtime falling sign lock" />
+        <field name="DTFLK" mask="0x80000000" access="rw" description="Deadtime falling lock" />
+      </register>
+      
+      <register name="SET1R" offset="0x3C" reset="0x00000000" description="Timer output 1 set register" />
+      <register name="RST1R" offset="0x40" reset="0x00000000" description="Timer output 1 reset register" />
+      <register name="SET2R" offset="0x44" reset="0x00000000" description="Timer output 2 set register" />
+      <register name="RST2R" offset="0x48" reset="0x00000000" description="Timer output 2 reset register" />
+      
+      <register name="EEFR1" offset="0x4C" reset="0x00000000" description="Timer external event filter register 1" />
+      <register name="EEFR2" offset="0x50" reset="0x00000000" description="Timer external event filter register 2" />
+      <register name="RSTR" offset="0x54" reset="0x00000000" description="Timer reset register" />
+      <register name="CHPR" offset="0x58" reset="0x00000000" description="Timer chopper register" />
+      <register name="CPT1CR" offset="0x5C" reset="0x00000000" description="Timer capture 1 control register" />
+      <register name="CPT2CR" offset="0x60" reset="0x00000000" description="Timer capture 2 control register" />
+      <register name="OUTR" offset="0x64" reset="0x00000000" description="Timer output register" />
+      <register name="FLTR" offset="0x68" reset="0x00000000" description="Timer fault register" />
+      <register name="CR2" offset="0x6C" reset="0x00000000" description="Timer control register 2" />
+      <register name="EEFR3" offset="0x70" reset="0x00000000" description="Timer external event filter register 3" />
+      
+    </group>
+    
+    <!-- ============ COMMON REGISTERS (0x380 - 0x3FC) ============ -->
+    <register name="CR1" offset="0x380" reset="0x00000000" description="Common control register 1">
+      <field name="MUDIS" mask="0x00000001" access="rw" description="Master update disable" />
+      <field name="TAUDIS" mask="0x00000002" access="rw" description="Timer A update disable" />
+      <field name="TBUDIS" mask="0x00000004" access="rw" description="Timer B update disable" />
+      <field name="TCUDIS" mask="0x00000008" access="rw" description="Timer C update disable" />
+      <field name="TDUDIS" mask="0x00000010" access="rw" description="Timer D update disable" />
+      <field name="TEUDIS" mask="0x00000020" access="rw" description="Timer E update disable" />
+      <field name="TFUDIS" mask="0x00000040" access="rw" description="Timer F update disable" />
+      <field name="AD1USRC" mask="0x00070000" access="rw" description="ADC trigger 1 update source" />
+      <field name="AD2USRC" mask="0x00380000" access="rw" description="ADC trigger 2 update source" />
+      <field name="AD3USRC" mask="0x01C00000" access="rw" description="ADC trigger 3 update source" />
+      <field name="AD4USRC" mask="0x0E000000" access="rw" description="ADC trigger 4 update source" />
+    </register>
+    
+    <register name="CR2" offset="0x384" reset="0x00000000" description="Common control register 2">
+      <field name="MSWU" mask="0x00000001" access="wo" description="Master software update" />
+      <field name="TASWU" mask="0x00000002" access="wo" description="Timer A software update" />
+      <field name="TBSWU" mask="0x00000004" access="wo" description="Timer B software update" />
+      <field name="TCSWU" mask="0x00000008" access="wo" description="Timer C software update" />
+      <field name="TDSWU" mask="0x00000010" access="wo" description="Timer D software update" />
+      <field name="TESWU" mask="0x00000020" access="wo" description="Timer E software update" />
+      <field name="TFSWU" mask="0x00000040" access="wo" description="Timer F software update" />
+      <field name="MRST" mask="0x00000100" access="wo" description="Master counter reset" />
+      <field name="TARST" mask="0x00000200" access="wo" description="Timer A counter reset" />
+      <field name="TBRST" mask="0x00000400" access="wo" description="Timer B counter reset" />
+      <field name="TCRST" mask="0x00000800" access="wo" description="Timer C counter reset" />
+      <field name="TDRST" mask="0x00001000" access="wo" description="Timer D counter reset" />
+      <field name="TERST" mask="0x00002000" access="wo" description="Timer E counter reset" />
+      <field name="TFRST" mask="0x00004000" access="wo" description="Timer F counter reset" />
+      <field name="SWPA" mask="0x00010000" access="wo" description="Swap timer A outputs" />
+      <field name="SWPB" mask="0x00020000" access="wo" description="Swap timer B outputs" />
+      <field name="SWPC" mask="0x00040000" access="wo" description="Swap timer C outputs" />
+      <field name="SWPD" mask="0x00080000" access="wo" description="Swap timer D outputs" />
+      <field name="SWPE" mask="0x00100000" access="wo" description="Swap timer E outputs" />
+      <field name="SWPF" mask="0x00200000" access="wo" description="Swap timer F outputs" />
+    </register>
+    
+    <register name="ISR" offset="0x388" reset="0x00000000" access="ro" description="Common interrupt status register">
+      <field name="FLT1" mask="0x00000001" access="ro" description="Fault 1 interrupt" />
+      <field name="FLT2" mask="0x00000002" access="ro" description="Fault 2 interrupt" />
+      <field name="FLT3" mask="0x00000004" access="ro" description="Fault 3 interrupt" />
+      <field name="FLT4" mask="0x00000008" access="ro" description="Fault 4 interrupt" />
+      <field name="FLT5" mask="0x00000010" access="ro" description="Fault 5 interrupt" />
+      <field name="FLT6" mask="0x00000020" access="ro" description="Fault 6 interrupt" />
+      <field name="SYSFLT" mask="0x00000020" access="ro" description="System fault interrupt" />
+      <field name="DLLRDY" mask="0x00010000" access="ro" description="DLL ready interrupt" />
+      <field name="BMPER" mask="0x00020000" access="ro" description="Burst mode period interrupt" />
+    </register>
+    
+    <register name="ICR" offset="0x38C" reset="0x00000000" access="wo" description="Common interrupt clear register">
+      <field name="FLT1C" mask="0x00000001" access="wo" description="Clear fault 1" />
+      <field name="FLT2C" mask="0x00000002" access="wo" description="Clear fault 2" />
+      <field name="FLT3C" mask="0x00000004" access="wo" description="Clear fault 3" />
+      <field name="FLT4C" mask="0x00000008" access="wo" description="Clear fault 4" />
+      <field name="FLT5C" mask="0x00000010" access="wo" description="Clear fault 5" />
+      <field name="FLT6C" mask="0x00000020" access="wo" description="Clear fault 6" />
+      <field name="SYSFLTC" mask="0x00000020" access="wo" description="Clear system fault" />
+      <field name="DLLRDYC" mask="0x00010000" access="wo" description="Clear DLL ready" />
+      <field name="BMPERC" mask="0x00020000" access="wo" description="Clear burst mode period" />
+    </register>
+    
+    <register name="IER" offset="0x390" reset="0x00000000" description="Common interrupt enable register">
+      <field name="FLT1IE" mask="0x00000001" access="rw" description="Fault 1 interrupt enable" />
+      <field name="FLT2IE" mask="0x00000002" access="rw" description="Fault 2 interrupt enable" />
+      <field name="FLT3IE" mask="0x00000004" access="rw" description="Fault 3 interrupt enable" />
+      <field name="FLT4IE" mask="0x00000008" access="rw" description="Fault 4 interrupt enable" />
+      <field name="FLT5IE" mask="0x00000010" access="rw" description="Fault 5 interrupt enable" />
+      <field name="FLT6IE" mask="0x00000020" access="rw" description="Fault 6 interrupt enable" />
+      <field name="SYSFLTIE" mask="0x00000020" access="rw" description="System fault interrupt enable" />
+      <field name="DLLRDYIE" mask="0x00010000" access="rw" description="DLL ready interrupt enable" />
+      <field name="BMPERIE" mask="0x00020000" access="rw" description="Burst mode period interrupt enable" />
+    </register>
+    
+    <register name="OENR" offset="0x394" reset="0x00000000" description="Common output enable register">
+      <field name="TA1OEN" mask="0x00000001" access="rw" description="Timer A output 1 enable" />
+      <field name="TA2OEN" mask="0x00000002" access="rw" description="Timer A output 2 enable" />
+      <field name="TB1OEN" mask="0x00000004" access="rw" description="Timer B output 1 enable" />
+      <field name="TB2OEN" mask="0x00000008" access="rw" description="Timer B output 2 enable" />
+      <field name="TC1OEN" mask="0x00000010" access="rw" description="Timer C output 1 enable" />
+      <field name="TC2OEN" mask="0x00000020" access="rw" description="Timer C output 2 enable" />
+      <field name="TD1OEN" mask="0x00000040" access="rw" description="Timer D output 1 enable" />
+      <field name="TD2OEN" mask="0x00000080" access="rw" description="Timer D output 2 enable" />
+      <field name="TE1OEN" mask="0x00000100" access="rw" description="Timer E output 1 enable" />
+      <field name="TE2OEN" mask="0x00000200" access="rw" description="Timer E output 2 enable" />
+      <field name="TF1OEN" mask="0x00000400" access="rw" description="Timer F output 1 enable" />
+      <field name="TF2OEN" mask="0x00000800" access="rw" description="Timer F output 2 enable" />
+    </register>
+    
+    <register name="ODISR" offset="0x398" reset="0x00000000" access="wo" description="Common output disable register" />
+    <register name="ODSR" offset="0x39C" reset="0x00000000" access="ro" description="Common output disable status register" />
+    <register name="BMCR" offset="0x3A0" reset="0x00000000" description="Burst mode control register" />
+    <register name="BMTRG" offset="0x3A4" reset="0x00000000" description="Burst mode trigger register" />
+    <register name="BMCMPR" offset="0x3A8" reset="0x00000000" description="Burst mode compare register" />
+    <register name="BMPER" offset="0x3AC" reset="0x00000000" description="Burst mode period register" />
+    <register name="EECR1" offset="0x3B0" reset="0x00000000" description="External event control register 1" />
+    <register name="EECR2" offset="0x3B4" reset="0x00000000" description="External event control register 2" />
+    <register name="EECR3" offset="0x3B8" reset="0x00000000" description="External event control register 3" />
+    <register name="ADC1R" offset="0x3BC" reset="0x00000000" description="ADC trigger 1 register" />
+    <register name="ADC2R" offset="0x3C0" reset="0x00000000" description="ADC trigger 2 register" />
+    <register name="ADC3R" offset="0x3C4" reset="0x00000000" description="ADC trigger 3 register" />
+    <register name="ADC4R" offset="0x3C8" reset="0x00000000" description="ADC trigger 4 register" />
+    <register name="DLLCR" offset="0x3CC" reset="0x00000000" description="DLL control register" />
+    <register name="FLTINR1" offset="0x3D0" reset="0x00000000" description="Fault input register 1" />
+    <register name="FLTINR2" offset="0x3D4" reset="0x00000000" description="Fault input register 2" />
+    <register name="BDMUPR" offset="0x3D8" reset="0x00000000" description="Burst mode update register" />
+    <register name="BDTAUPR" offset="0x3DC" reset="0x00000000" description="Timer A burst DMA update register" />
+    <register name="BDTBUPR" offset="0x3E0" reset="0x00000000" description="Timer B burst DMA update register" />
+    <register name="BDTCUPR" offset="0x3E4" reset="0x00000000" description="Timer C burst DMA update register" />
+    <register name="BDTDUPR" offset="0x3E8" reset="0x00000000" description="Timer D burst DMA update register" />
+    <register name="BDTEUPR" offset="0x3EC" reset="0x00000000" description="Timer E burst DMA update register" />
+    <register name="BDTFUPR" offset="0x3F0" reset="0x00000000" description="Timer F burst DMA update register" />
+    <register name="ADCER" offset="0x3F4" reset="0x00000000" description="ADC extended trigger register" />
+    <register name="ADCUR" offset="0x3F8" reset="0x00000000" description="ADC trigger update register" />
+    <register name="ADCPS1" offset="0x3FC" reset="0x00000000" description="ADC post-scaler register 1" />
+    <register name="ADCPS2" offset="0x400" reset="0x00000000" description="ADC post-scaler register 2" />
+    <register name="FLTINR3" offset="0x404" reset="0x00000000" description="Fault input register 3" />
+    <register name="FLTINR4" offset="0x408" reset="0x00000000" description="Fault input register 4" />
+    
+  </peripheral>
+  
+</device>

@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 RNG (True Random Number Generator) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="RNG" description="True random number generator">
+    <instance id="1" base="0x50060800" />
+    
+    <register name="CR" offset="0x00" reset="0x00000000" description="Control register">
+      <field name="RNGEN" mask="0x00000004" access="rw" description="True random number generator enable">
+        <enum value="0x00000000" name="Disabled" description="RNG disabled, noise sources powered off, logic clock gated" />
+        <enum value="0x00000004" name="Enabled" description="RNG enabled" />
+      </field>
+      <field name="IE" mask="0x00000008" access="rw" description="Interrupt enable">
+        <enum value="0x00000000" name="Disabled" description="RNG interrupt disabled" />
+        <enum value="0x00000008" name="Enabled" description="RNG interrupt enabled (on DRDY=1, SEIS=1, or CEIS=1)" />
+      </field>
+      <field name="CED" mask="0x00000020" access="rw" description="Clock error detection">
+        <enum value="0x00000000" name="Enabled" description="Clock error detection enabled" />
+        <enum value="0x00000020" name="Disabled" description="Clock error detection disabled" />
+      </field>
+    </register>
+    
+    <register name="SR" offset="0x04" reset="0x00000000" description="Status register">
+      <field name="DRDY" mask="0x00000001" access="ro" description="Data ready">
+        <enum value="0x00000000" name="NotReady" description="RNG_DR not yet valid, no random data available" />
+        <enum value="0x00000001" name="Ready" description="RNG_DR contains valid random data" />
+      </field>
+      <field name="CECS" mask="0x00000002" access="ro" description="Clock error current status">
+        <enum value="0x00000000" name="OK" description="RNG clock correct (fRNGCLK &gt; fHCLK/32)" />
+        <enum value="0x00000002" name="Slow" description="RNG clock too slow (fRNGCLK &lt; fHCLK/32)" />
+      </field>
+      <field name="SECS" mask="0x00000004" access="ro" description="Seed error current status">
+        <enum value="0x00000000" name="OK" description="No faulty sequence currently detected" />
+        <enum value="0x00000004" name="Error" description="Faulty sequence detected (noise source stuck)" />
+      </field>
+      <field name="CEIS" mask="0x00000020" access="rc_w0" description="Clock error interrupt status">
+        <enum value="0x00000000" name="OK" description="RNG clock correct" />
+        <enum value="0x00000020" name="Error" description="RNG clock too slow detected" />
+      </field>
+      <field name="SEIS" mask="0x00000040" access="rc_w0" description="Seed error interrupt status">
+        <enum value="0x00000000" name="OK" description="No faulty sequence detected" />
+        <enum value="0x00000040" name="Error" description="Faulty sequence detected" />
+      </field>
+    </register>
+    
+    <register name="DR" offset="0x08" reset="0x00000000" access="ro" description="Data register">
+      <field name="RNDATA" mask="0xFFFFFFFF" access="ro" description="Random data (valid when DRDY=1 and value != 0)" />
+    </register>
+    
+  </peripheral>
+  
+</device>

@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 TAMP (Tamper and Backup Registers) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="TAMP" description="Tamper and backup registers">
+    <instance id="1" base="0x40002400" />
+    
+    <register name="CR1" offset="0x00" reset="0xFFFF0000" description="Control register 1">
+      <field name="TAMP1E" mask="0x00000001" access="rw" description="Tamper 1 detection enable" />
+      <field name="TAMP2E" mask="0x00000002" access="rw" description="Tamper 2 detection enable" />
+      <field name="TAMP3E" mask="0x00000004" access="rw" description="Tamper 3 detection enable" />
+      <field name="ITAMP3E" mask="0x00040000" access="rw" description="Internal tamper 3 enable" />
+      <field name="ITAMP4E" mask="0x00080000" access="rw" description="Internal tamper 4 enable" />
+      <field name="ITAMP5E" mask="0x00100000" access="rw" description="Internal tamper 5 enable" />
+      <field name="ITAMP6E" mask="0x00200000" access="rw" description="Internal tamper 6 enable" />
+    </register>
+    
+    <register name="CR2" offset="0x04" reset="0x00000000" description="Control register 2">
+      <field name="TAMP1NOER" mask="0x00000001" access="rw" description="Tamper 1 no erase" />
+      <field name="TAMP2NOER" mask="0x00000002" access="rw" description="Tamper 2 no erase" />
+      <field name="TAMP3NOER" mask="0x00000004" access="rw" description="Tamper 3 no erase" />
+      <field name="TAMP1MSK" mask="0x00010000" access="rw" description="Tamper 1 mask" />
+      <field name="TAMP2MSK" mask="0x00020000" access="rw" description="Tamper 2 mask" />
+      <field name="TAMP3MSK" mask="0x00040000" access="rw" description="Tamper 3 mask" />
+      <field name="TAMP1TRG" mask="0x01000000" access="rw" description="Tamper 1 active level" />
+      <field name="TAMP2TRG" mask="0x02000000" access="rw" description="Tamper 2 active level" />
+      <field name="TAMP3TRG" mask="0x04000000" access="rw" description="Tamper 3 active level" />
+    </register>
+    
+    <register name="FLTCR" offset="0x0C" reset="0x00000000" description="Filter control register">
+      <field name="TAMPFREQ" mask="0x00000007" access="rw" description="Tamper sampling frequency" />
+      <field name="TAMPFLT" mask="0x00000018" access="rw" description="Tamper filter count" />
+      <field name="TAMPPRCH" mask="0x00000060" access="rw" description="Tamper precharge duration" />
+      <field name="TAMPPUDIS" mask="0x00000080" access="rw" description="Tamper pull-up disable" />
+    </register>
+    
+    <register name="IER" offset="0x2C" reset="0x00000000" description="Interrupt enable register">
+      <field name="TAMP1IE" mask="0x00000001" access="rw" description="Tamper 1 interrupt enable" />
+      <field name="TAMP2IE" mask="0x00000002" access="rw" description="Tamper 2 interrupt enable" />
+      <field name="TAMP3IE" mask="0x00000004" access="rw" description="Tamper 3 interrupt enable" />
+      <field name="ITAMP3IE" mask="0x00040000" access="rw" description="Internal tamper 3 interrupt enable" />
+      <field name="ITAMP4IE" mask="0x00080000" access="rw" description="Internal tamper 4 interrupt enable" />
+      <field name="ITAMP5IE" mask="0x00100000" access="rw" description="Internal tamper 5 interrupt enable" />
+      <field name="ITAMP6IE" mask="0x00200000" access="rw" description="Internal tamper 6 interrupt enable" />
+    </register>
+    
+    <register name="SR" offset="0x30" reset="0x00000000" access="ro" description="Status register">
+      <field name="TAMP1F" mask="0x00000001" access="ro" description="Tamper 1 detection flag" />
+      <field name="TAMP2F" mask="0x00000002" access="ro" description="Tamper 2 detection flag" />
+      <field name="TAMP3F" mask="0x00000004" access="ro" description="Tamper 3 detection flag" />
+      <field name="ITAMP3F" mask="0x00040000" access="ro" description="Internal tamper 3 flag" />
+      <field name="ITAMP4F" mask="0x00080000" access="ro" description="Internal tamper 4 flag" />
+      <field name="ITAMP5F" mask="0x00100000" access="ro" description="Internal tamper 5 flag" />
+      <field name="ITAMP6F" mask="0x00200000" access="ro" description="Internal tamper 6 flag" />
+    </register>
+    
+    <register name="MISR" offset="0x34" reset="0x00000000" access="ro" description="Masked interrupt status register">
+      <field name="TAMP1MF" mask="0x00000001" access="ro" description="Tamper 1 masked flag" />
+      <field name="TAMP2MF" mask="0x00000002" access="ro" description="Tamper 2 masked flag" />
+      <field name="TAMP3MF" mask="0x00000004" access="ro" description="Tamper 3 masked flag" />
+      <field name="ITAMP3MF" mask="0x00040000" access="ro" description="Internal tamper 3 masked flag" />
+      <field name="ITAMP4MF" mask="0x00080000" access="ro" description="Internal tamper 4 masked flag" />
+      <field name="ITAMP5MF" mask="0x00100000" access="ro" description="Internal tamper 5 masked flag" />
+      <field name="ITAMP6MF" mask="0x00200000" access="ro" description="Internal tamper 6 masked flag" />
+    </register>
+    
+    <register name="SCR" offset="0x3C" reset="0x00000000" access="wo" description="Status clear register">
+      <field name="CTAMP1F" mask="0x00000001" access="wo" description="Clear tamper 1 flag" />
+      <field name="CTAMP2F" mask="0x00000002" access="wo" description="Clear tamper 2 flag" />
+      <field name="CTAMP3F" mask="0x00000004" access="wo" description="Clear tamper 3 flag" />
+      <field name="CITAMP3F" mask="0x00040000" access="wo" description="Clear internal tamper 3 flag" />
+      <field name="CITAMP4F" mask="0x00080000" access="wo" description="Clear internal tamper 4 flag" />
+      <field name="CITAMP5F" mask="0x00100000" access="wo" description="Clear internal tamper 5 flag" />
+      <field name="CITAMP6F" mask="0x00200000" access="wo" description="Clear internal tamper 6 flag" />
+    </register>
+    
+    <!-- Backup registers (32 x 32-bit) -->
+    <group name="BKP" offset="0x100" stride="0x04" range_min="0" range_max="31" description="Backup register">
+      <register name="R" offset="0x00" reset="0x00000000" description="Backup data">
+        <field name="BKP" mask="0xFFFFFFFF" access="rw" description="Backup data" />
+      </register>
+    </group>
+    
+  </peripheral>
+  
+</device>

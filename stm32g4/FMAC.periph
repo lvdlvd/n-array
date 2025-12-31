@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 FMAC (Filter Math Accelerator) Peripheral
+  Extracted from RM0440 Rev 7
+  
+  Hardware accelerator for FIR and IIR digital filters.
+  256x16-bit internal memory for coefficients and data buffers.
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="FMAC" description="Filter math accelerator">
+    <instance id="1" base="0x40021400" />
+    
+    <register name="X1BUFCFG" offset="0x00" reset="0x00000000" description="X1 buffer configuration register">
+      <field name="X1_BASE" mask="0x000000FF" access="rw" description="Base address of X1 buffer" />
+      <field name="X1_BUF_SIZE" mask="0x0000FF00" access="rw" description="Size of X1 buffer in 16-bit words" />
+      <field name="FULL_WM" mask="0x03000000" access="rw" description="Watermark for buffer full flag">
+        <enum value="0x00000000" name="Threshold1" />
+        <enum value="0x01000000" name="Threshold2" />
+        <enum value="0x02000000" name="Threshold4" />
+        <enum value="0x03000000" name="Threshold8" />
+      </field>
+    </register>
+    
+    <register name="X2BUFCFG" offset="0x04" reset="0x00000000" description="X2 buffer configuration register">
+      <field name="X2_BASE" mask="0x000000FF" access="rw" description="Base address of X2 buffer" />
+      <field name="X2_BUF_SIZE" mask="0x0000FF00" access="rw" description="Size of X2 buffer in 16-bit words" />
+    </register>
+    
+    <register name="YBUFCFG" offset="0x08" reset="0x00000000" description="Y buffer configuration register">
+      <field name="Y_BASE" mask="0x000000FF" access="rw" description="Base address of Y buffer" />
+      <field name="Y_BUF_SIZE" mask="0x0000FF00" access="rw" description="Size of Y buffer in 16-bit words" />
+      <field name="EMPTY_WM" mask="0x03000000" access="rw" description="Watermark for buffer empty flag">
+        <enum value="0x00000000" name="Threshold1" />
+        <enum value="0x01000000" name="Threshold2" />
+        <enum value="0x02000000" name="Threshold4" />
+        <enum value="0x03000000" name="Threshold8" />
+      </field>
+    </register>
+    
+    <register name="PARAM" offset="0x0C" reset="0x00000000" description="Parameter register">
+      <field name="P" mask="0x000000FF" access="rw" description="Input parameter P (number of coefficients)" />
+      <field name="Q" mask="0x0000FF00" access="rw" description="Input parameter Q (number of feedback taps)" />
+      <field name="R" mask="0x00FF0000" access="rw" description="Input parameter R (gain)" />
+      <field name="FUNC" mask="0x7F000000" access="rw" description="Function selection">
+        <enum value="0x01000000" name="LoadX1" description="Load X1 buffer" />
+        <enum value="0x02000000" name="LoadX2" description="Load X2 buffer" />
+        <enum value="0x03000000" name="LoadY" description="Load Y buffer" />
+        <enum value="0x08000000" name="FIR" description="Convolution (FIR filter)" />
+        <enum value="0x09000000" name="IIR" description="IIR filter (direct form 1)" />
+      </field>
+      <field name="START" mask="0x80000000" access="rw" description="Enable execution" />
+    </register>
+    
+    <register name="CR" offset="0x10" reset="0x00000000" description="Control register">
+      <field name="RIEN" mask="0x00000001" access="rw" description="Read interrupt enable" />
+      <field name="WIEN" mask="0x00000002" access="rw" description="Write interrupt enable" />
+      <field name="OVFLIEN" mask="0x00000004" access="rw" description="Overflow error interrupt enable" />
+      <field name="UNFLIEN" mask="0x00000008" access="rw" description="Underflow error interrupt enable" />
+      <field name="SATIEN" mask="0x00000010" access="rw" description="Saturation error interrupt enable" />
+      <field name="DMAREN" mask="0x00000100" access="rw" description="DMA read channel request enable" />
+      <field name="DMAWEN" mask="0x00000200" access="rw" description="DMA write channel request enable" />
+      <field name="CLIPEN" mask="0x00008000" access="rw" description="Clipping enable" />
+      <field name="RESET" mask="0x00010000" access="rw" description="Reset FMAC unit" />
+    </register>
+    
+    <register name="SR" offset="0x14" reset="0x00000001" access="ro" description="Status register">
+      <field name="YEMPTY" mask="0x00000001" access="ro" description="Y buffer empty flag" />
+      <field name="X1FULL" mask="0x00000002" access="ro" description="X1 buffer full flag" />
+      <field name="OVFL" mask="0x00000100" access="ro" description="Overflow error flag" />
+      <field name="UNFL" mask="0x00000200" access="ro" description="Underflow error flag" />
+      <field name="SAT" mask="0x00000400" access="ro" description="Saturation error flag" />
+    </register>
+    
+    <register name="WDATA" offset="0x18" reset="0x00000000" access="wo" description="Write data register">
+      <field name="WDATA" mask="0x0000FFFF" access="wo" description="Write data (16-bit)" />
+    </register>
+    
+    <register name="RDATA" offset="0x1C" reset="0x00000000" access="ro" description="Read data register">
+      <field name="RDATA" mask="0x0000FFFF" access="ro" description="Read data (16-bit)" />
+    </register>
+    
+  </peripheral>
+  
+</device>

@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 SYSCFG (System Configuration Controller) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="SYSCFG" description="System configuration controller">
+    <instance id="1" base="0x40010000" />
+    
+    <register name="MEMRMP" offset="0x00" reset="0x00000000" description="Memory remap register">
+      <field name="MEM_MODE" mask="0x00000007" access="rw" description="Memory mapping selection">
+        <enum value="0x00000000" name="MainFlash" />
+        <enum value="0x00000001" name="SystemFlash" />
+        <enum value="0x00000002" name="FMC" />
+        <enum value="0x00000003" name="SRAM1" />
+        <enum value="0x00000004" name="QUADSPI" />
+      </field>
+      <field name="FB_MODE" mask="0x00000100" access="rw" description="Flash bank mode selection" />
+    </register>
+    
+    <register name="CFGR1" offset="0x04" reset="0x7C000000" description="Configuration register 1">
+      <field name="BOOSTEN" mask="0x00000100" access="rw" description="I/O analog switch voltage booster enable" />
+      <field name="ANASWVDD" mask="0x00000200" access="rw" description="GPIO analog switch control voltage selection" />
+      <field name="I2C_PB6_FMP" mask="0x00010000" access="rw" description="Fast-mode Plus on PB6" />
+      <field name="I2C_PB7_FMP" mask="0x00020000" access="rw" description="Fast-mode Plus on PB7" />
+      <field name="I2C_PB8_FMP" mask="0x00040000" access="rw" description="Fast-mode Plus on PB8" />
+      <field name="I2C_PB9_FMP" mask="0x00080000" access="rw" description="Fast-mode Plus on PB9" />
+      <field name="I2C1_FMP" mask="0x00100000" access="rw" description="I2C1 Fast-mode Plus enable" />
+      <field name="I2C2_FMP" mask="0x00200000" access="rw" description="I2C2 Fast-mode Plus enable" />
+      <field name="I2C3_FMP" mask="0x00400000" access="rw" description="I2C3 Fast-mode Plus enable" />
+      <field name="I2C4_FMP" mask="0x00800000" access="rw" description="I2C4 Fast-mode Plus enable" />
+      <field name="FPU_IE" mask="0xFC000000" access="rw" description="FPU interrupt enable bits">
+        <!-- Bits 31:26: INEXACT, INPUT DENORMAL, OVERFLOW, UNDERFLOW, DIV-BY-ZERO, INVALID OP -->
+      </field>
+    </register>
+    
+    <register name="EXTICR1" offset="0x08" reset="0x00000000" description="External interrupt configuration register 1">
+      <field name="EXTI0" mask="0x0000000F" access="rw" description="EXTI0 configuration" />
+      <field name="EXTI1" mask="0x000000F0" access="rw" description="EXTI1 configuration" />
+      <field name="EXTI2" mask="0x00000F00" access="rw" description="EXTI2 configuration" />
+      <field name="EXTI3" mask="0x0000F000" access="rw" description="EXTI3 configuration" />
+    </register>
+    
+    <register name="EXTICR2" offset="0x0C" reset="0x00000000" description="External interrupt configuration register 2">
+      <field name="EXTI4" mask="0x0000000F" access="rw" description="EXTI4 configuration" />
+      <field name="EXTI5" mask="0x000000F0" access="rw" description="EXTI5 configuration" />
+      <field name="EXTI6" mask="0x00000F00" access="rw" description="EXTI6 configuration" />
+      <field name="EXTI7" mask="0x0000F000" access="rw" description="EXTI7 configuration" />
+    </register>
+    
+    <register name="EXTICR3" offset="0x10" reset="0x00000000" description="External interrupt configuration register 3">
+      <field name="EXTI8" mask="0x0000000F" access="rw" description="EXTI8 configuration" />
+      <field name="EXTI9" mask="0x000000F0" access="rw" description="EXTI9 configuration" />
+      <field name="EXTI10" mask="0x00000F00" access="rw" description="EXTI10 configuration" />
+      <field name="EXTI11" mask="0x0000F000" access="rw" description="EXTI11 configuration" />
+    </register>
+    
+    <register name="EXTICR4" offset="0x14" reset="0x00000000" description="External interrupt configuration register 4">
+      <field name="EXTI12" mask="0x0000000F" access="rw" description="EXTI12 configuration" />
+      <field name="EXTI13" mask="0x000000F0" access="rw" description="EXTI13 configuration" />
+      <field name="EXTI14" mask="0x00000F00" access="rw" description="EXTI14 configuration" />
+      <field name="EXTI15" mask="0x0000F000" access="rw" description="EXTI15 configuration" />
+    </register>
+    
+    <register name="SCSR" offset="0x18" reset="0x00000000" description="CCMSRAM control and status register">
+      <field name="CCMER" mask="0x00000001" access="rw" description="CCM SRAM erase" />
+      <field name="CCMBSY" mask="0x00000002" access="ro" description="CCM SRAM busy" />
+    </register>
+    
+    <register name="CFGR2" offset="0x1C" reset="0x00000000" description="Configuration register 2">
+      <field name="CLL" mask="0x00000001" access="rs" description="Cortex-M4 LOCKUP enable (Hardfault)" />
+      <field name="SPL" mask="0x00000002" access="rs" description="SRAM parity lock" />
+      <field name="PVDL" mask="0x00000004" access="rs" description="PVD lock" />
+      <field name="ECCL" mask="0x00000008" access="rs" description="ECC lock" />
+      <field name="SPF" mask="0x00000100" access="rc_w1" description="SRAM parity flag" />
+    </register>
+    
+    <register name="SWPR" offset="0x20" reset="0x00000000" access="wo" description="SRAM2 write protection register">
+      <field name="PAGE0_WP" mask="0x00000001" access="wo" description="Page 0 write protection" />
+      <field name="PAGE1_WP" mask="0x00000002" access="wo" description="Page 1 write protection" />
+      <field name="PAGE2_WP" mask="0x00000004" access="wo" description="Page 2 write protection" />
+      <field name="PAGE3_WP" mask="0x00000008" access="wo" description="Page 3 write protection" />
+      <field name="PAGE4_WP" mask="0x00000010" access="wo" description="Page 4 write protection" />
+      <field name="PAGE5_WP" mask="0x00000020" access="wo" description="Page 5 write protection" />
+      <field name="PAGE6_WP" mask="0x00000040" access="wo" description="Page 6 write protection" />
+      <field name="PAGE7_WP" mask="0x00000080" access="wo" description="Page 7 write protection" />
+      <field name="PAGE8_WP" mask="0x00000100" access="wo" description="Page 8 write protection" />
+      <field name="PAGE9_WP" mask="0x00000200" access="wo" description="Page 9 write protection" />
+      <field name="PAGE10_WP" mask="0x00000400" access="wo" description="Page 10 write protection" />
+      <field name="PAGE11_WP" mask="0x00000800" access="wo" description="Page 11 write protection" />
+      <field name="PAGE12_WP" mask="0x00001000" access="wo" description="Page 12 write protection" />
+      <field name="PAGE13_WP" mask="0x00002000" access="wo" description="Page 13 write protection" />
+      <field name="PAGE14_WP" mask="0x00004000" access="wo" description="Page 14 write protection" />
+      <field name="PAGE15_WP" mask="0x00008000" access="wo" description="Page 15 write protection" />
+      <field name="PAGE16_WP" mask="0x00010000" access="wo" description="Page 16 write protection" />
+      <field name="PAGE17_WP" mask="0x00020000" access="wo" description="Page 17 write protection" />
+      <field name="PAGE18_WP" mask="0x00040000" access="wo" description="Page 18 write protection" />
+      <field name="PAGE19_WP" mask="0x00080000" access="wo" description="Page 19 write protection" />
+      <field name="PAGE20_WP" mask="0x00100000" access="wo" description="Page 20 write protection" />
+      <field name="PAGE21_WP" mask="0x00200000" access="wo" description="Page 21 write protection" />
+      <field name="PAGE22_WP" mask="0x00400000" access="wo" description="Page 22 write protection" />
+      <field name="PAGE23_WP" mask="0x00800000" access="wo" description="Page 23 write protection" />
+      <field name="PAGE24_WP" mask="0x01000000" access="wo" description="Page 24 write protection" />
+      <field name="PAGE25_WP" mask="0x02000000" access="wo" description="Page 25 write protection" />
+      <field name="PAGE26_WP" mask="0x04000000" access="wo" description="Page 26 write protection" />
+      <field name="PAGE27_WP" mask="0x08000000" access="wo" description="Page 27 write protection" />
+      <field name="PAGE28_WP" mask="0x10000000" access="wo" description="Page 28 write protection" />
+      <field name="PAGE29_WP" mask="0x20000000" access="wo" description="Page 29 write protection" />
+      <field name="PAGE30_WP" mask="0x40000000" access="wo" description="Page 30 write protection" />
+      <field name="PAGE31_WP" mask="0x80000000" access="wo" description="Page 31 write protection" />
+    </register>
+    
+    <register name="SKR" offset="0x24" reset="0x00000000" access="wo" description="SRAM2 key register">
+      <field name="KEY" mask="0x000000FF" access="wo" description="SRAM2 write protection key (0xCA then 0x53)" />
+    </register>
+    
+  </peripheral>
+  
+</device>

@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 USB (Universal Serial Bus Full-Speed Device) Peripheral
+  Extracted from RM0440 Rev 7
+  
+  Note: USB uses Packet Memory Area (PMA) at 0x40006000 (1024 bytes).
+  The <ram_elements> section describes the buffer descriptor table
+  and packet buffers located in PMA.
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="USB" description="Universal serial bus full-speed device interface">
+    <instance id="1" base="0x40005C00" />
+    
+    <!-- ================================================================
+         Endpoint Registers (8 endpoints, 0x00-0x1C)
+         Note: These use toggle-write semantics for some bits
+         ================================================================ -->
+    <register name="EP0R" offset="0x00" reset="0x0000" description="Endpoint 0 register">
+      <field name="EA" mask="0x000F" access="rw" description="Endpoint address" />
+      <field name="STAT_TX" mask="0x0030" access="t" description="Status bits for TX (toggle-write)">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x0010" name="Stall" />
+        <enum value="0x0020" name="NAK" />
+        <enum value="0x0030" name="Valid" />
+      </field>
+      <field name="DTOG_TX" mask="0x0040" access="t" description="Data toggle for TX (toggle-write)" />
+      <field name="CTR_TX" mask="0x0080" access="rc_w0" description="Correct transfer for TX" />
+      <field name="EP_KIND" mask="0x0100" access="rw" description="Endpoint kind (DBL_BUF or STATUS_OUT)" />
+      <field name="EP_TYPE" mask="0x0600" access="rw" description="Endpoint type">
+        <enum value="0x0000" name="Bulk" />
+        <enum value="0x0200" name="Control" />
+        <enum value="0x0400" name="Isochronous" />
+        <enum value="0x0600" name="Interrupt" />
+      </field>
+      <field name="SETUP" mask="0x0800" access="ro" description="Setup transaction completed" />
+      <field name="STAT_RX" mask="0x3000" access="t" description="Status bits for RX (toggle-write)">
+        <enum value="0x0000" name="Disabled" />
+        <enum value="0x1000" name="Stall" />
+        <enum value="0x2000" name="NAK" />
+        <enum value="0x3000" name="Valid" />
+      </field>
+      <field name="DTOG_RX" mask="0x4000" access="t" description="Data toggle for RX (toggle-write)" />
+      <field name="CTR_RX" mask="0x8000" access="rc_w0" description="Correct transfer for RX" />
+    </register>
+    
+    <register name="EP1R" offset="0x04" reset="0x0000" description="Endpoint 1 register">
+      <field name="EA" mask="0x000F" access="rw" description="Endpoint address" />
+      <field name="STAT_TX" mask="0x0030" access="t" description="Status bits for TX (toggle-write)" />
+      <field name="DTOG_TX" mask="0x0040" access="t" description="Data toggle for TX (toggle-write)" />
+      <field name="CTR_TX" mask="0x0080" access="rc_w0" description="Correct transfer for TX" />
+      <field name="EP_KIND" mask="0x0100" access="rw" description="Endpoint kind" />
+      <field name="EP_TYPE" mask="0x0600" access="rw" description="Endpoint type" />
+      <field name="SETUP" mask="0x0800" access="ro" description="Setup transaction completed" />
+      <field name="STAT_RX" mask="0x3000" access="t" description="Status bits for RX (toggle-write)" />
+      <field name="DTOG_RX" mask="0x4000" access="t" description="Data toggle for RX (toggle-write)" />
+      <field name="CTR_RX" mask="0x8000" access="rc_w0" description="Correct transfer for RX" />
+    </register>
+    
+    <register name="EP2R" offset="0x08" reset="0x0000" description="Endpoint 2 register">
+      <field name="EA" mask="0x000F" access="rw" description="Endpoint address" />
+      <field name="STAT_TX" mask="0x0030" access="t" description="Status bits for TX (toggle-write)" />
+      <field name="DTOG_TX" mask="0x0040" access="t" description="Data toggle for TX (toggle-write)" />
+      <field name="CTR_TX" mask="0x0080" access="rc_w0" description="Correct transfer for TX" />
+      <field name="EP_KIND" mask="0x0100" access="rw" description="Endpoint kind" />
+      <field name="EP_TYPE" mask="0x0600" access="rw" description="Endpoint type" />
+      <field name="SETUP" mask="0x0800" access="ro" description="Setup transaction completed" />
+      <field name="STAT_RX" mask="0x3000" access="t" description="Status bits for RX (toggle-write)" />
+      <field name="DTOG_RX" mask="0x4000" access="t" description="Data toggle for RX (toggle-write)" />
+      <field name="CTR_RX" mask="0x8000" access="rc_w0" description="Correct transfer for RX" />
+    </register>
+    
+    <register name="EP3R" offset="0x0C" reset="0x0000" description="Endpoint 3 register">
+      <field name="EA" mask="0x000F" access="rw" description="Endpoint address" />
+      <field name="STAT_TX" mask="0x0030" access="t" description="Status bits for TX (toggle-write)" />
+      <field name="DTOG_TX" mask="0x0040" access="t" description="Data toggle for TX (toggle-write)" />
+      <field name="CTR_TX" mask="0x0080" access="rc_w0" description="Correct transfer for TX" />
+      <field name="EP_KIND" mask="0x0100" access="rw" description="Endpoint kind" />
+      <field name="EP_TYPE" mask="0x0600" access="rw" description="Endpoint type" />
+      <field name="SETUP" mask="0x0800" access="ro" description="Setup transaction completed" />
+      <field name="STAT_RX" mask="0x3000" access="t" description="Status bits for RX (toggle-write)" />
+      <field name="DTOG_RX" mask="0x4000" access="t" description="Data toggle for RX (toggle-write)" />
+      <field name="CTR_RX" mask="0x8000" access="rc_w0" description="Correct transfer for RX" />
+    </register>
+    
+    <register name="EP4R" offset="0x10" reset="0x0000" description="Endpoint 4 register">
+      <field name="EA" mask="0x000F" access="rw" description="Endpoint address" />
+      <field name="STAT_TX" mask="0x0030" access="t" description="Status bits for TX (toggle-write)" />
+      <field name="DTOG_TX" mask="0x0040" access="t" description="Data toggle for TX (toggle-write)" />
+      <field name="CTR_TX" mask="0x0080" access="rc_w0" description="Correct transfer for TX" />
+      <field name="EP_KIND" mask="0x0100" access="rw" description="Endpoint kind" />
+      <field name="EP_TYPE" mask="0x0600" access="rw" description="Endpoint type" />
+      <field name="SETUP" mask="0x0800" access="ro" description="Setup transaction completed" />
+      <field name="STAT_RX" mask="0x3000" access="t" description="Status bits for RX (toggle-write)" />
+      <field name="DTOG_RX" mask="0x4000" access="t" description="Data toggle for RX (toggle-write)" />
+      <field name="CTR_RX" mask="0x8000" access="rc_w0" description="Correct transfer for RX" />
+    </register>
+    
+    <register name="EP5R" offset="0x14" reset="0x0000" description="Endpoint 5 register">
+      <field name="EA" mask="0x000F" access="rw" description="Endpoint address" />
+      <field name="STAT_TX" mask="0x0030" access="t" description="Status bits for TX (toggle-write)" />
+      <field name="DTOG_TX" mask="0x0040" access="t" description="Data toggle for TX (toggle-write)" />
+      <field name="CTR_TX" mask="0x0080" access="rc_w0" description="Correct transfer for TX" />
+      <field name="EP_KIND" mask="0x0100" access="rw" description="Endpoint kind" />
+      <field name="EP_TYPE" mask="0x0600" access="rw" description="Endpoint type" />
+      <field name="SETUP" mask="0x0800" access="ro" description="Setup transaction completed" />
+      <field name="STAT_RX" mask="0x3000" access="t" description="Status bits for RX (toggle-write)" />
+      <field name="DTOG_RX" mask="0x4000" access="t" description="Data toggle for RX (toggle-write)" />
+      <field name="CTR_RX" mask="0x8000" access="rc_w0" description="Correct transfer for RX" />
+    </register>
+    
+    <register name="EP6R" offset="0x18" reset="0x0000" description="Endpoint 6 register">
+      <field name="EA" mask="0x000F" access="rw" description="Endpoint address" />
+      <field name="STAT_TX" mask="0x0030" access="t" description="Status bits for TX (toggle-write)" />
+      <field name="DTOG_TX" mask="0x0040" access="t" description="Data toggle for TX (toggle-write)" />
+      <field name="CTR_TX" mask="0x0080" access="rc_w0" description="Correct transfer for TX" />
+      <field name="EP_KIND" mask="0x0100" access="rw" description="Endpoint kind" />
+      <field name="EP_TYPE" mask="0x0600" access="rw" description="Endpoint type" />
+      <field name="SETUP" mask="0x0800" access="ro" description="Setup transaction completed" />
+      <field name="STAT_RX" mask="0x3000" access="t" description="Status bits for RX (toggle-write)" />
+      <field name="DTOG_RX" mask="0x4000" access="t" description="Data toggle for RX (toggle-write)" />
+      <field name="CTR_RX" mask="0x8000" access="rc_w0" description="Correct transfer for RX" />
+    </register>
+    
+    <register name="EP7R" offset="0x1C" reset="0x0000" description="Endpoint 7 register">
+      <field name="EA" mask="0x000F" access="rw" description="Endpoint address" />
+      <field name="STAT_TX" mask="0x0030" access="t" description="Status bits for TX (toggle-write)" />
+      <field name="DTOG_TX" mask="0x0040" access="t" description="Data toggle for TX (toggle-write)" />
+      <field name="CTR_TX" mask="0x0080" access="rc_w0" description="Correct transfer for TX" />
+      <field name="EP_KIND" mask="0x0100" access="rw" description="Endpoint kind" />
+      <field name="EP_TYPE" mask="0x0600" access="rw" description="Endpoint type" />
+      <field name="SETUP" mask="0x0800" access="ro" description="Setup transaction completed" />
+      <field name="STAT_RX" mask="0x3000" access="t" description="Status bits for RX (toggle-write)" />
+      <field name="DTOG_RX" mask="0x4000" access="t" description="Data toggle for RX (toggle-write)" />
+      <field name="CTR_RX" mask="0x8000" access="rc_w0" description="Correct transfer for RX" />
+    </register>
+    
+    <!-- ================================================================
+         Control Registers
+         ================================================================ -->
+    
+    <register name="CNTR" offset="0x40" reset="0x0003" description="Control register">
+      <field name="FRES" mask="0x0001" access="rw" description="Force USB reset" />
+      <field name="PDWN" mask="0x0002" access="rw" description="Power down" />
+      <field name="LP_MODE" mask="0x0004" access="rw" description="Low-power mode" />
+      <field name="FSUSP" mask="0x0008" access="rw" description="Force suspend" />
+      <field name="RESUME" mask="0x0010" access="rw" description="Resume request" />
+      <field name="L1RESUME" mask="0x0020" access="rw" description="LPM L1 resume request" />
+      <field name="L1REQM" mask="0x0080" access="rw" description="LPM L1 state request interrupt mask" />
+      <field name="ESOFM" mask="0x0100" access="rw" description="Expected start of frame interrupt mask" />
+      <field name="SOFM" mask="0x0200" access="rw" description="Start of frame interrupt mask" />
+      <field name="RESETM" mask="0x0400" access="rw" description="USB reset interrupt mask" />
+      <field name="SUSPM" mask="0x0800" access="rw" description="Suspend mode interrupt mask" />
+      <field name="WKUPM" mask="0x1000" access="rw" description="Wakeup interrupt mask" />
+      <field name="ERRM" mask="0x2000" access="rw" description="Error interrupt mask" />
+      <field name="PMAOVRM" mask="0x4000" access="rw" description="Packet memory area over/underrun interrupt mask" />
+      <field name="CTRM" mask="0x8000" access="rw" description="Correct transfer interrupt mask" />
+    </register>
+    
+    <register name="ISTR" offset="0x44" reset="0x00000000" description="Interrupt status register">
+      <field name="EP_ID" mask="0x000F" access="ro" description="Endpoint identifier" />
+      <field name="DIR" mask="0x0010" access="ro" description="Direction of transaction">
+        <enum value="0x0000" name="IN" description="IN transaction (to host)" />
+        <enum value="0x0010" name="OUT" description="OUT transaction (from host)" />
+      </field>
+      <field name="L1REQ" mask="0x0080" access="rc_w0" description="LPM L1 state request" />
+      <field name="ESOF" mask="0x0100" access="rc_w0" description="Expected start of frame" />
+      <field name="SOF" mask="0x0200" access="rc_w0" description="Start of frame" />
+      <field name="RESET" mask="0x0400" access="rc_w0" description="USB reset request" />
+      <field name="SUSP" mask="0x0800" access="rc_w0" description="Suspend mode request" />
+      <field name="WKUP" mask="0x1000" access="rc_w0" description="Wakeup" />
+      <field name="ERR" mask="0x2000" access="rc_w0" description="Error" />
+      <field name="PMAOVR" mask="0x4000" access="rc_w0" description="Packet memory area over/underrun" />
+      <field name="CTR" mask="0x8000" access="ro" description="Correct transfer" />
+    </register>
+    
+    <register name="FNR" offset="0x48" reset="0x0000" access="ro" description="Frame number register">
+      <field name="FN" mask="0x07FF" access="ro" description="Frame number" />
+      <field name="LSOF" mask="0x1800" access="ro" description="Lost SOF">
+        <enum value="0x0000" name="Expected" description="Next SOF expected in 1ms" />
+        <enum value="0x0800" name="Soon" description="Next SOF expected in 2-3ms" />
+        <enum value="0x1000" name="Later" description="Next SOF expected 2-3ms" />
+        <enum value="0x1800" name="Late" description="SOF more than 3ms late" />
+      </field>
+      <field name="LCK" mask="0x2000" access="ro" description="Locked" />
+      <field name="RXDM" mask="0x4000" access="ro" description="Receive data- line status" />
+      <field name="RXDP" mask="0x8000" access="ro" description="Receive data+ line status" />
+    </register>
+    
+    <register name="DADDR" offset="0x4C" reset="0x0000" description="Device address register">
+      <field name="ADD" mask="0x007F" access="rw" description="Device address" />
+      <field name="EF" mask="0x0080" access="rw" description="Enable function" />
+    </register>
+    
+    <register name="BTABLE" offset="0x50" reset="0x0000" description="Buffer table address">
+      <field name="BTABLE" mask="0xFFF8" access="rw" description="Buffer table address (8-byte aligned offset in PMA)" />
+    </register>
+    
+    <register name="LPMCSR" offset="0x54" reset="0x0000" description="LPM control and status register">
+      <field name="LPMEN" mask="0x0001" access="rw" description="LPM support enable" />
+      <field name="LPMACK" mask="0x0002" access="rw" description="LPM token acknowledge enable" />
+      <field name="REMWAKE" mask="0x0008" access="ro" description="Remote wakeup value" />
+      <field name="BESL" mask="0x00F0" access="ro" description="Best effort service latency" />
+    </register>
+    
+    <register name="BCDR" offset="0x58" reset="0x0000" description="Battery charging detector">
+      <field name="BCDEN" mask="0x0001" access="rw" description="Battery charging detector enable" />
+      <field name="DCDEN" mask="0x0002" access="rw" description="Data contact detection enable" />
+      <field name="PDEN" mask="0x0004" access="rw" description="Primary detection enable" />
+      <field name="SDEN" mask="0x0008" access="rw" description="Secondary detection enable" />
+      <field name="DCDET" mask="0x0010" access="ro" description="Data contact detection" />
+      <field name="PDET" mask="0x0020" access="ro" description="Primary detection" />
+      <field name="SDET" mask="0x0040" access="ro" description="Secondary detection" />
+      <field name="PS2DET" mask="0x0080" access="ro" description="PS2 detection" />
+      <field name="DPPU" mask="0x8000" access="rw" description="DP pull-up control" />
+    </register>
+    
+    <!-- ================================================================
+         Packet Memory Area (PMA) - USB SRAM
+         Base address: 0x40006000 (1024 bytes)
+         
+         The PMA contains:
+         - Buffer Descriptor Table (BDT) at offset specified by BTABLE register
+         - Packet buffers at offsets specified in BDT entries
+         
+         Access: Half-word (16-bit) only. Word (32-bit) access not allowed.
+         ================================================================ -->
+    <ram_elements base="0x40006000" size="1024" description="USB Packet Memory Area (PMA)" access_width="16">
+      
+      <!-- Buffer Descriptor Table Entry (8 bytes per endpoint) -->
+      <!-- Location: PMA[BTABLE + n*8] where n = endpoint number -->
+      <element name="BDT_ENTRY" size="8" description="Buffer descriptor table entry for one endpoint">
+        <halfword index="0" name="ADDR_TX" description="Transmission buffer address">
+          <field name="ADDR_TX" mask="0xFFFE" description="TX buffer address in PMA (half-word aligned)" />
+        </halfword>
+        <halfword index="1" name="COUNT_TX" description="Transmission byte count">
+          <field name="COUNT_TX" mask="0x03FF" description="Number of bytes to transmit" />
+        </halfword>
+        <halfword index="2" name="ADDR_RX" description="Reception buffer address">
+          <field name="ADDR_RX" mask="0xFFFE" description="RX buffer address in PMA (half-word aligned)" />
+        </halfword>
+        <halfword index="3" name="COUNT_RX" description="Reception byte count/buffer size">
+          <field name="COUNT_RX" mask="0x03FF" access="ro" description="Number of bytes received" />
+          <field name="NUM_BLOCK" mask="0x7C00" description="Number of memory blocks allocated">
+            <!-- If BL_SIZE=0: block size = 2 bytes, NUM_BLOCK = buffer_size/2 -->
+            <!-- If BL_SIZE=1: block size = 32 bytes, NUM_BLOCK = buffer_size/32 - 1 -->
+          </field>
+          <field name="BL_SIZE" mask="0x8000" description="Block size">
+            <enum value="0x0000" name="Size2" description="2-byte blocks" />
+            <enum value="0x8000" name="Size32" description="32-byte blocks" />
+          </field>
+        </halfword>
+      </element>
+      
+      <!-- Packet Buffer (variable size, up to 64 bytes for FS) -->
+      <!-- Location: PMA[ADDR_TX] or PMA[ADDR_RX] from BDT entry -->
+      <element name="PACKET_BUFFER" max_size="64" description="Packet data buffer">
+        <!-- Raw data bytes, accessed as half-words -->
+        <!-- Each 16-bit access holds 2 data bytes in little-endian order -->
+      </element>
+      
+    </ram_elements>
+    
+  </peripheral>
+  
+</device>

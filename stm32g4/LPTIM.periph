@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 LPTIM (Low-Power Timer) Peripheral
+  Extracted from RM0440 Rev 7
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="LPTIM" description="Low-power timer">
+    <instance id="1" base="0x40007C00" />
+    
+    <register name="ISR" offset="0x00" reset="0x00000000" access="ro" description="Interrupt and status register">
+      <field name="CMPM" mask="0x00000001" access="ro" description="Compare match" />
+      <field name="ARRM" mask="0x00000002" access="ro" description="Autoreload match" />
+      <field name="EXTTRIG" mask="0x00000004" access="ro" description="External trigger edge event" />
+      <field name="CMPOK" mask="0x00000008" access="ro" description="Compare register update OK" />
+      <field name="ARROK" mask="0x00000010" access="ro" description="Autoreload register update OK" />
+      <field name="UP" mask="0x00000020" access="ro" description="Counter direction change down to up" />
+      <field name="DOWN" mask="0x00000040" access="ro" description="Counter direction change up to down" />
+    </register>
+    
+    <register name="ICR" offset="0x04" reset="0x00000000" access="wo" description="Interrupt clear register">
+      <field name="CMPMCF" mask="0x00000001" access="wo" description="Compare match clear flag" />
+      <field name="ARRMCF" mask="0x00000002" access="wo" description="Autoreload match clear flag" />
+      <field name="EXTTRIGCF" mask="0x00000004" access="wo" description="External trigger clear flag" />
+      <field name="CMPOKCF" mask="0x00000008" access="wo" description="Compare register update OK clear flag" />
+      <field name="ARROKCF" mask="0x00000010" access="wo" description="Autoreload register update OK clear flag" />
+      <field name="UPCF" mask="0x00000020" access="wo" description="Direction change to up clear flag" />
+      <field name="DOWNCF" mask="0x00000040" access="wo" description="Direction change to down clear flag" />
+    </register>
+    
+    <register name="IER" offset="0x08" reset="0x00000000" description="Interrupt enable register">
+      <field name="CMPMIE" mask="0x00000001" access="rw" description="Compare match interrupt enable" />
+      <field name="ARRMIE" mask="0x00000002" access="rw" description="Autoreload match interrupt enable" />
+      <field name="EXTTRIGIE" mask="0x00000004" access="rw" description="External trigger interrupt enable" />
+      <field name="CMPOKIE" mask="0x00000008" access="rw" description="Compare register update OK interrupt enable" />
+      <field name="ARROKIE" mask="0x00000010" access="rw" description="Autoreload register update OK interrupt enable" />
+      <field name="UPIE" mask="0x00000020" access="rw" description="Direction change to up interrupt enable" />
+      <field name="DOWNIE" mask="0x00000040" access="rw" description="Direction change to down interrupt enable" />
+    </register>
+    
+    <register name="CFGR" offset="0x0C" reset="0x00000000" description="Configuration register">
+      <field name="CKSEL" mask="0x00000001" access="rw" description="Clock selector" />
+      <field name="CKPOL" mask="0x00000006" access="rw" description="Clock polarity">
+        <enum value="0x00000000" name="RisingEdge" />
+        <enum value="0x00000002" name="FallingEdge" />
+        <enum value="0x00000004" name="BothEdges" />
+      </field>
+      <field name="CKFLT" mask="0x00000018" access="rw" description="Clock filter" />
+      <field name="TRGFLT" mask="0x000000C0" access="rw" description="Trigger filter" />
+      <field name="PRESC" mask="0x00000E00" access="rw" description="Clock prescaler">
+        <enum value="0x00000000" name="Div1" />
+        <enum value="0x00000200" name="Div2" />
+        <enum value="0x00000400" name="Div4" />
+        <enum value="0x00000600" name="Div8" />
+        <enum value="0x00000800" name="Div16" />
+        <enum value="0x00000A00" name="Div32" />
+        <enum value="0x00000C00" name="Div64" />
+        <enum value="0x00000E00" name="Div128" />
+      </field>
+      <field name="TRIGSEL" mask="0x0000E000" access="rw" description="Trigger selector" />
+      <field name="TRIGEN" mask="0x00060000" access="rw" description="Trigger enable and polarity" />
+      <field name="TIMOUT" mask="0x00080000" access="rw" description="Timeout enable" />
+      <field name="WAVE" mask="0x00100000" access="rw" description="Waveform shape" />
+      <field name="WAVPOL" mask="0x00200000" access="rw" description="Waveform polarity" />
+      <field name="PRELOAD" mask="0x00400000" access="rw" description="Preload enable" />
+      <field name="COUNTMODE" mask="0x00800000" access="rw" description="Counter mode" />
+      <field name="ENC" mask="0x01000000" access="rw" description="Encoder mode enable" />
+    </register>
+    
+    <register name="CR" offset="0x10" reset="0x00000000" description="Control register">
+      <field name="ENABLE" mask="0x00000001" access="rw" description="LPTIM enable" />
+      <field name="SNGSTRT" mask="0x00000002" access="rs" description="Single mode start" />
+      <field name="CNTSTRT" mask="0x00000004" access="rs" description="Continuous mode start" />
+      <field name="COUNTRST" mask="0x00000008" access="rs" description="Counter reset" />
+      <field name="RSTARE" mask="0x00000010" access="rw" description="Reset after read enable" />
+    </register>
+    
+    <register name="CMP" offset="0x14" reset="0x00000000" description="Compare register">
+      <field name="CMP" mask="0x0000FFFF" access="rw" description="Compare value" />
+    </register>
+    
+    <register name="ARR" offset="0x18" reset="0x00000001" description="Autoreload register">
+      <field name="ARR" mask="0x0000FFFF" access="rw" description="Autoreload value" />
+    </register>
+    
+    <register name="CNT" offset="0x1C" reset="0x00000000" access="ro" description="Counter register">
+      <field name="CNT" mask="0x0000FFFF" access="ro" description="Counter value" />
+    </register>
+    
+    <register name="OR" offset="0x20" reset="0x00000000" description="Option register">
+      <field name="IN1" mask="0x00000001" access="rw" description="Input 1 remapping" />
+      <field name="IN2" mask="0x00000002" access="rw" description="Input 2 remapping" />
+    </register>
+    
+  </peripheral>
+  
+</device>

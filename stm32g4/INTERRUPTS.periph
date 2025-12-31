@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 Interrupt Vector Table
+  From RM0440 Rev 7, Section 14.3 Table 97
+  
+  Vector address = 0x00000000 + (IRQ + 16) * 4
+  IRQ -14 to -1 are Cortex-M4 system exceptions
+  IRQ 0+ are STM32G4 peripheral interrupts
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <interrupts>
+    <!-- Cortex-M4 System Exceptions (negative IRQ numbers) -->
+    <interrupt irq="-14" name="NMI" description="Non-maskable interrupt" />
+    <interrupt irq="-13" name="HardFault" description="All class of fault" />
+    <interrupt irq="-12" name="MemManage" description="Memory management" />
+    <interrupt irq="-11" name="BusFault" description="Pre-fetch fault, memory access fault" />
+    <interrupt irq="-10" name="UsageFault" description="Undefined instruction or illegal state" />
+    <interrupt irq="-5" name="SVCall" description="System service call via SWI instruction" />
+    <interrupt irq="-4" name="DebugMonitor" description="Debug monitor" />
+    <interrupt irq="-2" name="PendSV" description="Pendable request for system service" />
+    <interrupt irq="-1" name="SysTick" description="System tick timer" />
+    
+    <!-- STM32G4 Peripheral Interrupts -->
+    <interrupt irq="0" name="WWDG" description="Window watchdog" />
+    <interrupt irq="1" name="PVD_PVM" description="PVD through EXTI line, PVM" />
+    <interrupt irq="2" name="RTC_TAMP_LSECSS" description="RTC tamper, timestamp, LSECSS" />
+    <interrupt irq="3" name="RTC_WKUP" description="RTC wakeup through EXTI line" />
+    <interrupt irq="4" name="FLASH" description="Flash global interrupt" />
+    <interrupt irq="5" name="RCC" description="RCC global interrupt" />
+    <interrupt irq="6" name="EXTI0" description="EXTI line 0" />
+    <interrupt irq="7" name="EXTI1" description="EXTI line 1" />
+    <interrupt irq="8" name="EXTI2" description="EXTI line 2" />
+    <interrupt irq="9" name="EXTI3" description="EXTI line 3" />
+    <interrupt irq="10" name="EXTI4" description="EXTI line 4" />
+    <interrupt irq="11" name="DMA1_CH1" description="DMA1 channel 1" />
+    <interrupt irq="12" name="DMA1_CH2" description="DMA1 channel 2" />
+    <interrupt irq="13" name="DMA1_CH3" description="DMA1 channel 3" />
+    <interrupt irq="14" name="DMA1_CH4" description="DMA1 channel 4" />
+    <interrupt irq="15" name="DMA1_CH5" description="DMA1 channel 5" />
+    <interrupt irq="16" name="DMA1_CH6" description="DMA1 channel 6" />
+    <interrupt irq="17" name="DMA1_CH7" description="DMA1 channel 7" />
+    <interrupt irq="18" name="ADC1_2" description="ADC1 and ADC2" />
+    <interrupt irq="19" name="USB_HP" description="USB high priority" />
+    <interrupt irq="20" name="USB_LP" description="USB low priority" />
+    <interrupt irq="21" name="FDCAN1_IT0" description="FDCAN1 interrupt 0" />
+    <interrupt irq="22" name="FDCAN1_IT1" description="FDCAN1 interrupt 1" />
+    <interrupt irq="23" name="EXTI9_5" description="EXTI lines 9:5" />
+    <interrupt irq="24" name="TIM1_BRK_TIM15" description="TIM1 break, TIM15" />
+    <interrupt irq="25" name="TIM1_UP_TIM16" description="TIM1 update, TIM16" />
+    <interrupt irq="26" name="TIM1_TRG_COM_TIM17" description="TIM1 trigger/commutation, TIM17" />
+    <interrupt irq="27" name="TIM1_CC" description="TIM1 capture compare" />
+    <interrupt irq="28" name="TIM2" description="TIM2 global" />
+    <interrupt irq="29" name="TIM3" description="TIM3 global" />
+    <interrupt irq="30" name="TIM4" description="TIM4 global" />
+    <interrupt irq="31" name="I2C1_EV" description="I2C1 event" />
+    <interrupt irq="32" name="I2C1_ER" description="I2C1 error" />
+    <interrupt irq="33" name="I2C2_EV" description="I2C2 event" />
+    <interrupt irq="34" name="I2C2_ER" description="I2C2 error" />
+    <interrupt irq="35" name="SPI1" description="SPI1 global" />
+    <interrupt irq="36" name="SPI2" description="SPI2 global" />
+    <interrupt irq="37" name="USART1" description="USART1 global" />
+    <interrupt irq="38" name="USART2" description="USART2 global" />
+    <interrupt irq="39" name="USART3" description="USART3 global" />
+    <interrupt irq="40" name="EXTI15_10" description="EXTI lines 15:10" />
+    <interrupt irq="41" name="RTC_ALARM" description="RTC alarm through EXTI" />
+    <interrupt irq="42" name="USB_WKUP" description="USB wakeup through EXTI" />
+    <interrupt irq="43" name="TIM8_BRK" description="TIM8 break" />
+    <interrupt irq="44" name="TIM8_UP" description="TIM8 update" />
+    <interrupt irq="45" name="TIM8_TRG_COM" description="TIM8 trigger/commutation" />
+    <interrupt irq="46" name="TIM8_CC" description="TIM8 capture compare" />
+    <interrupt irq="47" name="ADC3" description="ADC3 global" />
+    <interrupt irq="48" name="FMC" description="FMC global" category="Cat3,Cat4" />
+    <interrupt irq="49" name="LPTIM1" description="LPTIM1 global" />
+    <interrupt irq="50" name="TIM5" description="TIM5 global" category="Cat3,Cat4" />
+    <interrupt irq="51" name="SPI3" description="SPI3 global" />
+    <interrupt irq="52" name="UART4" description="UART4 global" />
+    <interrupt irq="53" name="UART5" description="UART5 global" />
+    <interrupt irq="54" name="TIM6_DAC1_3" description="TIM6, DAC1 underrun, DAC3 underrun" />
+    <interrupt irq="55" name="TIM7_DAC2_4" description="TIM7, DAC2 underrun, DAC4 underrun" />
+    <interrupt irq="56" name="DMA2_CH1" description="DMA2 channel 1" />
+    <interrupt irq="57" name="DMA2_CH2" description="DMA2 channel 2" />
+    <interrupt irq="58" name="DMA2_CH3" description="DMA2 channel 3" />
+    <interrupt irq="59" name="DMA2_CH4" description="DMA2 channel 4" />
+    <interrupt irq="60" name="DMA2_CH5" description="DMA2 channel 5" />
+    <interrupt irq="61" name="ADC4" description="ADC4 global" category="Cat3,Cat4" />
+    <interrupt irq="62" name="ADC5" description="ADC5 global" category="Cat4" />
+    <interrupt irq="63" name="UCPD1" description="UCPD1 global" />
+    <interrupt irq="64" name="COMP1_2_3" description="COMP1, COMP2, COMP3" />
+    <interrupt irq="65" name="COMP4_5_6" description="COMP4, COMP5, COMP6" category="Cat3,Cat4" />
+    <interrupt irq="66" name="COMP7" description="COMP7" category="Cat4" />
+    <interrupt irq="67" name="HRTIM1_MASTER" description="HRTIM1 master" category="Cat4" />
+    <interrupt irq="68" name="HRTIM1_TIMA" description="HRTIM1 timer A" category="Cat4" />
+    <interrupt irq="69" name="HRTIM1_TIMB" description="HRTIM1 timer B" category="Cat4" />
+    <interrupt irq="70" name="HRTIM1_TIMC" description="HRTIM1 timer C" category="Cat4" />
+    <interrupt irq="71" name="HRTIM1_TIMD" description="HRTIM1 timer D" category="Cat4" />
+    <interrupt irq="72" name="HRTIM1_TIME" description="HRTIM1 timer E" category="Cat4" />
+    <interrupt irq="73" name="HRTIM1_FLT" description="HRTIM1 fault" category="Cat4" />
+    <interrupt irq="74" name="HRTIM1_TIMF" description="HRTIM1 timer F" category="Cat4" />
+    <interrupt irq="75" name="CRS" description="CRS global" />
+    <interrupt irq="76" name="SAI1" description="SAI1 global" category="Cat3,Cat4" />
+    <interrupt irq="77" name="TIM20_BRK" description="TIM20 break" category="Cat4" />
+    <interrupt irq="78" name="TIM20_UP" description="TIM20 update" category="Cat4" />
+    <interrupt irq="79" name="TIM20_TRG_COM" description="TIM20 trigger/commutation" category="Cat4" />
+    <interrupt irq="80" name="TIM20_CC" description="TIM20 capture compare" category="Cat4" />
+    <interrupt irq="81" name="FPU" description="FPU global" />
+    <interrupt irq="82" name="I2C4_EV" description="I2C4 event" category="Cat3,Cat4" />
+    <interrupt irq="83" name="I2C4_ER" description="I2C4 error" category="Cat3,Cat4" />
+    <interrupt irq="84" name="SPI4" description="SPI4 global" category="Cat3,Cat4" />
+    <interrupt irq="85" name="AES" description="AES global" category="Cat2,Cat3" />
+    <interrupt irq="86" name="FDCAN2_IT0" description="FDCAN2 interrupt 0" />
+    <interrupt irq="87" name="FDCAN2_IT1" description="FDCAN2 interrupt 1" />
+    <interrupt irq="88" name="FDCAN3_IT0" description="FDCAN3 interrupt 0" category="Cat3,Cat4" />
+    <interrupt irq="89" name="FDCAN3_IT1" description="FDCAN3 interrupt 1" category="Cat3,Cat4" />
+    <interrupt irq="90" name="RNG" description="RNG global" />
+    <interrupt irq="91" name="LPUART1" description="LPUART1 global" />
+    <interrupt irq="92" name="I2C3_EV" description="I2C3 event" />
+    <interrupt irq="93" name="I2C3_ER" description="I2C3 error" />
+    <interrupt irq="94" name="DMAMUX_OVR" description="DMAMUX overrun" />
+    <interrupt irq="95" name="QUADSPI" description="QUADSPI global" category="Cat3,Cat4" />
+    <interrupt irq="96" name="DMA1_CH8" description="DMA1 channel 8" />
+    <interrupt irq="97" name="DMA2_CH6" description="DMA2 channel 6" />
+    <interrupt irq="98" name="DMA2_CH7" description="DMA2 channel 7" />
+    <interrupt irq="99" name="DMA2_CH8" description="DMA2 channel 8" />
+    <interrupt irq="100" name="CORDIC" description="CORDIC global" />
+    <interrupt irq="101" name="FMAC" description="FMAC global" />
+  </interrupts>
+  
+</device>

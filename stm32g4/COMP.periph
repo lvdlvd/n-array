@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 COMP (Comparator) Peripheral
+  Extracted from RM0440 Rev 7
+  
+  7 comparators (COMP1-COMP7), each with a 4-byte CSR register
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+  
+  <peripheral name="COMP" description="Comparators">
+    <instance id="1" base="0x40010200" />
+    
+    <!-- 7 comparator instances using group -->
+    <group name="C" offset="0x00" stride="0x04" range_min="1" range_max="7" description="Comparator">
+      <register name="CSR" offset="0x00" reset="0x00000000" description="Control and status register">
+        <field name="EN" mask="0x00000001" access="rw" description="Comparator enable" />
+        <field name="INMSEL" mask="0x00000070" access="rw" description="Inverting input selection" />
+        <field name="INPSEL" mask="0x00000100" access="rw" description="Non-inverting input selection" />
+        <field name="POL" mask="0x00008000" access="rw" description="Output polarity" />
+        <field name="HYST" mask="0x00070000" access="rw" description="Hysteresis">
+          <enum value="0x00000000" name="None" />
+          <enum value="0x00010000" name="Hyst10mV" />
+          <enum value="0x00020000" name="Hyst20mV" />
+          <enum value="0x00030000" name="Hyst30mV" />
+          <enum value="0x00040000" name="Hyst40mV" />
+          <enum value="0x00050000" name="Hyst50mV" />
+          <enum value="0x00060000" name="Hyst60mV" />
+          <enum value="0x00070000" name="Hyst70mV" />
+        </field>
+        <field name="BLANKSEL" mask="0x00380000" access="rw" description="Blanking signal selection" />
+        <field name="BRGEN" mask="0x00400000" access="rw" description="VREFINT scaler resistor bridge enable" />
+        <field name="SCALEN" mask="0x00800000" access="rw" description="VREFINT scaler enable" />
+        <field name="VALUE" mask="0x40000000" access="ro" description="Comparator output status" />
+        <field name="LOCK" mask="0x80000000" access="rw" description="Register lock" />
+      </register>
+    </group>
+    
+  </peripheral>
+  
+</device>
