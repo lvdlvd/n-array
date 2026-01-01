@@ -23,13 +23,13 @@
 
 ### Attributes
 
-| Attribute | Required | Description |
-|-----------|----------|-------------|
-| `name` | Yes | Unique peripheral identifier |
-| `description` | Yes | Human-readable description |
-| `abstract` | No | If "true", peripheral is a template (no instances generated) |
-| `base` | No | Name of peripheral to inherit from |
-| `prodcategory` | No | STM32G4 product category (2, 3, or 4) |
+| Attribute      | Required | Description                                                  |
+| -------------- | -------- | ------------------------------------------------------------ |
+| `name`         | Yes      | Unique peripheral identifier                                 |
+| `description`  | Yes      | Human-readable description                                   |
+| `abstract`     | No       | If "true", peripheral is a template (no instances generated) |
+| `base`         | No       | Name of peripheral to inherit from                           |
+| `prodcategory` | No       | STM32G4 product category (2, 3, or 4)                        |
 
 ## Instance Element
 
@@ -92,15 +92,15 @@ When a peripheral inherits from a base (`base="..."`), use `extend="true"` to ad
 
 ### Access Types
 
-| Type | Description | Read Behavior | Write Behavior |
-|------|-------------|---------------|----------------|
-| `rw` | Read-write | Returns value | Sets value |
-| `ro` | Read-only | Returns value | Ignored |
-| `wo` | Write-only | Returns 0/undefined | Sets value |
-| `rc_w1` | Read, clear on write 1 | Returns value | Writing 1 clears bit |
-| `rc_w0` | Read, clear on write 0 | Returns value | Writing 0 clears bit |
-| `rs` | Read, set by software | Returns value | Writing 1 sets, HW clears |
-| `t` | Toggle | Returns value | Writing 1 toggles bit |
+| Type    | Description            | Read Behavior       | Write Behavior            |
+| ------- | ---------------------- | ------------------- | ------------------------- |
+| `rw`    | Read-write             | Returns value       | Sets value                |
+| `ro`    | Read-only              | Returns value       | Ignored                   |
+| `wo`    | Write-only             | Returns 0/undefined | Sets value                |
+| `rc_w1` | Read, clear on write 1 | Returns value       | Writing 1 clears bit      |
+| `rc_w0` | Read, clear on write 0 | Returns value       | Writing 0 clears bit      |
+| `rs`    | Read, set by software  | Returns value       | Writing 1 sets, HW clears |
+| `t`     | Toggle                 | Returns value       | Writing 1 toggles bit     |
 
 ### Field Examples
 ```xml
