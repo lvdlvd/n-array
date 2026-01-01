@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  STM32G4 Memory Layout
+  Extracted from datasheets section 3.5 (Embedded SRAM)
+  
+  All STM32G4 devices have:
+  - FLASH at 0x08000000
+  - SRAM1 at 0x20000000
+  - SRAM2 at end of SRAM1
+  - CCMRAM at 0x10000000 (also aliased after SRAM2)
+  
+  Features:
+  - SRAM1 first 32KB supports hardware parity check (all devices)
+  - SRAM2 retained in Standby mode
+  - CCMRAM accessed via I-Code/D-Code for best performance
+  - CCMRAM supports parity check and 1KB write protection granularity
+  - All SRAM accessible at CPU speed with 0 wait states
+-->
+<device name="STM32G4" reference_manual="RM0440" revision="7">
+
+  <memory_map>
+    
+    <!--  -->
+    <!-- Category 2: G431/G441 - Access Line (32KB SRAM total)        -->
+    <!--  -->
+    <variant family="G431" category="2" description="Access line">
+      <flash base="0x08000000">
+        <size suffix="6" kb="32" />
+        <size suffix="8" kb="64" />
+        <size suffix="B" kb="128" />
+      </flash>
+      <sram total_kb="32">
+        <region name="SRAM1" base="0x20000000" size_kb="16" parity_kb="16" />
+        <region name="SRAM2" base="0x20004000" size_kb="6" standby_retained="true" />
+        <region name="CCMRAM" base="0x10000000" size_kb="10" alias="0x20005800" parity="true" />
+      </sram>
+    </variant>
+    
+    <variant family="G441" category="2" aes="true" description="Access line with AES">
+      <flash base="0x08000000">
+        <size suffix="B" kb="128" />
+      </flash>
+      <sram total_kb="32">
+        <region name="SRAM1" base="0x20000000" size_kb="16" parity_kb="16" />
+        <region name="SRAM2" base="0x20004000" size_kb="6" standby_retained="true" />
+        <region name="CCMRAM" base="0x10000000" size_kb="10" alias="0x20005800" parity="true" />
+      </sram>
+    </variant>
+    
+    <!--  -->
+    <!-- Category 3: G473/G483 - Performance Line (128KB SRAM total)  -->
+    <!--  -->
+    <variant family="G473" category="3" description="Performance line">
+      <flash base="0x08000000">
+        <size suffix="B" kb="128" />
+        <size suffix="C" kb="256" />
+        <size suffix="E" kb="512" />
+      </flash>
+      <sram total_kb="128">
+        <region name="SRAM1" base="0x20000000" size_kb="80" parity_kb="32" />
+        <region name="SRAM2" base="0x20014000" size_kb="16" standby_retained="true" />
+        <region name="CCMRAM" base="0x10000000" size_kb="32" alias="0x20018000" parity="true" />
+      </sram>
+    </variant>
+    
+    <variant family="G483" category="3" aes="true" description="Performance line with AES">
+      <flash base="0x08000000">
+        <size suffix="E" kb="512" />
+      </flash>
+      <sram total_kb="128">
+        <region name="SRAM1" base="0x20000000" size_kb="80" parity_kb="32" />
+        <region name="SRAM2" base="0x20014000" size_kb="16" standby_retained="true" />
+        <region name="CCMRAM" base="0x10000000" size_kb="32" alias="0x20018000" parity="true" />
+      </sram>
+    </variant>
+    
+    <!--  -->
+    <!-- Category 3 Access+: G491/G4A1 (112KB SRAM total)             -->
+    <!--  -->
+    <variant family="G491" category="3" subtype="Access+" description="Access line plus">
+      <flash base="0x08000000">
+        <size suffix="C" kb="256" />
+        <size suffix="E" kb="512" />
+      </flash>
+      <sram total_kb="112">
+        <region name="SRAM1" base="0x20000000" size_kb="80" parity_kb="32" />
+        <region name="SRAM2" base="0x20014000" size_kb="16" standby_retained="true" />
+        <region name="CCMRAM" base="0x10000000" size_kb="16" alias="0x20018000" parity="true" />
+      </sram>
+    </variant>
+    
+    <variant family="G4A1" category="3" subtype="Access+" aes="true" description="Access line plus with AES">
+      <flash base="0x08000000">
+        <size suffix="E" kb="512" />
+      </flash>
+      <sram total_kb="112">
+        <region name="SRAM1" base="0x20000000" size_kb="80" parity_kb="32" />
+        <region name="SRAM2" base="0x20014000" size_kb="16" standby_retained="true" />
+        <region name="CCMRAM" base="0x10000000" size_kb="16" alias="0x20018000" parity="true" />
+      </sram>
+    </variant>
+    
+    <!--  -->
+    <!-- Category 4: G474/G484 - Hi-Resolution Line (128KB SRAM)      -->
+    <!--  -->
+    <variant family="G474" category="4" hrtim="true" description="Hi-resolution line">
+      <flash base="0x08000000">
+        <size suffix="B" kb="128" />
+        <size suffix="C" kb="256" />
+        <size suffix="E" kb="512" />
+      </flash>
+      <sram total_kb="128">
+        <region name="SRAM1" base="0x20000000" size_kb="80" parity_kb="32" />
+        <region name="SRAM2" base="0x20014000" size_kb="16" standby_retained="true" />
+        <region name="CCMRAM" base="0x10000000" size_kb="32" alias="0x20018000" parity="true" />
+      </sram>
+    </variant>
+    
+    <variant family="G484" category="4" hrtim="true" aes="true" description="Hi-resolution line with AES">
+      <flash base="0x08000000">
+        <size suffix="E" kb="512" />
+      </flash>
+      <sram total_kb="128">
+        <region name="SRAM1" base="0x20000000" size_kb="80" parity_kb="32" />
+        <region name="SRAM2" base="0x20014000" size_kb="16" standby_retained="true" />
+        <region name="CCMRAM" base="0x10000000" size_kb="32" alias="0x20018000" parity="true" />
+      </sram>
+    </variant>
+    
+  </memory_map>
+  
+  <!--
+    Quick Reference:
+    
+    Cat2 (G431/G441): 32KB total = 16KB SRAM1 + 6KB SRAM2 + 10KB CCM
+    Cat3 (G473/G483): 128KB total = 80KB SRAM1 + 16KB SRAM2 + 32KB CCM
+    Cat3+ (G491/G4A1): 112KB total = 80KB SRAM1 + 16KB SRAM2 + 16KB CCM
+    Cat4 (G474/G484): 128KB total = 80KB SRAM1 + 16KB SRAM2 + 32KB CCM
+    
+    Flash suffixes: 6=32KB, 8=64KB, B=128KB, C=256KB, E=512KB
+    
+    Notes:
+    * SRAM1 parity: 16KB (Cat2), 32KB (Cat3/4) first portion only
+    * SRAM2: Retained in Standby mode
+    * CCMRAM: Accessed via I/D Code bus, also aliased in SRAM address space
+    * CCMRAM: Full parity check, 1KB write protect granularity
+  -->
+  
+</device>
