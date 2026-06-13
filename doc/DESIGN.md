@@ -74,6 +74,9 @@ M1 closes the first half.
 - **Generated code is checked in.** Regeneration is opt-in by deleting
   the target (as stm32gen Makefiles already do). Toolchain stays just
   `arm-none-eabi-gcc`.
+- **C dialect: `gnu23`** (latest stable; `gnu17` also works). C23 makes
+  64-bit enum constants standard ISO, which the pinmux uses; generated
+  headers compile clean under `gnu23` with no `-Wno-pedantic` needed.
 - **Library generalized lazily.** The 5–7×-repeated drivers get
   consolidated; CAN/USB/clock-variants stay copies until the right
   interface is obvious (per style.md rule-of-3-5).
@@ -110,7 +113,89 @@ New, enabled by `.periph`:
 - **prodcategory filtering** driven by the L2 board selection.
 - **errata.h** / inline comments near affected registers from
   `ERRATA.periph`.
-- **pinmux.h** validated AF helpers from `PINMUX.periph`.
+- **pinmux.h** validated AF constants from `PINMUX.periph` — see below.
+
+## Pinmux & the board pinout (M2)
+
+The board's defining artifact is its **pinout table** — the
+`Pin | Port | Function | DIR | Config | Connected-to` markdown you
+already author as hardware documentation (see
+`compinator/doc/v2pinout.md`). Previously that table was hand-transcribed
+into the role-enum + `pin_cfgs[]` at the top of `main.c`, choosing AF
+numbers by hand — error-prone: b3dsm's `{TIM1CHx_PINS, GPIO_AF2_I2C3}`
+labels AF2 "I2C3" though it's really TIM1 on those pins.
+
+**Generated `pinmux.h` (`-pinmux`, done).** From the datasheet AF table
+(`PINMUX.periph`) the generator emits one constant per *legal* (pin,
+function) pair, AF baked in from the datasheet:
+
+```c
+enum GPIO_Mux {
+  PA9_USART1_TX = (pinconf_t)PA9 | ((pinconf_t)(GPIO_AFOUT | (7 << 8)) << 32),
+  PB3_FDCAN3_RX = ... // Cat3,4 only
+};
+```
+
+A wrong pin/function pair simply doesn't exist → **compile error**
+(`'PA9_USART2_TX' undeclared; did you mean 'PA2_USART2_TX'?`), not a
+silent miswire. The board pinout becomes one compact, datasheet-checked
+table:
+
+```c
+static const pinconf_t board[] = {
+  PAAll|PIN_ANALOG, PBAll|PIN_ANALOG, PCAll|PIN_ANALOG, // unused -> off
+  PC13           | PIN_OUTPUT,
+  PA9_USART1_TX  | PIN_HIGH,
+  PA10_USART1_RX | PIN_PULLUP,
+  PB3_FDCAN3_RX,  PB4_FDCAN3_TX | PIN_HIGH,
+};
+```
+
+**Encoding.** `pinconf_t` = `uint64_t`: low 32 = `GPIO_Pin` (port one-hot
++ index + 16-bit mask, so same-port pins still OR for bulk banks), high
+32 = `GPIO_Conf` (mode/af/otype/pupd/speed). Config flags are
+pre-shifted into the high word (`PIN_HIGH = (pinconf_t)GPIO_HIGH << 32`)
+so they OR straight on. The whole header is **enums, not `#define`s**
+(debugger-visible, per style.md): 64-bit enum constants are standard in
+C23 and a pedantic-only warning before it. Storage stays `pinconf_t`, so
+OR-combining constants needs no `-Wno-enum-conversion` — retiring that
+old wart. The pin/port list is generated from the actual `GPIO`
+instances (no `#if 0` for absent ports).
+
+**Direction (decided): C is the source of truth, not markdown.** The
+`board[]` table is the most-constrained representation (compiler +
+datasheet validated), so it is canonical; the markdown is a generated
+*view*. Three things are built on top:
+
+- **`narray -pinfmt board.c`** — a "gofmt for pinouts". Each pin line
+  carries a `//%` marker; narray resolves the constants (name-based,
+  recognizing its own `pinmux.h` symbols), and rewrites an aligned,
+  refreshed column block (pin, function, AF, attributes), preserving
+  free-form text after a ` | ` separator. Idempotent; skips lines
+  already inside a `//` comment or with no recognized pin.
+
+      PA9_USART1_TX | PIN_HIGH,  //% PA9  USART1_TX  AF7  af,hi | console TX
+
+- **`narray -pinout board.c`** — Markdown export of that same table, for
+  docs (the generated view).
+- **`lib/gpio.h` + `gpio.c`** (done) — the runtime: `gpioConfig(pinconf_t)`
+  splits the 64-bit word (low = pins, high = conf) and programs MODER/
+  OTYPER/OSPEEDR/PUPDR/AFRL/AFRH; `gpioConfigAll(board, n)`, `digitalHi/
+  Lo/Toggle/In`, `gpioLock`. The port overlay `GPIO_ALL[8]` is an extern
+  array (avoids `-Warray-bounds` from a single-object cast), bound to the
+  first GPIO port by an alias narray emits into `devs.ld`. Compiles and
+  links clean on arm-none-eabi cortex-m4; a board[] configures to
+  absolute GPIO addresses.
+
+**Header convention:** library files (`gpio.h/.c`) include the generated
+register header as **`device.h`** — one canonical name per project, so a
+project never includes both a family-specific name and `device.h` (which
+would double-define under `#pragma once`). `nvic.h` still uses the
+`NARRAY_DEVICE` sentinel guard (header-only, no `.c`); worth unifying on
+`device.h` later.
+
+**Still to build:** per-package physical pin numbers (a small datasheet
+extraction, tied to the board's part) to add a Pin # column.
 
 ## Interrupt vectoring & the NVIC core
 

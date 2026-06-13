@@ -228,6 +228,10 @@ func writeDevsLD(w io.Writer, d *Device) {
 	for _, s := range syms {
 		p("%-20s = 0x%08X; /* struct %s */\n", s.name, s.addr, s.typ)
 	}
+	// GPIO_ALL: the lib/gpio.h port-overlay array, bound to the first GPIO port.
+	if gp, err := d.peripheral("GPIO"); err == nil && len(gp.Instances) > 0 {
+		p("\n%-20s = 0x%08X; /* lib/gpio.h port overlay */\n", "GPIO_ALL", uint64(gp.Instances[0].Base))
+	}
 }
 
 func writeIRQ(w io.Writer, d *Device) {

@@ -62,6 +62,20 @@ type file struct {
 	Revision        string        `xml:"revision,attr"`
 	Peripherals     []*Peripheral `xml:"peripheral"`
 	Interrupts      []*Interrupt  `xml:"interrupts>interrupt"`
+	Pins            []*Pin        `xml:"pinmux>pin"`
+}
+
+// Pin is one GPIO pad and the alternate functions the datasheet maps onto it.
+type Pin struct {
+	Name string `xml:"name,attr"` // PA0..PG15
+	AFs  []*AF  `xml:"af"`
+}
+
+type AF struct {
+	Num  int    `xml:"num,attr"`
+	Func string `xml:"func,attr"` // e.g. USART2_CTS; "-" means none
+	Cat  string `xml:"cat,attr"`  // category restriction, e.g. "3,4"
+	Note string `xml:"note,attr"`
 }
 
 type Peripheral struct {
@@ -164,6 +178,7 @@ type Device struct {
 	Revision        string
 	Peripherals     []*Peripheral
 	Interrupts      []*Interrupt
+	Pins            []*Pin
 
 	byName map[string][]*Peripheral // a name may have category variants (FLASH Cat2/3/4)
 }
@@ -220,6 +235,7 @@ func load(dir string) (*Device, error) {
 			d.Peripherals = append(d.Peripherals, per)
 		}
 		d.Interrupts = append(d.Interrupts, f.Interrupts...)
+		d.Pins = append(d.Pins, f.Pins...)
 	}
 
 	sort.Slice(d.Peripherals, func(i, j int) bool { return d.Peripherals[i].Name < d.Peripherals[j].Name })
@@ -369,6 +385,9 @@ var (
 	fDump   = flag.Bool("dump", false, "dump the resolved device model as JSON and exit")
 	fHeader = flag.Bool("header", false, "emit the C register header to stdout")
 	fDevs   = flag.Bool("devs", false, "emit the devs.ld peripheral-address linker script to stdout")
+	fPinmux = flag.Bool("pinmux", false, "emit the pinmux.h GPIO pin-map header to stdout")
+	fPinfmt = flag.String("pinfmt", "", "rewrite the //% pinout annotations in this C file in place")
+	fPinout = flag.String("pinout", "", "emit a Markdown pinout table for this board C file to stdout")
 )
 
 func main() {
@@ -404,6 +423,25 @@ func main() {
 
 	if *fDevs {
 		writeDevsLD(os.Stdout, d)
+		return
+	}
+
+	if *fPinmux {
+		writePinmux(os.Stdout, d)
+		return
+	}
+
+	if *fPinfmt != "" {
+		if err := pinfmtFile(d, *fPinfmt); err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
+	if *fPinout != "" {
+		if err := pinoutMarkdown(d, *fPinout, os.Stdout); err != nil {
+			log.Fatal(err)
+		}
 		return
 	}
 
