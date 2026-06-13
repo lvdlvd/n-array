@@ -380,7 +380,7 @@
        LPUART - Low-power UART (async only, no LIN/IrDA/sync/smartcard/auto-baud)
        ======================================================================== -->
   <peripheral name="LPUART" base="USART_BASE" description="Low-power UART (async only)">
-    <instance id="1" base="0x40008000" />
+    <instance id="1" name="LPUART1" base="0x40008000" />
     
     <!-- CR2: exclude unsupported features, restrict STOP bits -->
     <register name="CR2" extend="true">
