@@ -63,6 +63,34 @@ type file struct {
 	Peripherals     []*Peripheral `xml:"peripheral"`
 	Interrupts      []*Interrupt  `xml:"interrupts>interrupt"`
 	Pins            []*Pin        `xml:"pinmux>pin"`
+	Variants        []*Variant    `xml:"memory_map>variant"`
+}
+
+// Variant is one part family's memory map (MEMORY.periph): a flash base with
+// a size per part-number suffix, plus the SRAM regions.
+type Variant struct {
+	Family      string `xml:"family,attr"` // G431, G473, G474, ...
+	Category    string `xml:"category,attr"`
+	Description string `xml:"description,attr"`
+	Flash       struct {
+		Base  Hex    `xml:"base,attr"`
+		Sizes []Size `xml:"size"`
+	} `xml:"flash"`
+	SRAM struct {
+		Regions []Region `xml:"region"`
+	} `xml:"sram"`
+}
+
+type Size struct {
+	Suffix string `xml:"suffix,attr"` // 6,8,B,C,E
+	KB     int    `xml:"kb,attr"`
+}
+
+type Region struct {
+	Name   string `xml:"name,attr"` // SRAM1, SRAM2, CCMRAM
+	Base   Hex    `xml:"base,attr"`
+	SizeKB int    `xml:"size_kb,attr"`
+	Alias  Hex    `xml:"alias,attr"`
 }
 
 // Pin is one GPIO pad and the alternate functions the datasheet maps onto it.
@@ -179,6 +207,7 @@ type Device struct {
 	Peripherals     []*Peripheral
 	Interrupts      []*Interrupt
 	Pins            []*Pin
+	Variants        []*Variant
 
 	byName map[string][]*Peripheral // a name may have category variants (FLASH Cat2/3/4)
 }
@@ -236,6 +265,7 @@ func load(dir string) (*Device, error) {
 		}
 		d.Interrupts = append(d.Interrupts, f.Interrupts...)
 		d.Pins = append(d.Pins, f.Pins...)
+		d.Variants = append(d.Variants, f.Variants...)
 	}
 
 	sort.Slice(d.Peripherals, func(i, j int) bool { return d.Peripherals[i].Name < d.Peripherals[j].Name })
@@ -379,6 +409,39 @@ func expandGroup(g *Group) *Register {
 
 func cleanws(s *string) { *s = strings.Join(strings.Fields(*s), " ") }
 
+// selCat is the product category selected by -part ("" = emit all). When set,
+// peripherals/instances/registers/fields tagged with a non-matching
+// prodcategory are dropped, so the header matches exactly one part.
+var selCat string
+
+// inCat reports whether an element tagged with prodcategory pc belongs in the
+// selected category. An untagged element ("") is always in; with no part
+// selected, everything is in.
+func inCat(pc string) bool {
+	if pc == "" || selCat == "" {
+		return true
+	}
+	for _, c := range strings.Split(strings.ReplaceAll(pc, "|", ","), ",") {
+		if strings.TrimSpace(c) == selCat {
+			return true
+		}
+	}
+	return false
+}
+
+// matchVariant finds the memory variant for a part designator (STM32G473...,
+// G473, ...) by the longest matching family prefix.
+func (d *Device) matchVariant(part string) *Variant {
+	body := strings.TrimPrefix(part, "STM32")
+	var best *Variant
+	for _, v := range d.Variants {
+		if strings.HasPrefix(body, v.Family) && (best == nil || len(v.Family) > len(best.Family)) {
+			best = v
+		}
+	}
+	return best
+}
+
 // ---- main -----------------------------------------------------------------
 
 var (
@@ -388,6 +451,8 @@ var (
 	fPinmux = flag.Bool("pinmux", false, "emit the pinmux.h GPIO pin-map header to stdout")
 	fPinfmt = flag.String("pinfmt", "", "rewrite the //% pinout annotations in this C file in place")
 	fPinout = flag.String("pinout", "", "emit a Markdown pinout table for this board C file to stdout")
+	fMemory = flag.String("memory", "", "emit the device memory linker script for a target like STM32G473Exx_ROM")
+	fPart   = flag.String("part", "", "select a part (e.g. STM32G473) so -header/-devs filter to its category")
 )
 
 func main() {
@@ -405,6 +470,14 @@ func main() {
 	}
 	if err := d.resolve(); err != nil {
 		log.Fatal(err)
+	}
+
+	if *fPart != "" {
+		v := d.matchVariant(*fPart)
+		if v == nil {
+			log.Fatalf("part %q: no memory variant matches", *fPart)
+		}
+		selCat = v.Category
 	}
 
 	if *fDump {
@@ -440,6 +513,13 @@ func main() {
 
 	if *fPinout != "" {
 		if err := pinoutMarkdown(d, *fPinout, os.Stdout); err != nil {
+			log.Fatal(err)
+		}
+		return
+	}
+
+	if *fMemory != "" {
+		if err := writeMemoryLD(os.Stdout, d, *fMemory); err != nil {
 			log.Fatal(err)
 		}
 		return

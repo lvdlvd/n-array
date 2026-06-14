@@ -197,6 +197,48 @@ would double-define under `#pragma once`). `nvic.h` still uses the
 **Still to build:** per-package physical pin numbers (a small datasheet
 extraction, tied to the board's part) to add a Pin # column.
 
+## Memory & linker scripts (M2)
+
+Part-number-driven. The target is encoded in the `.ld` file name —
+`STM32G473Exx_ROM` → family G473 (Cat3 SRAM map), flash suffix E
+(512 KB), run model ROM. The Makefile selects part *and* run model by
+linking `-T <name>.ld`.
+
+**`narray -memory <name>`** (done) emits the device memory script from
+`MEMORY.periph`: the `MEMORY` regions (FLASH by suffix, SRAM1/SRAM2/
+CCMRAM), `_estack` at the top of CCMRAM, `INCLUDE devs.ld`, and the
+`REGION_ALIAS` bindings + the right sections include.
+
+**One boot, not boot_rom/boot_ram.** The ROM↔RAM difference is only
+addresses, captured in linker symbols, so `lib/startup.h`'s
+`narray_init_memory()` (the .data-copy / .bss-zero you flagged) is
+identical for both — for RAM `_sidata == _sdata`, so the copy is a no-op.
+
+**Two sections files, not one — an `ld` gotcha.** `REGION_ALIAS` gives
+each alias its *own* position counter, so aliasing both `TEXT` and `DATA`
+to one region makes them overlap. So:
+- `lib/sections.ld` (ROM): `TEXT=FLASH`, `DATA=SRAM1`, `.data ... AT> LOAD`
+  (LOAD=FLASH) — code in flash, data image copied to SRAM.
+- `lib/sections_ram.ld` (RAM): a single alias `RUN`, everything packed
+  in order (code, .data, .bss), `.data` in place (LMA==VMA).
+
+Verified: both link clean on arm-none-eabi cortex-m4 with real .data/.bss;
+ROM `.data` LMA in flash (copy), RAM LMA==VMA (no-op); `_estack` at CCMRAM
+top.
+
+**Part category → header filtering (done).** `-part STM32G473` decodes
+to a category (via the memory variant) and filters peripherals/instances/
+registers/fields by `prodcategory`. This replaces the "emit highest
+category" FLASH hack: each part now gets its own FLASH variant
+(G473/Cat3 → 18 registers incl. DBANK; G431/Cat2, G474/Cat4 → 13), one
+struct, no collision; with no `-part` the most complete variant is still
+the default. Caveat: `prodcategory` is currently only on the three FLASH
+variants — ADC4/5, TIM5, HRTIM etc. are *not* tagged in the `.periph`
+data, so they can't yet be gated. Enriching those tags is a data task.
+
+**Still to wire:** per-package pin numbers; the clock setup (hand-written
+per-family, as planned); broader `prodcategory` tags in the data.
+
 ## Interrupt vectoring & the NVIC core
 
 Decided in design discussion; replaces genstruct's weak-alias scheme.
