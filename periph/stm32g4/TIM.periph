@@ -296,7 +296,7 @@
        ======================================================================== -->
   <peripheral name="TIM_GP32" base="TIM_GP" description="32-bit general-purpose timer">
     <instance id="2" base="0x40000000" />
-    <instance id="5" base="0x40000C00" />
+    <instance id="5" base="0x40000C00" families="G473 G483 G474 G484" />
     
     <!-- 32-bit counter and CCR registers -->
     <register name="CNT" offset="0x24" reset="0x00000000" description="Counter">
@@ -339,7 +339,7 @@
   <peripheral name="TIM_ADV" base="TIM_GP" description="Advanced timer with break and complementary outputs">
     <instance id="1" base="0x40012C00" />
     <instance id="8" base="0x40013400" />
-    <instance id="20" base="0x40015000" />
+    <instance id="20" base="0x40015000" families="G473 G483 G491 G4A1 G474 G484" />
     
     <!-- CR2 extensions for advanced features -->
     <register name="CR2" extend="true">

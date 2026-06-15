@@ -5,7 +5,7 @@
 -->
 <device name="STM32G4" reference_manual="RM0440" revision="7">
   
-  <peripheral name="QUADSPI" description="Quad-SPI interface">
+  <peripheral name="QUADSPI" description="Quad-SPI interface" families="G473 G483 G491 G4A1 G474 G484">
     <instance id="1" base="0xA0001000" />
     
     <register name="CR" offset="0x00" reset="0x00000000" description="Control register">

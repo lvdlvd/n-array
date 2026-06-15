@@ -194,8 +194,16 @@ would double-define under `#pragma once`). `nvic.h` still uses the
 `NARRAY_DEVICE` sentinel guard (header-only, no `.c`); worth unifying on
 `device.h` later.
 
-**Still to build:** per-package physical pin numbers (a small datasheet
-extraction, tied to the board's part) to add a Pin # column.
+**Physical pin numbers (done).** `PINMAP.periph` holds each GPIO pin's
+number/coord per package (extracted from DS12712 Table 12, validated:
+unique numbers per package; family-wide since the physical pinout is
+pin-compatible). The full part number decodes to a package via the
+ordering-info fields — `STM32G4{ff}{pincount}{flash}{pkgtype}{temp}`,
+where **pin count (C/R/M/V/P/Q) and package type (H/I/T/U/Y) are
+separate** (the part_decoder XML had conflated them). `narray -part
+STM32G473RET6 -pinfmt board.c` then prepends the physical pin number
+column (PA9 → 43 on LQFP64, 70 on LQFP100); `-pinout` adds a Pin column
+and notes the package.
 
 ## Memory & linker scripts (M2)
 
@@ -226,18 +234,24 @@ Verified: both link clean on arm-none-eabi cortex-m4 with real .data/.bss;
 ROM `.data` LMA in flash (copy), RAM LMA==VMA (no-op); `_estack` at CCMRAM
 top.
 
-**Part category → header filtering (done).** `-part STM32G473` decodes
-to a category (via the memory variant) and filters peripherals/instances/
-registers/fields by `prodcategory`. This replaces the "emit highest
-category" FLASH hack: each part now gets its own FLASH variant
-(G473/Cat3 → 18 registers incl. DBANK; G431/Cat2, G474/Cat4 → 13), one
-struct, no collision; with no `-part` the most complete variant is still
-the default. Caveat: `prodcategory` is currently only on the three FLASH
-variants — ADC4/5, TIM5, HRTIM etc. are *not* tagged in the `.periph`
-data, so they can't yet be gated. Enriching those tags is a data task.
+**Part → family → header filtering (done).** Gating is by **device
+family**, not category — Table 2 (RM0440 "Product specific features")
+shows "Cat3" is not homogeneous (G473 has 5 ADC + TIM5 + dual-bank flash;
+G491 has 3 ADC, no TIM5, single-bank). Elements carry `families="G473
+G483 G474 G484"`; **absent = present in every G4 family**, so only the
+bits that vary are tagged. `-part STM32G473RET6` resolves to the family
+(G473) and drops any peripheral/instance/register/field whose `families=`
+omits it. Verified against Table 2: HRTIM only G474/484; ADC5 G473/474/
+484; TIM5/FDCAN3/FMC G473/474/484; AES only the x3/x4/441/4A1 devices;
+etc. FLASH variants tagged by family (one struct per part, no collision);
+no `-part` keeps the variant with the most registers (most complete).
 
-**Still to wire:** per-package pin numbers; the clock setup (hand-written
-per-family, as planned); broader `prodcategory` tags in the data.
+Tagged so far: ADC3/4/5, DAC2/4, TIM5/20, FDCAN2/3, I2C4, HRTIM, FMC,
+QUADSPI, AES, FLASH. **Still to tag** (intricate file structure):
+SPI4, COMP5-7, OPAMP4-6, UART5. FLASH's dual/single-bank-by-family
+nuance (G491 single-bank) is a known data limitation.
+
+**Still to wire:** the clock setup (hand-written per-family, as planned).
 
 ## Interrupt vectoring & the NVIC core
 

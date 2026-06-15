@@ -7,7 +7,7 @@
 -->
 <device name="STM32G4" reference_manual="RM0440" revision="7">
   
-  <peripheral name="FMC" description="Flexible memory controller">
+  <peripheral name="FMC" description="Flexible memory controller" families="G473 G483 G474 G484">
     <instance id="1" base="0xA0000000" />
     
     <!-- NOR/PSRAM Bank control and timing (4 banks, using group) -->

@@ -6,7 +6,7 @@
 -->
 <device name="STM32G4" reference_manual="RM0440" revision="7">
   
-  <peripheral name="AES" description="Advanced encryption standard hardware accelerator" category="Cat2,Cat3">
+  <peripheral name="AES" description="Advanced encryption standard hardware accelerator" category="Cat2,Cat3" families="G441 G483 G484 G4A1">
     <instance id="1" base="0x50060000" />
     
     <register name="CR" offset="0x00" reset="0x00000000" description="Control register">

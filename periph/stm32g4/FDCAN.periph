@@ -12,8 +12,8 @@
   
   <peripheral name="FDCAN" description="Flexible data-rate controller area network">
     <instance id="1" base="0x40006400" />
-    <instance id="2" base="0x40006800" />
-    <instance id="3" base="0x40006C00" />
+    <instance id="2" base="0x40006800" families="G473 G483 G491 G4A1 G474 G484" />
+    <instance id="3" base="0x40006C00" families="G473 G483 G474 G484" />
     
     <!-- ================================================================
          Core Registers (fixed offsets from peripheral base)

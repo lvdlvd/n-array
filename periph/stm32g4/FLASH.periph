@@ -161,7 +161,7 @@
        FLASH - Category 2 (single bank, up to 128KB)
        STM32G431, STM32G441
        ======================================================================== -->
-  <peripheral name="FLASH" base="FLASH_BASE" prodcategory="2" description="Flash memory interface (Category 2)">
+  <peripheral name="FLASH" base="FLASH_BASE" prodcategory="2" description="Flash memory interface (Category 2)" families="G431 G441">
     <instance id="1" base="0x40022000" />
     
     <!-- SEC1R with 7-bit SEC_SIZE1 field -->
@@ -176,7 +176,7 @@
        FLASH - Category 3 (dual bank optional, up to 256KB)
        STM32G471, STM32G473, STM32G474, STM32G483, STM32G484
        ======================================================================== -->
-  <peripheral name="FLASH" base="FLASH_BASE" prodcategory="3" description="Flash memory interface (Category 3)">
+  <peripheral name="FLASH" base="FLASH_BASE" prodcategory="3" description="Flash memory interface (Category 3)" families="G473 G483 G491 G4A1">
     <instance id="1" base="0x40022000" />
     
     <!-- CR extensions for dual bank -->
@@ -240,7 +240,7 @@
        FLASH - Category 4 (single bank, up to 512KB)
        STM32G491, STM32G4A1
        ======================================================================== -->
-  <peripheral name="FLASH" base="FLASH_BASE" prodcategory="4" description="Flash memory interface (Category 4)">
+  <peripheral name="FLASH" base="FLASH_BASE" prodcategory="4" description="Flash memory interface (Category 4)" families="G474 G484">
     <instance id="1" base="0x40022000" />
     
     <!-- Larger PNB field for more pages -->

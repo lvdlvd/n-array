@@ -8,7 +8,7 @@
 -->
 <device name="STM32G4" reference_manual="RM0440" revision="7">
   
-  <peripheral name="HRTIM" description="High-resolution timer">
+  <peripheral name="HRTIM" description="High-resolution timer" families="G474 G484">
     <instance id="1" base="0x40016800" />
     
     <!-- ============ MASTER TIMER REGISTERS (0x000 - 0x07F) ============ -->

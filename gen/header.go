@@ -52,33 +52,31 @@ func (in *Instance) symbol(p *Peripheral) string {
 
 func (p *Peripheral) typeName() string { return p.Name + "_Type" }
 
-// catInstances are the instances present in the selected category.
+// catInstances are the instances present in the selected family.
 func (p *Peripheral) catInstances() []*Instance {
 	var out []*Instance
 	for _, in := range p.Instances {
-		if inCat(in.ProdCategory) {
+		if inFamily(in.Families) {
 			out = append(out, in)
 		}
 	}
 	return out
 }
 
-// singleton: one instance in this category ⇒ accessors drop the pointer arg.
+// singleton: one instance in this family ⇒ accessors drop the pointer arg.
 func (p *Peripheral) singleton() bool { return len(p.catInstances()) == 1 }
 
 // emitPeripherals returns the concrete peripherals to emit, one struct per
-// name. With a part selected (-part), inCat keeps the single matching category
-// variant (FLASH Cat2/3/4); with no part, variants collapse to the highest
-// category — the most complete choice for a whole-family header.
+// name. With a part selected (-part), inFamily keeps the single matching
+// variant (FLASH); with no part, name collisions resolve to the variant with
+// the most registers — the most complete choice for a whole-family header.
 func (d *Device) emitPeripherals() []*Peripheral {
 	best := map[string]*Peripheral{}
 	for _, p := range d.Peripherals {
-		if p.Abstract || len(p.Resolved) == 0 || !inCat(p.ProdCategory) {
+		if p.Abstract || len(p.Resolved) == 0 || !inFamily(p.Families) {
 			continue
 		}
-		// With a part selected, inCat leaves one variant per name; otherwise
-		// (whole family) keep the highest category as the most complete.
-		if cur, ok := best[p.Name]; !ok || p.ProdCategory > cur.ProdCategory {
+		if cur, ok := best[p.Name]; !ok || len(p.Resolved) > len(cur.Resolved) {
 			best[p.Name] = p
 		}
 	}
@@ -120,7 +118,7 @@ func (p *Peripheral) members() []member {
 	regs := p.Resolved
 
 	for i := 0; i < len(regs); {
-		if !inCat(regs[i].ProdCategory) {
+		if !inFamily(regs[i].Families) {
 			i++
 			continue
 		}
@@ -237,7 +235,7 @@ func writeDevsLD(w io.Writer, d *Device) {
 	var syms []sym
 	for _, per := range d.emitPeripherals() {
 		for _, in := range per.Instances {
-			if !inCat(in.ProdCategory) {
+			if !inFamily(in.Families) {
 				continue
 			}
 			syms = append(syms, sym{in.symbol(per), uint64(in.Base), per.typeName()})
@@ -308,7 +306,7 @@ func writePeripheral(w io.Writer, per *Peripheral) {
 	p("};\n")
 
 	for _, in := range per.Instances {
-		if !inCat(in.ProdCategory) {
+		if !inFamily(in.Families) {
 			continue
 		}
 		p("extern struct %s %s; // @%s\n", per.typeName(), in.symbol(per), in.Base.Hex())
@@ -362,7 +360,7 @@ func writeStructArray(w io.Writer, r *Register) {
 func emittableFields(r *Register) []*Field {
 	var out []*Field
 	for _, f := range r.Fields {
-		if f.emittable() && inCat(f.ProdCategory) {
+		if f.emittable() && inFamily(f.Families) {
 			out = append(out, f)
 		}
 	}

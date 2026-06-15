@@ -64,6 +64,25 @@ type file struct {
 	Interrupts      []*Interrupt  `xml:"interrupts>interrupt"`
 	Pins            []*Pin        `xml:"pinmux>pin"`
 	Variants        []*Variant    `xml:"memory_map>variant"`
+	PinNums         []*PinNum     `xml:"pinmap>pin"`
+}
+
+// PinNum is one pin's physical number/coordinate in each package (PINMAP.periph).
+type PinNum struct {
+	Name string            // PA0, PC13, ...
+	Pkg  map[string]string // package name -> pin number or BGA coord
+}
+
+func (pn *PinNum) UnmarshalXML(d *xml.Decoder, start xml.StartElement) error {
+	pn.Pkg = map[string]string{}
+	for _, a := range start.Attr {
+		if a.Name.Local == "name" {
+			pn.Name = a.Value
+		} else {
+			pn.Pkg[a.Name.Local] = a.Value
+		}
+	}
+	return d.Skip()
 }
 
 // Variant is one part family's memory map (MEMORY.periph): a flash base with
@@ -112,6 +131,7 @@ type Peripheral struct {
 	Abstract     bool        `xml:"abstract,attr"`
 	Base         string      `xml:"base,attr"`         // parent peripheral name, "" if none
 	ProdCategory string      `xml:"prodcategory,attr"` // "", "2", "3", "4"
+	Families     string      `xml:"families,attr"`     // device families that have this; "" = all
 	Instances    []*Instance `xml:"instance"`
 	Registers    []*Register `xml:"register"`
 	Groups       []*Group    `xml:"group"`
@@ -125,6 +145,7 @@ type Instance struct {
 	Name         string `xml:"name,attr"` // optional explicit symbol, overrides the derived stem+id
 	Base         Hex    `xml:"base,attr"`
 	ProdCategory string `xml:"prodcategory,attr"`
+	Families     string `xml:"families,attr"` // device families that have this; "" = all
 }
 
 type Group struct {
@@ -145,6 +166,7 @@ type Register struct {
 	Access       string     `xml:"access,attr"` // default for fields: ro|wo|rw...
 	Extend       bool       `xml:"extend,attr"` // merge into inherited register of same name
 	ProdCategory string     `xml:"prodcategory,attr"`
+	Families     string     `xml:"families,attr"` // device families that have this; "" = all
 	Fields       []*Field   `xml:"field"`
 	Excludes     []*Exclude `xml:"exclude"`
 
@@ -166,6 +188,7 @@ type Field struct {
 	Access       string  `xml:"access,attr"`
 	Description  string  `xml:"description,attr"`
 	ProdCategory string  `xml:"prodcategory,attr"`
+	Families     string  `xml:"families,attr"` // device families that have this; "" = all
 	Enums        []*Enum `xml:"enum"`
 }
 
@@ -208,8 +231,30 @@ type Device struct {
 	Interrupts      []*Interrupt
 	Pins            []*Pin
 	Variants        []*Variant
+	PinNums         []*PinNum
 
 	byName map[string][]*Peripheral // a name may have category variants (FLASH Cat2/3/4)
+}
+
+// pinNumber returns pin `name`'s number/coordinate in package pkg, or "".
+func (d *Device) pinNumber(name, pkg string) string {
+	for _, pn := range d.PinNums {
+		if pn.Name == name {
+			return pn.Pkg[pkg]
+		}
+	}
+	return ""
+}
+
+// packages returns the set of package names present in the pin map.
+func (d *Device) packages() map[string]bool {
+	set := map[string]bool{}
+	for _, pn := range d.PinNums {
+		for pkg := range pn.Pkg {
+			set[pkg] = true
+		}
+	}
+	return set
 }
 
 // peripheral resolves a name used as an inheritance base. Bases are unique
@@ -266,6 +311,7 @@ func load(dir string) (*Device, error) {
 		d.Interrupts = append(d.Interrupts, f.Interrupts...)
 		d.Pins = append(d.Pins, f.Pins...)
 		d.Variants = append(d.Variants, f.Variants...)
+		d.PinNums = append(d.PinNums, f.PinNums...)
 	}
 
 	sort.Slice(d.Peripherals, func(i, j int) bool { return d.Peripherals[i].Name < d.Peripherals[j].Name })
@@ -409,24 +455,63 @@ func expandGroup(g *Group) *Register {
 
 func cleanws(s *string) { *s = strings.Join(strings.Fields(*s), " ") }
 
-// selCat is the product category selected by -part ("" = emit all). When set,
-// peripherals/instances/registers/fields tagged with a non-matching
-// prodcategory are dropped, so the header matches exactly one part.
-var selCat string
+// selFamily is the device family selected by -part ("" = emit all families).
+// When set, peripherals/instances/registers/fields whose families= list omits
+// it are dropped, so the header matches exactly one part.
+var selFamily string
 
-// inCat reports whether an element tagged with prodcategory pc belongs in the
-// selected category. An untagged element ("") is always in; with no part
-// selected, everything is in.
-func inCat(pc string) bool {
-	if pc == "" || selCat == "" {
+// inFamily reports whether an element with the given families= list belongs in
+// the selected family. An untagged element ("") is in every family — by
+// convention only the bits that VARY across the G4 line carry a families= tag;
+// with no part selected, everything is in.
+func inFamily(families string) bool {
+	if families == "" || selFamily == "" {
 		return true
 	}
-	for _, c := range strings.Split(strings.ReplaceAll(pc, "|", ","), ",") {
-		if strings.TrimSpace(c) == selCat {
+	for _, f := range strings.Fields(families) {
+		if f == selFamily {
 			return true
 		}
 	}
 	return false
+}
+
+// selPackage is the package selected by a full -part number ("" if the part
+// gives only a family). pinfmt uses it to add physical pin numbers.
+var selPackage string
+
+// Part-number field decodes, from the datasheet ordering information (e.g.
+// DS12712 Table 119): STM32G4{ff}{pincount}{flash}{pkgtype}{temp}.
+var pinCountLetter = map[byte]int{'C': 48, 'R': 64, 'M': 80, 'V': 100, 'P': 121, 'Q': 128}
+var pkgTypeLetter = map[byte]string{'H': "TFBGA", 'I': "UFBGA", 'T': "LQFP", 'U': "UFQFPN", 'Y': "WLCSP"}
+
+// decodePackage resolves a full part number (STM32G473VET6) to a package name
+// in the pin map (LQFP100). Returns "" if part carries no pin-count/package
+// letters (e.g. a bare family). The number is resolved against the pin map so
+// the WLCSP "80/81" wrinkle lands on the real package name.
+func (d *Device) decodePackage(part string) string {
+	v := d.matchVariant(part)
+	if v == nil {
+		return ""
+	}
+	suffix := strings.TrimPrefix(strings.TrimPrefix(part, "STM32"), v.Family)
+	if len(suffix) < 3 {
+		return ""
+	}
+	pins, ok1 := pinCountLetter[suffix[0]]
+	name, ok2 := pkgTypeLetter[suffix[2]]
+	if !ok1 || !ok2 {
+		return ""
+	}
+	if cand := fmt.Sprintf("%s%d", name, pins); d.packages()[cand] {
+		return cand
+	}
+	for pkg := range d.packages() { // WLCSP80 -> WLCSP81 etc.
+		if strings.HasPrefix(pkg, name) {
+			return pkg
+		}
+	}
+	return ""
 }
 
 // matchVariant finds the memory variant for a part designator (STM32G473...,
@@ -477,7 +562,8 @@ func main() {
 		if v == nil {
 			log.Fatalf("part %q: no memory variant matches", *fPart)
 		}
-		selCat = v.Category
+		selFamily = v.Family
+		selPackage = d.decodePackage(*fPart) // "" for a bare family
 	}
 
 	if *fDump {

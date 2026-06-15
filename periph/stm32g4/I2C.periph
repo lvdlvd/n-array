@@ -10,7 +10,7 @@
     <instance id="1" base="0x40005400" />
     <instance id="2" base="0x40005800" />
     <instance id="3" base="0x40007800" />
-    <instance id="4" base="0x40008400" />
+    <instance id="4" base="0x40008400" families="G473 G483 G474 G484" />
     
     <register name="CR1" offset="0x00" reset="0x00000000" description="Control register 1">
       <field name="PE" mask="0x00000001" access="rw" description="Peripheral enable">
