@@ -10,6 +10,7 @@
     <instance id="1" base="0x40013000" />
     <instance id="2" base="0x40003800" />
     <instance id="3" base="0x40003C00" />
+    <instance id="4" base="0x40013C00" families="G473 G483 G474 G484" /> <!-- SPI4: cat3-full + cat4 only (RM0440 Table 2) -->
     
     <register name="CR1" offset="0x00" reset="0x0000" description="Control register 1">
       <field name="CPHA" mask="0x0001" access="rw" description="Clock phase">

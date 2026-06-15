@@ -779,10 +779,24 @@
       <field name="BKCMP2P" mask="0x00000800" access="rw" description="COMP2 break input polarity" />
     </register>
     
-    <register name="TISEL" offset="0x68" reset="0x00000000" description="Timer input selection register">
-      <field name="TI1SEL" mask="0x0000000F" access="rw" description="TI1 input selection" />
+    <!-- RM0440 30.8.16: TIM16/17 TISEL is at 0x5C (was wrongly 0x68 = OR1). -->
+    <register name="TISEL" offset="0x5C" reset="0x00000000" description="Timer input selection register">
+      <field name="TI1SEL" mask="0x0000000F" access="rw" description="TI1 input selection (RM0440 Table 290)">
+        <!-- in1 differs by instance (TIM16: comp6_out, TIM17: comp5_out) -->
+        <enum value="0x00000000" name="CH1" description="TIMx_CH1 GPIO input" />
+        <enum value="0x00000002" name="MCO" description="MCO output" />
+        <enum value="0x00000003" name="HSE_32" description="HSE/32 (needs OR1 HSE32EN)" />
+        <enum value="0x00000004" name="RTC" description="RTC clock" />
+        <enum value="0x00000005" name="LSE" description="LSE clock" />
+        <enum value="0x00000006" name="LSI" description="LSI clock" />
+      </field>
     </register>
-    
+
+    <!-- RM0440 30.8.19: TIMx option register 1 (x=16,17) -->
+    <register name="OR1" offset="0x68" reset="0x00000000" description="Option register 1">
+      <field name="HSE32EN" mask="0x00000001" access="rw" description="Enable HSE/32 on tim_ti1_in3" />
+    </register>
+
   </peripheral>
-  
+
 </device>

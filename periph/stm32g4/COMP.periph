@@ -8,6 +8,7 @@
 <device name="STM32G4" reference_manual="RM0440" revision="7">
   
   <peripheral name="COMP" description="Comparators">
+    <!-- Availability (RM0440 Table 2): COMP1-7 on G473/483/474/484; COMP1-4 only on cat2 (G431/441) and access+ (G491/4A1). C[] is over-provided. -->
     <instance id="1" base="0x40010200" />
     
     <!-- 7 comparator instances using group -->

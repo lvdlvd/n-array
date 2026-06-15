@@ -251,7 +251,39 @@ QUADSPI, AES, FLASH. **Still to tag** (intricate file structure):
 SPI4, COMP5-7, OPAMP4-6, UART5. FLASH's dual/single-bank-by-family
 nuance (G491 single-bank) is a known data limitation.
 
-**Still to wire:** the clock setup (hand-written per-family, as planned).
+## Clock setup (`lib/clock.h` + `clock.c`, done)
+
+Runtime-adaptive, not compile-time: the same firmware works across boards
+regardless of crystal. `clock_measure_hse()` detects an HSE crystal and
+*measures* it (RM0440 §7.2.16 — TIM16 input-captures HSE/32 against the
+reset-default 16 MHz HSI), rounding to the nearest MHz; the value is
+cached in `clock_hse_hz`. Preset targets `clock_init_16/64/144/168()`
+bring SYSCLK up via the PLL off HSE (else HSI16) — choosing PLLM to land
+the VCO input near 8 MHz and PLLN for the target — handling PWR
+voltage/boost and flash wait-states in the RM-mandated order (modelled on
+the proven `stm32gen/.../boot.c` sequence). Fancier clocks: hand-roll the
+RCC tree.
+
+Live rate queries read the *current* RCC config (valid after a preset or
+a hand setup): `clock_sysclk/hclk/pclk1/pclk2_hz()`, the `*_timer_hz()`
+×2-rule variants, and per-kind kernel-clock rates from the CCIPR muxes —
+`clock_usart_hz(n)`, `clock_lpuart_hz()`, `clock_i2c_hz(n)`,
+`clock_fdcan_hz()` — for UART BRR and CAN bit timing. Peripheral *enables*
+stay the app's job (`RCC.APBxENR |= …` at the top of `main`).
+
+Compiles and links clean on arm-none-eabi cortex-m4 (gnu23); **not yet
+hardware-validated** (no device in the loop) — the measurement and PLL
+sequence are compile-checked and modelled on working code.
+
+Implementing this exposed and fixed a data bug: TIM16/17 `TISEL` was at
+offset 0x68 (should be 0x5C = the OR1 register); corrected the offset,
+added the `TI1SEL` source enums (incl. `HSE_32`=3, RM0440 Table 290) and
+the missing `OR1`/`HSE32EN` register, so the measurement references
+generated named constants.
+
+**Earlier this turn:** the last family-gating tags — SPI4 (added, was
+missing), UART5; COMP/OPAMP left as over-provided arrays (documented; the
+access+ OPAMP set {1,2,3,6} isn't a range).
 
 ## Interrupt vectoring & the NVIC core
 

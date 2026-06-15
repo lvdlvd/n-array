@@ -316,7 +316,7 @@
        ======================================================================== -->
   <peripheral name="UART" base="USART_BASE" description="UART with LIN/IrDA but no sync/smartcard">
     <instance id="4" base="0x40004C00" />
-    <instance id="5" base="0x40005000" />
+    <instance id="5" base="0x40005000" families="G473 G483 G491 G4A1 G474 G484" />
     
     <!-- CR1 extensions -->
     <register name="CR1" extend="true">
