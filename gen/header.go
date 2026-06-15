@@ -427,7 +427,14 @@ func writeRegisterAPI(w io.Writer, per *Peripheral, r *Register) {
 	}
 
 	if r.ArrayLen > 0 {
-		return // scalar array (NVIC ISER): full-width fields, nothing to emit
+		// scalar array (NVIC ISER[8], DMAMUX C[16], COMP C[7], OPAMP O[6]):
+		// the field positions are the same in every element, so emit the
+		// field-mask + named-value enums (DMAMUX_C_DMAREQ_ID, COMP_C_HYST, ...).
+		// Per-element get/set accessors are skipped — they would need an index.
+		if f := emittableFields(r); len(f) > 0 {
+			writeFieldEnums(w, upper(per.Name)+"_"+upper(r.Name), per.Name+"->"+r.Name+"[]", r.Description, f)
+		}
+		return
 	}
 
 	emit := emittableFields(r)

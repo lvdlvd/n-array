@@ -1,6 +1,10 @@
 # [N]Array — design & roadmap
 
-Status: design accepted, generator (M1) not yet started.
+Status: generator + register headers, devs.ld, pinmux, memory linker
+scripts, part/family selection, pin numbers all working; libs nvic/gpio/
+clock/fifo/dma/serial in place (compile+link clean on arm-none-eabi
+cortex-m4, gnu23; not yet hardware-validated). Next: an end-to-end
+example on real hardware.
 Audience: future me, and Claude sessions continuing this work.
 
 ## Why this exists
@@ -281,9 +285,35 @@ added the `TI1SEL` source enums (incl. `HSE_32`=3, RM0440 Table 290) and
 the missing `OR1`/`HSE32EN` register, so the measurement references
 generated named constants.
 
-**Earlier this turn:** the last family-gating tags — SPI4 (added, was
-missing), UART5; COMP/OPAMP left as over-provided arrays (documented; the
-access+ OPAMP set {1,2,3,6} isn't a range).
+**Earlier:** the last family-gating tags — SPI4 (added, was missing),
+UART5; COMP/OPAMP left as over-provided arrays (documented; the access+
+OPAMP set {1,2,3,6} isn't a range).
+
+## Buffered serial: fifo / dma / serial (done)
+
+Generalized from the reference projects' `fifo.h`/`dma.h`/`serial.h`:
+- `lib/fifo.h` — lock-free circular byte buffer with block access
+  (`fifo_head/tail` + `*_size` contiguous chunks), the DMA-shaped FIFO.
+  Verbatim — already device-independent.
+- `lib/dma.h` — channel helpers built directly on the generated
+  `DMA_Type.CH[8]` sub-struct array (the old hand-rolled `struct
+  DMA_Channel` + cast is gone — a concrete win of the richer generation)
+  and `DMAMUX.C[16]`; `DMA_CHAN`/`DMA_REQ` enums, `dma_start_rx/tx`,
+  `dma_stop`, `dma_isr`, `dma_remaining`.
+- `lib/serial.h` — USART⇄DMA⇄FIFO: RX DMAs into the fifo head in
+  ≤¼-buffer bursts with a receive-timeout flush; TX DMAs from the tail,
+  chained by the TC IRQ. The app owns the vectors and calls
+  `serial_*_handler()` from them (the [N]Array model). Init takes the
+  runtime kernel rate: `usart_init_tx(&USART1, clock_usart_hz(1), baud)`.
+  LPUART is unified via SERIAL_INITIALIZER_LP's `(USART_Type*)` cast — TX
+  shares the Serial struct and handlers; only `lpuart_init_tx()` differs
+  (256× `lpuart_brr`). LPUART has no `RTOR`, so its RX is DMA-only (no
+  timeout flush). Whole stack compiles/links clean on cortex-m4 (gnu23).
+
+This generalization exposed and fixed a generator gap: scalar-array
+registers (DMAMUX `C[16]`, COMP `C[7]`, OPAMP `O[6]`) were emitting no
+field enums. Now they emit field-mask + named-value enums (skip only the
+per-element accessors), giving `DMAMUX_C_DMAREQ_ID`, `COMP_C_HYST`, etc.
 
 ## Interrupt vectoring & the NVIC core
 
