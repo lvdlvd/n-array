@@ -412,6 +412,40 @@ runtime pieces. No SPI example yet.
   master-side timing; stm↔stm is tractable but is exactly the part compiling
   can't validate, so it waits for hardware.
 
+## CORDIC math (`lib/cordic.{h,c-family}`, integrated)
+
+Imported from the standalone `cordic-math` project so an n-array user can
+`#include "cordic.h"` and get single-precision `sinf/cosf/sincosf/atan2f/
+hypotf/sqrtf/expf/logf/log1pf/powf/fmodf/fabsf/roundf` backed by the G4
+CORDIC coprocessor — **no `-lm`**. Three files come over; the host emulation
+(`math_emul.c`) deliberately stays in `cordic-math` for prototyping:
+
+- `lib/cordic_math.c` — the backend-agnostic float frontend (range
+  reduction, q1.31 conversion, special cases), **verbatim** except its
+  `#include "math.h"` → `"cordic.h"`. Kept byte-identical otherwise so
+  re-syncing upstream fixes stays a one-line diff.
+- `lib/cordic_port.h` — the backend ABI (CSR image + q1.31 args/results),
+  **verbatim**.
+- `lib/cordic_stm32.c` — the device backend, the **only** rewritten file:
+  upstream hand-rolls a register overlay at `0x40020C00`; here it drives the
+  generated `CORDIC` singleton (`CORDIC.CSR/WDATA/RDATA`), bound by `devs.ld`
+  like every other instance. Zero-overhead mode — the RDATA read stalls on
+  AHB wait states until the result is ready, no polling/IRQ.
+- `lib/cordic.h` — public API, adapted from upstream's `math.h` drop-in
+  (constants + `__builtin` classification macros + the 13 decls), minus the
+  host-test `CORDIC_MATH_PREFIX` block. Naming it `cordic.h` (not `math.h`)
+  sidesteps shadowing the toolchain `<math.h>`, so the `-I` ordering upstream
+  needed no longer matters.
+
+Usage: add `cordic_math.c` + `cordic_stm32.c` to the build, enable the clock
+(`RCC.AHB1ENR |= RCC_AHB1ENR_CORDICEN;`) before the first call (no init
+function), and build with `-fno-builtin -ffp-contract=off`, no fast-math
+(so the compiler emits real calls and the low bits stay correct; FPSCR left
+at reset). *Status:* both TUs compile clean on cortex-m4 (gnu23,
+`-Wextra`); a program calling `sinf/sqrtf/powf/...` links with no libm and
+`CORDIC` resolves to `0x40020C00`. Frontend ~3.6 KB, backend 40 B. Not yet
+wired into the hello example.
+
 ## Interrupt vectoring & the NVIC core
 
 Decided in design discussion; replaces genstruct's weak-alias scheme.
