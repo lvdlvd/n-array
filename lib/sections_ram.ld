@@ -23,6 +23,7 @@ SECTIONS
 
   .text : {
     . = ALIGN(4);
+    _stext = .;                  /* code span, for the fault backtrace scanner */
     *(.text) *(.text.*)
     *(.rodata) *(.rodata.*)
     . = ALIGN(4);
@@ -45,6 +46,15 @@ SECTIONS
     . = ALIGN(4);
     _ebss = .;
   } > RUN
+
+  /* lib/fault.c crash record at the low end of CCRAM (NOLOAD, survives reset);
+     stack grows down from _estack (top of CCRAM). */
+  .crashdump (NOLOAD) : {
+    . = ALIGN(8);
+    KEEP(*(.crashdump))
+    . = ALIGN(8);
+  } > CCMRAM
+  _stack_limit = ORIGIN(CCMRAM) + SIZEOF(.crashdump) + 256; /* + guard gap */
 
   /DISCARD/ : {
     *(.ARM.exidx) *(.ARM.exidx.*)

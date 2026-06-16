@@ -315,6 +315,37 @@ registers (DMAMUX `C[16]`, COMP `C[7]`, OPAMP `O[6]`) were emitting no
 field enums. Now they emit field-mask + named-value enums (skip only the
 per-element accessors), giving `DMAMUX_C_DMAREQ_ID`, `COMP_C_HYST`, etc.
 
+## Console & crash handling: tprintf / console / fault (done)
+
+- `lib/tprintf.{c,h}` — Marco Paland's MIT tiny-printf, imported verbatim
+  (license intact). Self-contained, `_putchar`/`fctprintf` output hooks.
+- `lib/console.{h,c}` — glue from tprintf to the serial FIFO:
+  `serial_printf(s, ...)` (via `fctprintf`) to any port, and a global
+  `console` + `_putchar` so plain `tprintf()`/`printf` work. One writer
+  per console FIFO.
+- `lib/fault.{c,h}` — fault/assert/stray-IRQ trapping with a **post-mortem
+  crash record** in a no-init `.crashdump` section at the **low end of
+  CCRAM** (survives reset; the stack grows down from `_estack`, with
+  `_stack_limit` = record + a 256 B guard gap above it). The naked fault
+  handlers pick MSP/PSP from EXC_RETURN, record the causal PC/LR + cause
+  (CFSR/HFSR/fault addr), and **harvest a call-chain by scanning the stack
+  for Thumb return addresses** (odd, in `[_stext,_etext]`, preceded by a
+  BL/BLX) — no unwind tables in ROM. Then BKPT if a debugger is attached
+  (DHCSR), else reset. Stray IRQs use the NULL-vector model: pc≈0 ⇒ record
+  the IRQ from the stacked xPSR. `__assert_func` captures file/line/expr +
+  chain the same way. On the next boot, `fault_report(putc)` prints the
+  record (incl. the raw backtrace addresses) once the console is up.
+- `tools/narray-trace` — POSIX wrapper over `arm-none-eabi-addr2line`:
+  paste the `CRASH …`/`backtrace:` output (or pass addresses) to get
+  `0xADDR  function at file:line` for each frame. Symbolization is offline
+  against the `.elf`, so nothing extra ships in ROM.
+
+`.crashdump` placement and `_stext`/`_stack_limit` were added to both
+`sections.ld` and `sections_ram.ld`. Whole console+fault stack compiles
+and links clean on cortex-m4 (gnu23). **Stack-overflow detection** is
+SP-vs-`_stack_limit` only for now (flags `overflow`, skips the walk); an
+MPU guard page would make it airtight — deferred.
+
 ## Interrupt vectoring & the NVIC core
 
 Decided in design discussion; replaces genstruct's weak-alias scheme.

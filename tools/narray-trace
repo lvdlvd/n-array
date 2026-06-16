@@ -1,0 +1,40 @@
+#!/bin/sh
+# narray-trace — symbolize an [N]Array crash backtrace against a firmware .elf.
+#
+# The on-device fault_report() prints, among any other console output:
+#   CRASH fault pc=08001234 lr=08001100 cfsr=00000400 ...
+#   NARRAY-BT 08001234 08001100 08000f50 ... END
+# Paste your whole console scrollback (or pass addresses) — this ignores
+# everything before the NARRAY-BT marker and reads addresses up to END.
+#
+#   narray-trace fw.elf 08001234 08001100 ...     # addresses as arguments
+#   pbpaste | narray-trace fw.elf                 # or paste console text on stdin
+#
+# Honors ARM_PREFIX (default arm-none-eabi-). Thin wrapper over addr2line.
+
+set -eu
+
+elf=${1:?usage: narray-trace fw.elf [addr...]   (addresses else read from stdin)}
+shift
+
+a2l="${ARM_PREFIX:-arm-none-eabi-}addr2line"
+command -v "$a2l" >/dev/null 2>&1 || { echo "narray-trace: $a2l not found (set ARM_PREFIX)" >&2; exit 1; }
+
+if [ "$#" -gt 0 ]; then
+	addrs=$*
+else
+	# Isolate the address run after the start marker (up to END), ignoring any
+	# console noise before it; fall back to all hex tokens if no marker.
+	input=$(cat)
+	seq=$(printf '%s' "$input" | tr '\n' ' ' | sed -n 's/.*NARRAY-BT//p' | sed 's/END.*//')
+	[ -n "$seq" ] || seq=$input
+	addrs=$(printf '%s' "$seq" | grep -oiE '[0-9a-f]{8}' || true)
+fi
+[ -n "$addrs" ] || { echo "narray-trace: no addresses" >&2; exit 1; }
+
+# -f function names, -i inlined frames, -p pretty one-line-per-address.
+# shellcheck disable=SC2086
+for a in $addrs; do
+	printf '0x%s  ' "$a"
+	"$a2l" -f -i -p -e "$elf" "$a"
+done
