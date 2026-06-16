@@ -16,7 +16,10 @@
 #include "nvic.h"
 #include "startup.h"
 
-#define LED PA5 // Nucleo LD2
+// A typed role name: keeps -Wenum-conversion checking and folds to an immediate
+// at -O (no storage). Works as a runtime arg; a name needed in a static
+// initializer (board[] below) must instead be a #define (a constant expression).
+static const enum GPIO_Pin LED = PA5; // Nucleo LD2
 
 extern const isr_t __vectors[]; // the vector table, defined at the foot of the file
 
@@ -86,12 +89,12 @@ extern void _estack(void); // top of stack (linker)
 // core fault handlers, device IRQs by VECTOR(IRQn). Unwired slots stay NULL and
 // fault loudly if ever taken.
 __attribute__((section(".isr_vector"))) const isr_t __vectors[NVIC_VECTORS] = {
-	(isr_t)&_estack,
-	Reset_Handler,
-	[3] = HardFault_Handler,
-	[4] = MemManage_Handler,
-	[5] = BusFault_Handler,
-	[6] = UsageFault_Handler,
+	(isr_t)&_estack, // [0] SP    — positional
+	Reset_Handler,   // [1] Reset — positional, no +16
+	[VECTOR(HardFault_IRQn)] = HardFault_Handler,   // core exceptions sit at
+	[VECTOR(MemManage_IRQn)] = MemManage_Handler,   // slots 3-6 (IRQn+16);
+	[VECTOR(BusFault_IRQn)] = BusFault_Handler,     // VECTOR names them like
+	[VECTOR(UsageFault_IRQn)] = UsageFault_Handler, // any device IRQ
 	[VECTOR(DMA1_CH1_IRQn)] = dma1_ch1,
 	[VECTOR(USART2_IRQn)] = usart2,
 };
