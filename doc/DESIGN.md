@@ -443,8 +443,16 @@ function), and build with `-fno-builtin -ffp-contract=off`, no fast-math
 (so the compiler emits real calls and the low bits stay correct; FPSCR left
 at reset). *Status:* both TUs compile clean on cortex-m4 (gnu23,
 `-Wextra`); a program calling `sinf/sqrtf/powf/...` links with no libm and
-`CORDIC` resolves to `0x40020C00`. Frontend ~3.6 KB, backend 40 B. Not yet
-wired into the hello example.
+`CORDIC` resolves to `0x40020C00`. Frontend ~3.6 KB, backend 40 B.
+
+Demonstrated by **`examples/cordic/`** (the second example): it runs the
+deterministic backend vector sweep imported verbatim-but-for-includes from
+`cordic-math/test/device_dump.c` and prints `CSR ARG1 ARG2 RES1 RES2` hex
+records over a **polled** (lossless) UART, bracketed by `NARRAY-CORDIC-DUMP …
+END`. `cd cordic-math && make vectors` produces the 3531-record host
+reference (`vectors_emul.txt`); diffing the device capture against it proves
+the silicon is bit-exact with the emulation. Output is polled, not the DMA
+console, precisely because a diffed dump must not drop a byte on a full FIFO.
 
 ## Interrupt vectoring & the NVIC core
 
