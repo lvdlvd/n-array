@@ -348,6 +348,70 @@ and links clean on cortex-m4 (gnu23). **Stack-overflow detection** is
 SP-vs-`_stack_limit` only for now (flags `overflow`, skips the walk); an
 MPU guard page would make it airtight — deferred.
 
+## SPI: transaction-queue driver (`lib/spi.{h,c}`, master done)
+
+Generalized from a flight-tested STM32L4 master driver (`bminator10/src/spi.c`)
+into a reusable n-array building block. The core idea is **one ring of
+fixed-size transaction records (`struct SPIXmit`) with three cursors** —
+`head ≥ curr ≥ tail`:
+
+```
+elem[]:  [ done ][ done ][  IN FLIGHT  ][ pending ][ free ]
+         ^tail                ^curr                 ^head
+         `- deq results       `- DMA exchanging     `- enq here
+```
+
+`[tail,curr)` are completed transactions awaiting `spiq_deq_tail()`,
+`elem[curr]` is the one DMA is exchanging now, `[curr,head)` are enqueued
+and waiting. The single ring is thus *both* the input and output FIFO. Each
+transaction is **full-duplex in place**: TX-DMA clocks `buf` out while RX-DMA
+writes the received bytes back into the same `buf`. `spiq_enq_head()` kicks
+the SPI only if idle; otherwise the RX-DMA completion ISR chains to the next.
+
+API (kept deliberately parallel for a future I2C twin): `spiq_init`,
+`spiq_head`/`spiq_enq_head` to enqueue, `spiq_tail`/`spiq_deq_tail` to collect,
+`spi_rx_dma_handler` to call from the RX channel's IRQ, `spi_wait` (WFI), and
+the synchronous `spiq_xmit` convenience. A `ss_func(spi, addr, on)` hook
+replaces hardware NSS and, since it gets the `spi`, can retune speed/polarity
+per slave.
+
+What changed from the L4 original for n-array/G4:
+- DMA via `lib/dma.h` (DMAMUX) — the hand-rolled channel overlay, the fixed
+  `enum spiq_dma_t` SPI↔channel combos, and `DMA_CSELR` are all gone. The
+  caller picks any two `DMA_CHAN`; the driver derives `DMA_REQ_SPIx_RX/TX`
+  from the `SPI_Type*` and sets the mux.
+- Registers from the generated header; `clock_div` is a generated
+  `SPI_CR1_BR_Div*` value (pre-shifted, OR'd straight into CR1), framing set
+  explicit 8-bit via `SPI_CR2_DS_Bits8 | SPI_CR2_FRXTH_Quarter`.
+- **App owns IRQs** (n-array convention): `spiq_init` does *not* touch the
+  NVIC. The app wires only the **RX** channel's vector slot to a handler
+  calling `spi_rx_dma_handler` and `nvic_enable`s that one IRQ. The TX channel
+  needs no NVIC line; its TCIF (set because `dma_start_tx` enables TCIE) is
+  cleared inside the handler. Completing on RX-done is correct: RX finishes
+  exactly when the last byte has been clocked in.
+- Transaction buffer is **embedded** (`buf[SPI_XMIT_BUF]`, default 32) — DMA-
+  safe, bounded, no lifetime worries (decided in review over a pointer model).
+  `SPI_QUEUE_LEN` (default 16, power of two) and `SPI_XMIT_BUF` are override
+  macros.
+
+*Status:* compiles clean on cortex-m4 (gnu23, `-Wextra`/`-Wenum-conversion`),
+788 B text. **Not hardware-validated** (no board) — like the rest of the
+runtime pieces. No SPI example yet.
+
+*Deferred (designed, not built):*
+- **I2C** with a deliberately parallel API: same three-cursor ring, an
+  `I2CXmit { addr, wlen, rlen, buf }` (write-then-read with repeated START),
+  engine driving `CR2.SADD/NBYTES/RD_WRN/START/AUTOEND` + a small
+  `i2c_irq_handler` for STOP/NACK. No `ss_func` (7-bit addr is in the record).
+  Kept as separate parallel files, not a shared generic ring (rule of 3–5;
+  only two users).
+- **Slave mode (stm-to-stm)** reusing the same `SPIQ`, but NSS-edge driven:
+  RX/TX DMA kept armed, the master's NSS-deassert (EXTI on the NSS pin) ends
+  the frame and `dma_remaining()` gives the actual length. The earlier
+  L4↔RPi5 slave attempt (in old compinator commits) was abandoned over
+  master-side timing; stm↔stm is tractable but is exactly the part compiling
+  can't validate, so it waits for hardware.
+
 ## Interrupt vectoring & the NVIC core
 
 Decided in design discussion; replaces genstruct's weak-alias scheme.
@@ -450,7 +514,8 @@ arm-none-eabi-gcc cortex-m4; 81 instance symbols, superset of the golden.
 **M3 — driver library.** Consolidate gpio2/clock/boot/fault/tprintf/
 fifo/nvic into `lib/`, reconciling divergent copies; clock-tree
 data-driven from board.def. Per-family `arm_cmX.h` already exist in
-`stm32gen/lib`. Hold CAN/USB/SPI back.
+`stm32gen/lib`. SPI master done (`lib/spi.{h,c}`); I2C (parallel API) and
+SPI slave designed, deferred to hardware. Hold CAN/USB back.
 
 **M4 — project assembler.** `narray new <board.def>` → directory with
 generated headers, selected drivers, Makefile, `.ld`, stub `main.c`.
