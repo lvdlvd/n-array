@@ -2,9 +2,11 @@
 
 Status: generator + register headers, devs.ld, pinmux, memory linker
 scripts, part/family selection, pin numbers all working; libs nvic/gpio/
-clock/fifo/dma/serial in place (compile+link clean on arm-none-eabi
-cortex-m4, gnu23; not yet hardware-validated). Next: an end-to-end
-example on real hardware.
+clock/fifo/dma/serial/tprintf/console/fault in place, and a Nucleo-G474RE
+`examples/hello` that builds the whole stack into a flashable image
+(verified: correct vector-table manifest, .data LMA/VMA, CCRAM crashdump).
+Compile+link clean on arm-none-eabi cortex-m4, gnu23. Next: flash it on
+real hardware (still not hardware-validated).
 Audience: future me, and Claude sessions continuing this work.
 
 ## Why this exists

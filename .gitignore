@@ -1,2 +1,12 @@
 .DS_Store
 /gen/narray
+
+# build artifacts (examples generate device.h/pinmux.h/*.ld via narray)
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+/examples/*/device.h
+/examples/*/pinmux.h
+/examples/*/*.ld
