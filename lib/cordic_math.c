@@ -430,11 +430,11 @@ float logf(float x)
 /*
  * log1pf(x) = logf(1 + x).
  *
- * NOTE (per project requirements): cnav's single call site is logAdd,
- * where the argument is exp(d) with d <= 0, i.e. x in (0, 1]. On that
- * range the absolute error of this implementation is bounded by the
- * CORDIC ln error (~2^-16, see README) — verify against logAdd's
- * tolerance in that session. The 1+x == 1 guard returns x for arguments
+ * NOTE: the accuracy-sensitive call site is logAdd-style, where the
+ * argument is exp(d) with d <= 0, i.e. x in (0, 1]. On that range the
+ * absolute error of this implementation is bounded by the CORDIC ln
+ * error (~2^-16, see README) — verify against the caller's tolerance.
+ * The 1+x == 1 guard returns x for arguments
  * below the rounding granularity of 1.0f, which is exact to within one
  * ulp there (ln(1+x) = x - x^2/2 + ..., and x^2/2 < 2^-48).
  */
