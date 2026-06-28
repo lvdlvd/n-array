@@ -33,7 +33,10 @@ extern const isr_t __vectors[];
 
 // The board pinout (run `make pinfmt` to refresh these //% annotations).
 static const pinconf_t board[] = {
-	PAAll | PIN_ANALOG, PBAll | PIN_ANALOG, PCAll | PIN_ANALOG, // unused -> analog
+	// Unused -> analog (low power). EXCLUDE PA13/PA14: they are SWDIO/SWCLK and
+	// blanketing them to analog drops the debugger off the running chip (then
+	// only a BOOT0 entry to the system loader can reflash it).
+	(PAAll & ~(Pin_13 | Pin_14)) | PIN_ANALOG, PBAll | PIN_ANALOG, PCAll | PIN_ANALOG,
 	PA9_USART1_TX | PIN_HIGH,                                   //% ST-Link VCP TX
 	PA10_USART1_RX | PIN_PULLUP,                                //% ST-Link VCP RX
 };
