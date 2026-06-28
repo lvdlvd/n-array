@@ -40,8 +40,13 @@ static uint32_t xs32(void)
  * generation is pure integer to keep the vector set platform-exact) */
 static int32_t rq31(int32_t lo, int32_t hi)
 {
+    /* Combine in unsigned/64-bit so the full-range case rq31(INT32_MIN,
+     * INT32_MAX) is platform-exact. The old `lo + (int32_t)offset` signed
+     * combine overflowed/resolved differently on the device (arm-gcc) vs the
+     * host, desyncing the vector set on the sin/cos and atan full-range draws. */
     uint64_t span = (uint64_t)((int64_t)hi - lo);
-    return lo + (int32_t)(((uint64_t)xs32() * (span + 1)) >> 32);
+    uint32_t off  = (uint32_t)(((uint64_t)xs32() * (span + 1)) >> 32);
+    return (int32_t)((uint32_t)lo + off);
 }
 
 static void run1(uint32_t csr, int32_t a1, int32_t a2)
@@ -140,6 +145,27 @@ int cm_dump_main(void)
     }
 
     return 0;
+}
+
+/* Diagnostic: precision sweep. For each of N random (angle, modulus) pairs,
+ * run sin AND cos at PRECISION 1..6 (= 4,8,12,16,20,24 iterations). Lets the
+ * host find the exact iteration at which the software model and the silicon
+ * first diverge. Same seed/PRNG as cm_dump_main so the host can reproduce the
+ * inputs exactly. */
+void cm_dump_psweep(void)
+{
+    int n;
+    unsigned p;
+
+    st = 0x5EED5EEDu;
+    for (n = 0; n < 64; n++) {
+        int32_t th = rq31(INT32_MIN, INT32_MAX);
+        int32_t m  = rq31(0, INT32_MAX);
+        for (p = 1; p <= 6; p++) {
+            run1(cm_csr(CM_FUNC_SIN, p, 0, 1, 1), th, m);
+            run1(cm_csr(CM_FUNC_COS, p, 0, 1, 1), th, m);
+        }
+    }
 }
 
 #ifndef CM_DUMP_NO_MAIN

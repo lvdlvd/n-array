@@ -1,9 +1,9 @@
-# cordic — [N]Array CORDIC example (Nucleo-G474RE)
+# cordic — [N]Array CORDIC example (generic STM32G474 breakout)
 
 Drives the STM32G4 **CORDIC coprocessor** through a deterministic, seed-fixed
 vector sweep covering every `FUNC`/`SCALE`/argument operating point the
 `cordic.h` math frontend uses, and prints one hex record per operation over the
-ST-Link virtual COM port (USART2 on PA2/PA3, 115200 8N1):
+ST-Link virtual COM port (USART1 on PA9/PA10, 115200 8N1):
 
 ```
 CSR ARG1 ARG2 RES1 RES2
@@ -23,7 +23,7 @@ diffed dump must survive a full FIFO.
 
 ```sh
 make            # generates device.h/pinmux.h/*.ld via narray, builds cordic.bin
-make flash      # st-flash --reset write cordic.bin 0x08000000
+make flash      # openocd via ST-Link (stlink.cfg + stm32g4x.cfg)
 ```
 
 Built with `-fno-builtin -ffp-contract=off` (no fast-math) so the compiler emits

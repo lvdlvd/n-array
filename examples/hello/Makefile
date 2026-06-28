@@ -1,7 +1,8 @@
-# [N]Array hello — Nucleo-G474RE smoke test.
+# [N]Array hello — generic 64-pin STM32G474 breakout smoke test.
 # Generates the device header + linker scripts with narray, builds with the lib.
 
-# Nucleo-G474RE: STM32G474RET6 (LQFP64, 512K flash, Cat4), ROM run model.
+# STM32G474RET6 (LQFP64, 512K flash, Cat4), ROM run model. LED on PC13,
+# console on USART1 (PA9/PA10) via the ST-Link VCP.
 PART      = STM32G474
 PARTFULL  = STM32G474RET6
 MEMTARGET = STM32G474Exx_ROM
@@ -54,8 +55,19 @@ hello.bin: hello.elf
 pinfmt: $(NARRAY) pinmux.h
 	$(NARRAY) -part $(PARTFULL) -pinfmt main.c $(PERIPH)
 
-flash: hello.bin
-	st-flash --reset write hello.bin 0x08000000
+# Flash over ST-Link with OpenOCD (G4 flash is driven by the stm32l4x cmd set).
+flash: hello.elf
+	openocd \
+		-f interface/stlink.cfg \
+		-f target/stm32g4x.cfg \
+		-c init \
+		-c halt \
+		-c "flash probe 0" \
+		-c "stm32l4x mass_erase 0" \
+		-c "sleep 100" \
+		-c "program $< verify" \
+		-c reset \
+		-c shutdown
 
 clean:
 	rm -f *.o *.elf *.bin *.hex *.map $(GEN)

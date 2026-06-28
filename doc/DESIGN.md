@@ -336,7 +336,14 @@ per-element accessors), giving `DMAMUX_C_DMAREQ_ID`, `COMP_C_HYST`, etc.
   (DHCSR), else reset. Stray IRQs use the NULL-vector model: pc≈0 ⇒ record
   the IRQ from the stacked xPSR. `__assert_func` captures file/line/expr +
   chain the same way. On the next boot, `fault_report(putc)` prints the
-  record (incl. the raw backtrace addresses) once the console is up.
+  record (incl. the raw backtrace addresses) once the console is up, then
+  invalidates it (one-shot: `crashdump.magic = 0`).
+  **The `putc` handed to `fault_report` MUST be synchronous** — use the
+  polled `usart_putc()` (spins on TXE), never a DMA/IRQ-buffered writer.
+  The report often runs microseconds before the program continues or
+  re-faults/resets; a DMA-queued report would sit in the FIFO and never
+  reach the wire (this is exactly the trap the first `examples/hello`
+  fell into). Same rule for any lossless dump (see `examples/cordic`).
 - `tools/narray-trace` — POSIX wrapper over `arm-none-eabi-addr2line`:
   paste the `CRASH …`/`backtrace:` output (or pass addresses) to get
   `0xADDR  function at file:line` for each frame. Symbolization is offline

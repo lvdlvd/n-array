@@ -156,6 +156,18 @@ static inline void serial_irq_rx_handler(struct Serial *s, enum DMA_CHAN ch, str
 
 // ---- TX: DMA from the fifo tail, chained by the TC interrupt ---------------
 
+// Polled, blocking single-byte transmit: spin on TXE, then push one byte direct
+// to TDR. The synchronous counterpart to the DMA path below. Use it for output
+// that must NOT depend on the async DMA+IRQ engine — above all the post-mortem
+// crash report (fault_report): it runs moments before the program continues or
+// re-faults/resets, so a DMA-queued report would sit in the FIFO and never reach
+// the wire. Bypasses the Serial fifo, so don't interleave with an active DMA TX.
+static inline void usart_putc(struct USART_Type *u, char c) {
+	while (!(u->ISR & USART_ISR_TXE)) {
+	}
+	u->TDR = (uint8_t)c;
+}
+
 // Kick the TX engine after filling the fifo (idempotent — safe if running).
 static inline void serial_dma_tx_start(struct Serial *s) { s->usart->CR1 |= USART_CR1_TCIE; }
 

@@ -1,7 +1,7 @@
-# hello — [N]Array smoke test (Nucleo-G474RE)
+# hello — [N]Array smoke test (generic STM32G474 breakout)
 
-Blinks LD2 (PA5) and prints over the ST-Link virtual COM port (USART2 on
-PA2/PA3, 115200 8N1). It exercises the whole stack in one image: the
+Blinks the LED (PC13, active low) and prints over the ST-Link virtual COM port
+(USART1 on PA9/PA10, 115200 8N1). It exercises the whole stack in one image: the
 narray-generated register header and linker scripts, memory init, the
 vector-table manifest, the clock lib (HSE auto-detect else HSI16 → 168 MHz),
 GPIO, DMA+IRQ buffered serial, `tprintf`/console, and the fault/crash machinery.
@@ -10,7 +10,7 @@ GPIO, DMA+IRQ buffered serial, `tprintf`/console, and the fault/crash machinery.
 
 ```sh
 make            # generates device.h/pinmux.h/*.ld via narray, builds hello.bin
-make flash      # st-flash --reset write hello.bin 0x08000000
+make flash      # openocd via ST-Link (stlink.cfg + stm32g4x.cfg)
 ```
 
 Open the VCP at 115200; you should see `[N]Array hello … sysclk = … Hz` then

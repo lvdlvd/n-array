@@ -1,8 +1,8 @@
-# [N]Array CORDIC example — Nucleo-G474RE.
+# [N]Array CORDIC example — generic 64-pin STM32G474 breakout.
 # Runs the cordic-math deterministic vector sweep on silicon and prints the
-# records over USART2 for diffing against the host emulation.
+# records over USART1 (PA9/PA10, ST-Link VCP) for diffing against host emulation.
 
-# Nucleo-G474RE: STM32G474RET6 (LQFP64, 512K flash, Cat4), ROM run model.
+# STM32G474RET6 (LQFP64, 512K flash, Cat4), ROM run model.
 PART      = STM32G474
 PARTFULL  = STM32G474RET6
 MEMTARGET = STM32G474Exx_ROM
@@ -60,8 +60,19 @@ cordic.bin: cordic.elf
 pinfmt: $(NARRAY) pinmux.h
 	$(NARRAY) -part $(PARTFULL) -pinfmt main.c $(PERIPH)
 
-flash: cordic.bin
-	st-flash --reset write cordic.bin 0x08000000
+# Flash over ST-Link with OpenOCD (G4 flash is driven by the stm32l4x cmd set).
+flash: cordic.elf
+	openocd \
+		-f interface/stlink.cfg \
+		-f target/stm32g4x.cfg \
+		-c init \
+		-c halt \
+		-c "flash probe 0" \
+		-c "stm32l4x mass_erase 0" \
+		-c "sleep 100" \
+		-c "program $< verify" \
+		-c reset \
+		-c shutdown
 
 clean:
 	rm -f *.o *.elf *.bin *.hex *.map $(GEN)

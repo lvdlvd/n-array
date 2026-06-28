@@ -1,7 +1,7 @@
-// [N]Array CORDIC example — Nucleo-G474RE: drive the CORDIC coprocessor through
-// the deterministic backend-level vector sweep (device_dump.c, imported from the
-// cordic-math test suite) and print one hex record per operation over the ST-Link
-// virtual COM port (USART2, PA2/PA3, 115200 8N1):
+// [N]Array CORDIC example — generic 64-pin STM32G474 breakout: drive the CORDIC
+// coprocessor through the deterministic backend-level vector sweep (device_dump.c,
+// imported from the cordic-math test suite) and print one hex record per operation
+// over the ST-Link virtual COM port (USART1, PA9/PA10, 115200 8N1):
 //
 //     CSR ARG1 ARG2 RES1 RES2
 //
@@ -26,24 +26,22 @@
 // The deterministic sweep, imported verbatim-but-for-includes from
 // cordic-math/test/device_dump.c (compiled with -DCM_DUMP_NO_MAIN).
 int cm_dump_main(void);
+void cm_dump_psweep(void); // diagnostic precision sweep (see device_dump.c)
 
 extern const isr_t __vectors[];
 
 // The board pinout (run `make pinfmt` to refresh these //% annotations).
 static const pinconf_t board[] = {
 	PAAll | PIN_ANALOG, PBAll | PIN_ANALOG, PCAll | PIN_ANALOG, // unused -> analog
-	PA2_USART2_TX | PIN_HIGH,                                   //% ST-Link VCP TX
-	PA3_USART2_RX | PIN_PULLUP,                                 //% ST-Link VCP RX
+	PA9_USART1_TX | PIN_HIGH,                                   //% ST-Link VCP TX
+	PA10_USART1_RX | PIN_PULLUP,                                //% ST-Link VCP RX
 };
 
-// Lossless polled transmit: tprintf calls this for every character. Spin until
-// the TX data register is empty, then hand over one byte. No FIFO, no DMA, no
-// dropping — exactly what a diff-against-reference dump needs.
-void _putchar(char c) {
-	while (!(USART2.ISR & USART_ISR_TXE)) {
-	}
-	USART2.TDR = (uint8_t)c;
-}
+// Lossless polled transmit: tprintf calls this for every character. usart_putc
+// spins until the TX data register is empty, then hands over one byte. No FIFO,
+// no DMA, no dropping — exactly what a diff-against-reference dump (and the crash
+// report below) needs.
+void _putchar(char c) { usart_putc(&USART1, c); }
 
 void Reset_Handler(void) __attribute__((noreturn));
 void Reset_Handler(void) {
@@ -54,13 +52,13 @@ void Reset_Handler(void) {
 
 	clock_init_168(); // HSE if present (auto-measured), else HSI16
 
-	// Peripheral clocks: GPIOA, USART2, and the CORDIC coprocessor.
+	// Peripheral clocks: GPIOA, USART1, and the CORDIC coprocessor.
 	RCC.AHB1ENR |= RCC_AHB1ENR_CORDICEN;
 	RCC.AHB2ENR |= RCC_AHB2ENR_GPIOAEN;
-	RCC.APB1ENR1 |= RCC_APB1ENR1_USART2EN;
+	RCC.APB2ENR |= RCC_APB2ENR_USART1EN;
 
 	gpioConfigAll(board, sizeof board / sizeof board[0]);
-	usart_init_tx(&USART2, clock_usart_hz(2), 115200);
+	usart_init_tx(&USART1, clock_usart_hz(1), 115200);
 
 	fault_report(_putchar); // report a crash from the previous run, if any
 
@@ -69,6 +67,10 @@ void Reset_Handler(void) {
 	tprintf("\nNARRAY-CORDIC-DUMP sysclk=%u\n", (unsigned)clock_sysclk_hz());
 	cm_dump_main(); // the deterministic FUNC/SCALE/arg sweep
 	tprintf("NARRAY-CORDIC-END\n");
+
+	tprintf("\nNARRAY-PSWEEP-DUMP\n"); // diagnostic: sin/cos at precision 1..6
+	cm_dump_psweep();
+	tprintf("NARRAY-PSWEEP-END\n");
 
 	for (;;) {
 	}
