@@ -15,17 +15,23 @@
  * localized to a FUNC/SCALE/argument and resolved via the knobs in
  * the calibration enum in math_emul.c (see README, "Calibration").
  *
- * On the device, provide putchar-level output by defining
- * cm_dump_putc(), or rely on a retargeted printf and the default below.
+ * This file is byte-identical in cordic-math (test/device_dump.c) and
+ * n-array (examples/cordic/device_dump.c). The only build difference is the
+ * output path: define CM_DUMP_HOST for the host build (stdio printf, provides
+ * main), leave it unset for the device build (the tiny tprintf, with main
+ * supplied by the app via -DCM_DUMP_NO_MAIN). cordic_port.h and tprintf.h are
+ * resolved from each project's include path.
  */
 
 #include <stdint.h>
-#include "cordic_port.h" // adapted: was ../src/cordic_port.h (now on the -I path)
-#include "tprintf.h"     // adapted: was <stdio.h>; output via the tiny printf
-
-#ifndef CM_DUMP_PRINTF
-#define CM_DUMP_PRINTF tprintf // adapted: was printf
+#ifdef CM_DUMP_HOST
+#  include <stdio.h>
+#  define CM_DUMP_PRINTF printf
+#else
+#  include "tprintf.h"
+#  define CM_DUMP_PRINTF tprintf
 #endif
+#include "cordic_port.h"
 
 static uint32_t st = 0x5EED5EEDu;
 
