@@ -26,7 +26,8 @@
 // The deterministic sweep, imported verbatim-but-for-includes from
 // cordic-math/test/device_dump.c (compiled with -DCM_DUMP_NO_MAIN).
 int cm_dump_main(void);
-void cm_dump_psweep(void); // diagnostic precision sweep (see device_dump.c)
+void cm_dump_psweep(void);            // diagnostic precision sweep (see device_dump.c)
+void cm_dump_determinism(unsigned);   // re-run the sweep N times, checksum each
 
 extern const isr_t __vectors[];
 
@@ -68,9 +69,12 @@ void Reset_Handler(void) {
 	cm_dump_main(); // the deterministic FUNC/SCALE/arg sweep
 	tprintf("NARRAY-CORDIC-END\n");
 
-	tprintf("\nNARRAY-PSWEEP-DUMP\n"); // diagnostic: sin/cos at precision 1..6
-	cm_dump_psweep();
-	tprintf("NARRAY-PSWEEP-END\n");
+	// Calibration diagnostics — swap in as needed; both suppress the per-vector
+	// output (cm_dump_psweep prints sin/cos at PRECISION 1..6 to localize a
+	// divergence by iteration; cm_dump_determinism re-runs the whole set N times
+	// and confirms an identical result checksum — verified deterministic):
+	//   tprintf("NARRAY-PSWEEP-DUMP\n"); cm_dump_psweep();        tprintf("NARRAY-PSWEEP-END\n");
+	//   tprintf("NARRAY-DET-DUMP\n");    cm_dump_determinism(1000); tprintf("NARRAY-DET-END\n");
 
 	for (;;) {
 	}
