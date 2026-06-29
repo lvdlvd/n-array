@@ -29,10 +29,10 @@ static struct Serial vcp = SERIAL_INITIALIZER(USART1, tx_buf);
 
 // The board pinout (run `narray -part STM32G474RET6 -pinfmt main.c` to annotate).
 static const pinconf_t board[] = {
-	// Unused -> analog (low power). EXCLUDE PA13/PA14: they are SWDIO/SWCLK and
-	// blanketing them to analog drops the debugger off the running chip (then
-	// only a BOOT0 entry to the system loader can reflash it).
-	(PAAll & ~(Pin_13 | Pin_14)) | PIN_ANALOG, PBAll | PIN_ANALOG, PCAll | PIN_ANALOG,
+	// Unused -> analog (low power). PAMost = port A minus SWDIO/SWCLK, so the
+	// debugger survives on the running chip (else only a BOOT0 entry into the
+	// system loader can reflash it).
+	PAMost | PIN_ANALOG, PBAll | PIN_ANALOG, PCAll | PIN_ANALOG,
 	PC13 | PIN_OUTPUT,                                          //% breakout LED
 	PA9_USART1_TX | PIN_HIGH,                                   //% ST-Link VCP TX
 	PA10_USART1_RX | PIN_PULLUP,                                //% ST-Link VCP RX

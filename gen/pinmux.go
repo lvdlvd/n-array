@@ -55,6 +55,11 @@ func writePinmux(w io.Writer, d *Device) {
 	p("};\n")
 
 	writeFuncConstants(w, d, ports)
+
+	// pinfor(mux): recover the bare pin (port + mask, low 32 bits) from a
+	// GPIO_Mux constant, e.g. to drive digitalHi/Lo on a pin you configured via
+	// its mux value. The high 32 (AF/mode) are dropped.
+	p("\nstatic inline enum GPIO_Pin pinfor(enum GPIO_Mux m) { return (enum GPIO_Pin)(uint32_t)m; }\n")
 }
 
 // gpioPorts returns the GPIO instance ids actually present (A..G on G4).
@@ -92,6 +97,12 @@ func writePinEnum(w io.Writer, ports []string) {
 		}
 		p("%s\n", b.String())
 		fmt.Fprintf(w, "\tP%sAll = GPIO_%s | Pin_All,\n", id, id)
+		if id == "A" {
+			// SWDIO=PA13, SWCLK=PA14 across essentially the whole STM32 line.
+			// "Most" is the port minus those, so a board can blanket its unused
+			// pins to analog without dropping the debugger off a running chip.
+			fmt.Fprintf(w, "\tPAMost = GPIO_A | (Pin_All & ~(Pin_13 | Pin_14)), // port A minus SWDIO(PA13)/SWCLK(PA14)\n")
+		}
 	}
 	p("};\n")
 }
